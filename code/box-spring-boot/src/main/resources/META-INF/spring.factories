@@ -1,0 +1,5 @@
+org.springframework.context.ApplicationContextInitializer=com.wee0.box.spring.boot.BoxInitializer
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.wee0.box.spring.boot.BoxAutoConfiguration,\
+com.wee0.box.spring.boot.BoxDsAutoConfiguration,\
+com.wee0.box.spring.boot.BoxActionAutoConfiguration

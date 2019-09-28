@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--日志级别以及优先级排序: OFF > FATAL > ERROR > WARN > INFO > DEBUG > TRACE > ALL -->
+<!--Configuration后面的status，这个用于设置log4j2自身内部的信息输出，可以不设置，当设置成trace时，你会看到log4j2内部各种详细输出-->
+<!--monitorInterval：Log4j能够自动检测修改配置 文件和重新配置本身，设置间隔秒数-->
+<!-- 日志打印级别 -->
+<configuration status="WARN">
+    <Properties>
+        <property name="DEF_LEVEL">INFO</property>
+        <Property name="LOG_HOME">logs/box</Property>
+
+        <Property name="PATTERN_FILE">%d{HH:mm:ss.SSS}[%thread][%X{userId}] %level %logger.%M:%L - %msg%n</Property>
+        <Property name="PATTERN_CONSOLE">%d{HH:mm:ss.SSS}[%X{requestId}] %-5level %logger{36}.%M:%L - %msg%n</Property>
+
+        <Property name="FILE_ROLLING_SUFFIX">%d{yyyy-MM-dd}.%i.zip</Property>
+        <Property name="FILE_SIZE">50M</Property>
+        <Property name="FILE_STRATEGY_MAX">30</Property>
+
+        <Property name="LOG_ERROR">${LOG_HOME}-error</Property>
+        <Property name="LOG_PROJECT">${LOG_HOME}-project</Property>
+    </Properties>
+
+    <Appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${PATTERN_CONSOLE}"/>
+        </Console>
+
+        <RollingRandomAccessFile name="errorRolling"
+                                 fileName="${LOG_ERROR}.log"
+                                 filePattern="${LOG_ERROR}-${FILE_ROLLING_SUFFIX}"
+                                 immediateFlush="false" append="true">
+            <Filters>
+                <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <PatternLayout>
+                <Pattern>${PATTERN_FILE}</Pattern>
+                <Charset>UTF-8</Charset>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="${FILE_SIZE}"/>
+            </Policies>
+            <DefaultRolloverStrategy max="${FILE_STRATEGY_MAX}"/>
+        </RollingRandomAccessFile>
+
+        <RollingRandomAccessFile name="projectRolling"
+                                 fileName="${LOG_PROJECT}.log"
+                                 filePattern="${LOG_PROJECT}-${FILE_ROLLING_SUFFIX}"
+                                 immediateFlush="false" append="true">
+            <PatternLayout>
+                <Pattern>${PATTERN_FILE}</Pattern>
+                <Charset>UTF-8</Charset>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="${FILE_SIZE}"/>
+            </Policies>
+            <DefaultRolloverStrategy max="${FILE_STRATEGY_MAX}"/>
+        </RollingRandomAccessFile>
+
+    </Appenders>
+
+    <Loggers>
+        <Logger name="org.hibernate" level="INFO"/>
+        <Logger name="org.hibernate.SQL" level="DEBUG"/>
+        <Logger name="org.hibernate.engine.query.spi.HQLQueryPlan" level="DEBUG"/>
+        <Logger name="org.hibernate.engine.spi.QueryParameters" level="DEBUG"/>
+        <Logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="TRACE"/>
+        <Logger name="org.hibernate.engine.internal.StatisticalLoggingSessionEventListener" level="WARN"/>
+        <Logger name="druid.sql" level="INFO"/>
+        <Logger name="org.mybatis" level="INFO"/>
+        <Logger name="com.wee0.box" level="TRACE">
+            <!--<appender-ref ref="console"/>-->
+            <!--<appender-ref ref="boxRolling"/>-->
+        </Logger>
+        <Logger name="com.wee0.box.spring.BoxBeanDefinitionScanner" level="DEBUG"/>
+
+        <Root level="${DEF_LEVEL}">
+            <appender-ref ref="console"/>
+            <appender-ref ref="errorRolling"/>
+            <appender-ref ref="projectRolling"/>
+        </Root>
+    </Loggers>
+</configuration>
