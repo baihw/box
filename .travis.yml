@@ -18,7 +18,6 @@ cache:
 
 script:
   - cd code
-  - mvn test -B -Dgpg.skip=true
   - mvn clean package -DskipTests=true -Dgpg.skip=true
  
 # after_success:
