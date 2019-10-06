@@ -1,0 +1,36 @@
+language: java
+
+sudo: false
+dist: trusty
+
+jdk:
+  - oraclejdk8
+  - oraclejdk9
+  - openjdk8
+  - openjdk9
+
+cache:
+  directories:
+    - $HOME/.m2
+
+#before_script:
+#  - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -Dgpg.skip=true -B -V
+
+script:
+  - cd code
+  - mvn test -B -Dgpg.skip=true
+  - mvn clean package -DskipTests=true -Dgpg.skip=true
+ 
+# after_success:
+# after_script:
+
+branches:
+  only:
+    - dev
+
+notifications:
+  email:
+    recipients:
+    - "78026399@qq.com"
+    on_success: change
+    on_failure: always

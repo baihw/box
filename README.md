@@ -1,9 +1,9 @@
 # box
 
-[![Build Status](https://travis-ci.org/baihw/box.svg?branch=master)](https://travis-ci.org/baihw/box)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.wee0/box/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.wee0/box)
-[![JDK](https://img.shields.io/badge/JDK-1.8+-green.svg)](https://www.oracle.com/technetwork/java/javase/downloads/index.html)
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
+[![JDK](https://img.shields.io/badge/JDK-1.8+-green.svg)](https://www.oracle.com/technetwork/java/javase/downloads/index.html)
+[![Build Status](https://travis-ci.org/baihw/box.svg?branch=dev)](https://travis-ci.org/baihw/box)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.wee0.box/box-api/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.wee0.box/box-api)
 
 一个希望能够保持简约，并且具有较强的环境适应性的开发框架。
 
@@ -14,7 +14,7 @@
     <dependency>
             <groupId>com.wee0.box</groupId>
             <artifactId>box-{moduleName}</artifactId>
-            <version>0.1.0</version>
+            <version>{version}</version>
     </dependency>
   ```
 - **手动编译**  

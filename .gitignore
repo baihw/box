@@ -7,6 +7,7 @@ logs
 .*
 # 排除 .gitignore 本身
 !/.gitignore
+!/.travis.yml
 
 # Compiled class file
 *.class
