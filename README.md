@@ -17,8 +17,8 @@
             <version>{version}</version>
     </dependency>
   ```
-- **手动编译**  
-   下载源码，执行`mvn clean package`。  
+- **手动安装到本地**  
+   下载源码，执行`mvn clean install -Dmaven.test.skip=true`。  
 
 
 ## 快速上手
@@ -39,7 +39,7 @@
 
 ## 文档翻译
 
-* [English](https://github.com/baihw/box/blob/master/README_en.md)
+* [English](/README_en.md)
 
 
 
