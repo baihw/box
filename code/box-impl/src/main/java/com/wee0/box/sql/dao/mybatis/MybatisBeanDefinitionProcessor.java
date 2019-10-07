@@ -34,10 +34,10 @@ public class MybatisBeanDefinitionProcessor implements IBeanDefinitionProcessor 
     private static final String NAME_API_FACTORY_BEAN = MybatisDaoFactoryBean.class.getName();
 
     @Override
-    public void beforeInitialization(Class<?> clazz) {
-        if (clazz.isInterface() && null != AnnotationUtils.findAnnotation(clazz, BoxDao.class))
-            return;
-        MyBatisDaoManager.me().registerDao(clazz);
+    public void foundBean(Class<?> clazz) {
+        if (clazz.isInterface() && null != AnnotationUtils.findAnnotation(clazz, BoxDao.class)) {
+            MyBatisDaoManager.me().registerDao(clazz);
+        }
     }
 
     @Override

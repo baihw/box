@@ -21,6 +21,7 @@ import com.wee0.box.BoxConstants;
 import com.wee0.box.util.impl.JacksonJsonUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,12 +43,13 @@ import java.util.List;
  **/
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @Configuration
+@AutoConfigureAfter(BoxDsAutoConfiguration.class)
 class BoxActionAutoConfiguration implements WebMvcConfigurer {
 
-    @Value("box.auth.ignoreUrls")
+    @Value("${box.auth.ignoreUrls:#{null}}")
     private String authIgnoreUrls;
 
-    @Value("box.auth.cookieDomain")
+    @Value("${box.auth.cookieDomain:#{null}}")
     private String authCookieDomain;
 
     @Override

@@ -18,6 +18,7 @@ package com.wee0.box.spring.boot;
 
 import com.wee0.box.log.ILogger;
 import com.wee0.box.log.LoggerFactory;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
@@ -31,7 +32,7 @@ import org.springframework.core.annotation.Order;
  * 补充说明
  * </pre>
  **/
-@Order(Ordered.HIGHEST_PRECEDENCE)
+@AutoConfigureAfter(BoxDsAutoConfiguration.class)
 //@EnableConfigurationProperties(BoxProperty.class)
 @org.springframework.context.annotation.Configuration
 @Import(BoxBeanDefinitionRegistrar.class)

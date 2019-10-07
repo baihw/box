@@ -110,11 +110,12 @@ public class MyBatisDaoManager implements IDaoManager {
 
     public void registerDao(Class clazz) {
         CheckUtils.checkNotNull(clazz, "clazz cannot be null!");
-        CheckUtils.checkArgument(!clazz.isInterface(), "clazz must be a interface!");
-        CheckUtils.checkArgument(!SUPER_TYPE.isAssignableFrom(clazz), "clazz must be extends IDao!");
+        CheckUtils.checkArgument(!clazz.isInterface(), clazz + " must be a interface!");
+        CheckUtils.checkArgument(!SUPER_TYPE.isAssignableFrom(clazz), clazz + " must be extends IDao!");
 
         LanguageDriver _languageDriver = configuration.getLanguageDriver(XMLLanguageDriver.class);
         log.trace("languageDriver: {}", _languageDriver);
+        log.trace("registerDao: {}", clazz);
 
         final String _namespace = StringUtils.endsWithChar(clazz.getName(), '.');
         final Class<?> _entityClass = getEntityType(clazz);

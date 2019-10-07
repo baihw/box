@@ -45,6 +45,11 @@ final class SimpleSubject implements ISubject {
     }
 
     @Override
+    public void logout() {
+        throw new UnsupportedOperationException("This method is not yet implemented.");
+    }
+
+    @Override
     public boolean hasRole(String role) {
         throw new UnsupportedOperationException("This method is not yet implemented.");
     }

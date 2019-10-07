@@ -46,6 +46,11 @@ public interface ISubject {
     void login(IToken token);
 
     /**
+     * 执行登出逻辑
+     */
+    void logout();
+
+    /**
      * 判断是否具备指定角色
      *
      * @param role 角色标识

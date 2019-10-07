@@ -47,6 +47,7 @@ public class DsManagerTest {
         SimpleDsProperty _dsProperty = new SimpleDsProperty();
         _dsProperty.setDriverClassName("org.h2.Driver");
         _dsProperty.setUrl("jdbc:h2:mem:box_test;MODE=MYSQL");
+//        _dsProperty.setUrl("jdbc:h2:mem:box_test;MODE=MYSQL;INIT=RUNSCRIPT FROM './src/test/resources/table_init.sql'");
         _dsProperty.setUsername("box");
         _dsProperty.setPassword("box");
         DsManager.impl().addDataSourceByProperty(_dsProperty);

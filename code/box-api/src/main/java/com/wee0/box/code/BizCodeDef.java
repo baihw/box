@@ -72,14 +72,24 @@ public enum BizCodeDef implements IBizCode, IBizCodeInitializer {
     QueryFailed("B000007"),
 
     /**
-     * 默认的无参系统异常
+     * 需要登陆后访问
      */
     S000000("S000000"),
 
     /**
-     * 默认的有参系统异常
+     * 需要授权后访问
      */
-    S000001("S000001");
+    S000001("S000001"),
+
+    /**
+     * 需要登陆后访问
+     */
+    NeedLogin("S000002"),
+
+    /**
+     * 需要授权后访问
+     */
+    Unauthorized("S000003");
 
 
     // 实际的业务编码
@@ -106,6 +116,8 @@ public enum BizCodeDef implements IBizCode, IBizCodeInitializer {
         setter.set(QueryFailed, "查询失败");
         setter.set(S000000, "系统异常，请跟管理员联系");
         setter.set(S000001, "系统异常，请跟管理员联系，信息：{0} param{1}  param{2} ");
+        setter.set(NeedLogin, "请先登陆后访问");
+        setter.set(Unauthorized, "没有访问权限，请联系管理员");
     }
 
 }

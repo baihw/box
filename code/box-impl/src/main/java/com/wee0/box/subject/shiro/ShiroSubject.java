@@ -59,6 +59,11 @@ final class ShiroSubject implements ISubject {
     }
 
     @Override
+    public void logout() {
+        this.subject.logout();
+    }
+
+    @Override
     public boolean hasRole(String role) {
         return this.subject.hasRole(role);
     }

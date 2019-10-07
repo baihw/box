@@ -28,6 +28,7 @@ import com.wee0.box.io.IFileSystem;
 import com.wee0.box.log.ILoggerContext;
 import com.wee0.box.log.ILoggerFactory;
 import com.wee0.box.sql.ISqlHelper;
+import com.wee0.box.sql.dao.IDaoManager;
 import com.wee0.box.sql.ds.IDsHelper;
 import com.wee0.box.sql.ds.IDsManager;
 import com.wee0.box.struct.ICmdFactory;

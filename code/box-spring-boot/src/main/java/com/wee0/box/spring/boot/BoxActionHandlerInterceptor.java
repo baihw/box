@@ -16,11 +16,15 @@
 
 package com.wee0.box.spring.boot;
 
+import com.wee0.box.code.BizCodeDef;
+import com.wee0.box.code.BizCodeManager;
 import com.wee0.box.log.ILogger;
 import com.wee0.box.log.LoggerFactory;
+import com.wee0.box.struct.CmdFactory;
 import com.wee0.box.subject.ISubject;
 import com.wee0.box.subject.SubjectContext;
 import com.wee0.box.util.shortcut.CheckUtils;
+import com.wee0.box.util.shortcut.JsonUtils;
 import com.wee0.box.util.shortcut.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -31,6 +35,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.lang.reflect.Proxy;
 
 /**
@@ -54,12 +59,21 @@ final class BoxActionHandlerInterceptor implements HandlerInterceptor {
         ignoreUrls = StringUtils.endsWithChar(ignoreUrls, ',');
         this.ignoreUrls = ignoreUrls;
         this.cookieDomain = CheckUtils.checkTrimEmpty(cookieDomain, null);
+        log.debug("cookieDomain: {}, ignoreUrls: {}", this.cookieDomain, this.ignoreUrls);
     }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         if (handler instanceof ResourceHttpRequestHandler || handler instanceof ParameterizableViewController)
             return true;
+
+        // 判断当前会话标识是否发生改变
+        String _boxId = findId(request);
+        ISubject _subject = SubjectContext.getSubject(_boxId);
+        if (!_subject.getId().equals(_boxId)) {
+            log.trace("sessionId from {} to {}", _boxId, _subject.getId());
+            response.addCookie(createIdCookie(_subject.getId(), cookieDomain));
+        }
 
         // 判断请求的资源是否允许匿名访问
         String _uri = request.getRequestURI();
@@ -68,13 +82,8 @@ final class BoxActionHandlerInterceptor implements HandlerInterceptor {
         }
 
         // 判断当前用户是否已经登陆
-        String _boxId = findId(request);
-        ISubject _subject = SubjectContext.getSubject(_boxId);
         if (!_subject.isLogin()) {
-            log.error("please login...");
-            if (!_subject.getId().equals(_boxId)) {
-                response.addCookie(createIdCookie(_subject.getId(), cookieDomain));
-            }
+            renderJson(response, CmdFactory.create(BizCodeDef.NeedLogin));
             return false;
         }
 
@@ -92,14 +101,14 @@ final class BoxActionHandlerInterceptor implements HandlerInterceptor {
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) {
         if (handler instanceof ResourceHttpRequestHandler || handler instanceof ParameterizableViewController)
             return;
-        log.debug("handler: {}, modelAndView: {}", handler, modelAndView);
+//        log.trace("handler: {}, modelAndView: {}", handler, modelAndView);
     }
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
         if (handler instanceof ResourceHttpRequestHandler || handler instanceof ParameterizableViewController)
             return;
-        log.debug("handler: {}", handler);
+//        log.trace("handler: {}", handler);
     }
 
     // 默认的客户端标识关联键名
@@ -111,9 +120,12 @@ final class BoxActionHandlerInterceptor implements HandlerInterceptor {
         if (null == _result)
             _result = CheckUtils.checkTrimEmpty(request.getHeader(KEY_BOX_ID), null);
         if (null == _result) {
-            for (Cookie _cookie : request.getCookies()) {
-                if (KEY_BOX_ID.equals(_cookie.getName())) {
-                    _result = CheckUtils.checkTrimEmpty(_cookie.getValue(), null);
+            Cookie[] _cookes = request.getCookies();
+            if (null != _cookes && 0 != _cookes.length) {
+                for (Cookie _cookie : _cookes) {
+                    if (KEY_BOX_ID.equals(_cookie.getName())) {
+                        _result = CheckUtils.checkTrimEmpty(_cookie.getValue(), null);
+                    }
                 }
             }
         }
@@ -130,5 +142,15 @@ final class BoxActionHandlerInterceptor implements HandlerInterceptor {
         _cookie.setHttpOnly(true);
 //        _cookie.setSecure(true);
         return _cookie;
+    }
+
+    private static void renderJson(HttpServletResponse response, Object data) {
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/json; charset=UTF-8");
+        try (PrintWriter writer = response.getWriter();) {
+            writer.print(JsonUtils.writeToString(data));
+        } catch (IOException e) {
+            log.error("render error", e);
+        }
     }
 }
