@@ -41,6 +41,7 @@ class BoxAutoConfiguration {
     private static ILogger log = LoggerFactory.getLogger(BoxAutoConfiguration.class);
 
     BoxAutoConfiguration() {
+        log.debug("BoxAutoConfiguration...");
     }
 
 }

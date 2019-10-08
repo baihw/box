@@ -91,6 +91,8 @@ public class MyBatisDaoManager implements IDaoManager {
 
     // 配置对象
     private final Configuration configuration;
+    // 语法对象
+    LanguageDriver languageDriver;
     // 会话工厂对象
     private final SqlSessionFactory sqlSessionFactory;
     // 会话管理对象
@@ -112,9 +114,6 @@ public class MyBatisDaoManager implements IDaoManager {
         CheckUtils.checkNotNull(clazz, "clazz cannot be null!");
         CheckUtils.checkArgument(!clazz.isInterface(), clazz + " must be a interface!");
         CheckUtils.checkArgument(!SUPER_TYPE.isAssignableFrom(clazz), clazz + " must be extends IDao!");
-
-        LanguageDriver _languageDriver = configuration.getLanguageDriver(XMLLanguageDriver.class);
-        log.trace("languageDriver: {}", _languageDriver);
         log.trace("registerDao: {}", clazz);
 
         final String _namespace = StringUtils.endsWithChar(clazz.getName(), '.');
@@ -132,7 +131,7 @@ public class MyBatisDaoManager implements IDaoManager {
             String _sqlScript = getSqlScript(DsManager.impl().getDefaultDatabaseId(), _method, _entityClass);
             if (null == _sqlScript)
                 continue;
-            SqlSource _sqlSource = _languageDriver.createSqlSource(configuration, _sqlScript, null);
+            SqlSource _sqlSource = this.languageDriver.createSqlSource(configuration, _sqlScript, null);
 
             // 结果映射
             Class<?> _resultType = getResultType(_method, clazz);
@@ -388,6 +387,9 @@ public class MyBatisDaoManager implements IDaoManager {
 
         // 初始化
         initConfiguration(this.configuration);
+
+        this.languageDriver = configuration.getLanguageDriver(XMLLanguageDriver.class);
+        log.trace("languageDriver: {}", this.languageDriver);
 
         // 解析xml配置
         if (null != _xmlConfigBuilder) {

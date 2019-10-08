@@ -61,27 +61,30 @@ class BoxDsAutoConfiguration {
     // 日志对象
     private static ILogger log = LoggerFactory.getLogger(BoxDsAutoConfiguration.class);
 
-    @Autowired
-    private Environment environment;
+//    @Autowired
+//    private Environment environment;
+
+    BoxDsAutoConfiguration(){
+        log.debug("BoxDsAutoConfiguration...");
+    }
 
     @Bean(name = "datasource")
     @ConditionalOnProperty(name = "box.ds.enable", havingValue = "true", matchIfMissing = true)
     @ConditionalOnMissingBean(DataSource.class)
     public DataSource dataSource() {
-        initDsManager();
         return DsManager.impl().getDefaultDataSource();
     }
 
-    @Bean
-    @ConditionalOnProperty(name = "box.mybatis.enable", havingValue = "true", matchIfMissing = true)
-    @ConditionalOnClass(SqlSessionFactory.class)
-    public SqlSessionFactory sqlSessionFactory() {
-        InputStream _inputStream = BoxDsAutoConfiguration.class.getResourceAsStream("/mybatis/mybatis-config.xml");
-        XMLConfigBuilder _configBuilder = new XMLConfigBuilder(_inputStream);
-        Configuration _configuration = _configBuilder.getConfiguration();
-        SqlSessionFactory _sqlSessionFactory = new SqlSessionFactoryBuilder().build(_configuration);
-        return _sqlSessionFactory;
-    }
+//    @Bean
+//    @ConditionalOnProperty(name = "box.mybatis.enable", havingValue = "true", matchIfMissing = true)
+//    @ConditionalOnClass(SqlSessionFactory.class)
+//    public SqlSessionFactory sqlSessionFactory() {
+//        InputStream _inputStream = BoxDsAutoConfiguration.class.getResourceAsStream("/mybatis/mybatis-config.xml");
+//        XMLConfigBuilder _configBuilder = new XMLConfigBuilder(_inputStream);
+//        Configuration _configuration = _configBuilder.getConfiguration();
+//        SqlSessionFactory _sqlSessionFactory = new SqlSessionFactoryBuilder().build(_configuration);
+//        return _sqlSessionFactory;
+//    }
 
 //    @Override
 //    public void setEnvironment(Environment environment) {
@@ -94,99 +97,6 @@ class BoxDsAutoConfiguration {
 //        }
 //    }
 
-    /**
-     * 初始化数据源管理器
-     */
-    private void initDsManager() {
-        DataSource _defaultDataSource = null;
-        Binder _binder = Binder.get(environment);
-        BindResult<SimpleJndiProperty> _jndiBindResult = _binder.bind("box.jndi", Bindable.of(SimpleJndiProperty.class));
-        if (_jndiBindResult.isBound()) {
-            SimpleJndiProperty _jndiProperty = _jndiBindResult.get();
-            if (_jndiProperty.isActive()) {
-                _defaultDataSource = createJndiDataSource(_jndiProperty);
-                DsManager.impl().addDataSource(IDsManager.DEF_DS_NAME, _defaultDataSource);
-            }
-        }
 
-        if (null == _defaultDataSource) {
-            BindResult<SimpleDsProperty> _dsBindResult = _binder.bind("box.ds", Bindable.of(SimpleDsProperty.class));
-            if (_dsBindResult.isBound()) {
-                SimpleDsProperty _dsProperty = _dsBindResult.get();
-                DsManager.impl().addDataSourceByProperty(_dsProperty);
-            }
-        }
-
-        DsManager.impl().init();
-    }
-
-//    /**
-//     * @return 标准数据源
-//     */
-//    private DataSource createStandardDataSource(IDsProperty dsProperty) {
-//        if (!StringUtils.hasLength(dsProperty.getUrl())) {
-//            return null;
-//        }
-//        DsManager.impl().addDataSourceByProperty(dsProperty);
-//        DsManager.impl().init();
-//        DataSource _ds = DsManager.impl().getDefaultDataSource();
-//        return _ds;
-//    }
-
-    /**
-     * @return jndi数据源
-     */
-    private DataSource createJndiDataSource(SimpleJndiProperty jndiProperty) {
-        // 根据配置信息，创建一个默认的数据源提供者实例。
-        if (!jndiProperty.isActive()) {
-            return null;
-        }
-        // 如果配置了jndi，并且active为true，则使用jndi数据源。
-        JndiObjectFactoryBean bean = new JndiObjectFactoryBean();
-        bean.setJndiName(CheckUtils.checkNotTrimEmpty(jndiProperty.getName(), "jndi.name can not be empty!"));
-        bean.setProxyInterface(DataSource.class);
-        bean.setLookupOnStartup(false);
-        bean.setResourceRef(true);
-        try {
-            bean.afterPropertiesSet();
-        } catch (IllegalArgumentException | NamingException e) {
-            log.error(e.getMessage());
-            throw new RuntimeException(e);
-        }
-        DataSource _ds = (DataSource) bean.getObject();
-        return _ds;
-    }
-
-    // 一个简单的JNDI属性配置对象
-    static final class SimpleJndiProperty {
-
-        private String name;
-        private boolean active;
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public boolean isActive() {
-            return active;
-        }
-
-        public void setActive(boolean active) {
-            this.active = active;
-        }
-
-        @Override
-        public String toString() {
-            final StringBuilder sb = new StringBuilder("SimpleJndiProperty{");
-            sb.append("name='").append(name).append('\'');
-            sb.append(", active=").append(active);
-            sb.append('}');
-            return sb.toString();
-        }
-    }
 
 }
