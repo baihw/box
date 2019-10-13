@@ -17,9 +17,9 @@
 package com.wee0.box.testObjects;
 
 import com.wee0.box.beans.IBeanDefinitionProcessor;
-import com.wee0.box.web.annotation.BoxServiceApi;
 import com.wee0.box.log.ILogger;
 import com.wee0.box.log.LoggerFactory;
+import com.wee0.box.sql.annotation.BoxDao;
 import org.springframework.core.annotation.AnnotationUtils;
 
 /**
@@ -34,12 +34,12 @@ public class TestBeanDefinitionProcessor implements IBeanDefinitionProcessor {
 
     private static final ILogger log = LoggerFactory.getLogger(TestBeanDefinitionProcessor.class);
 
-    private static final String NAME_API_FACTORY_BEAN = TestServiceApiFactoryBean.class.getName();
+    private static final String NAME_DAO_FACTORY_BEAN = TestDaoFactoryBean.class.getName();
 
     @Override
     public String getFactoryBeanClassName(Class clazz) {
-        if (clazz.isInterface() && null != AnnotationUtils.findAnnotation(clazz, BoxServiceApi.class))
-            return NAME_API_FACTORY_BEAN;
+        if (clazz.isInterface() && null != AnnotationUtils.findAnnotation(clazz, BoxDao.class))
+            return NAME_DAO_FACTORY_BEAN;
         return null;
     }
 

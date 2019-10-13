@@ -33,10 +33,10 @@ import org.springframework.beans.factory.FactoryBean;
  * </pre>
  **/
 @SuppressWarnings("unchecked")
-public class TestServiceApiFactoryBean<T> implements FactoryBean<T> {
+public class TestDaoFactoryBean<T> implements FactoryBean<T> {
 
     // 日志对象
-    private static ILogger log = LoggerFactory.getLogger(TestServiceApiFactoryBean.class);
+    private static ILogger log = LoggerFactory.getLogger(TestDaoFactoryBean.class);
 
     private Class<T> interfaceClass;
 
