@@ -72,12 +72,12 @@ public enum BizCodeDef implements IBizCode, IBizCodeInitializer {
     QueryFailed("B000007"),
 
     /**
-     * 需要登陆后访问
+     * 默认的无参系统异常
      */
     S000000("S000000"),
 
     /**
-     * 需要授权后访问
+     * 默认的有参系统异常
      */
     S000001("S000001"),
 

@@ -41,7 +41,7 @@ public class ICmdFactoryTest {
         CMD<Integer> _result = impl.create("test");
         Assert.assertNotNull(_result);
         Assert.assertTrue(_result.isOK());
-        Assert.assertEquals("test", _result.getMsg());
+        Assert.assertEquals("test", _result.getMessage());
     }
 
     @Test
@@ -49,7 +49,7 @@ public class ICmdFactoryTest {
         CMD<Integer> _result = impl.create(BizCodeDef.SaveSuccess);
         Assert.assertNotNull(_result);
         Assert.assertTrue(_result.isOK());
-        Assert.assertEquals(BizCodeManager.impl().getText(BizCodeDef.SaveSuccess), _result.getMsg());
+        Assert.assertEquals(BizCodeManager.impl().getText(BizCodeDef.SaveSuccess), _result.getMessage());
     }
 
 }

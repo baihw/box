@@ -44,17 +44,17 @@ public interface CMD<CT> extends IStruct {
     /**
      * 设置消息
      *
-     * @param msg 消息
+     * @param message 消息
      * @return 链式调用对象
      */
-    CMD<CT> setMsg(String msg);
+    CMD<CT> setMessage(String message);
 
     /**
      * 获取消息
      *
      * @return 消息
      */
-    String getMsg();
+    String getMessage();
 
     /**
      * 设置数据

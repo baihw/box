@@ -155,7 +155,7 @@ public class DruidDsManager implements IDsManager {
 
         _ds.setUseUnfairLock(true);
         _ds.setFailFast(true);
-        // _ds.setProxyFilters(Arrays.asList(new DruidLogFilter()));
+        _ds.setProxyFilters(Arrays.asList(new DruidLogFilter()));
 
         return addDataSource(_dsName, _ds);
     }

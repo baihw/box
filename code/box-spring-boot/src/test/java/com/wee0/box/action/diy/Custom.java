@@ -16,11 +16,7 @@
 
 package com.wee0.box.action.diy;
 
-import com.wee0.box.beans.annotation.BoxAction;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import com.wee0.box.web.annotation.BoxAction;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>

@@ -16,7 +16,7 @@
 
 package com.wee0.box.action;
 
-import com.wee0.box.beans.annotation.BoxAction;
+import com.wee0.box.web.annotation.BoxAction;
 
 import java.util.ArrayList;
 import java.util.HashMap;

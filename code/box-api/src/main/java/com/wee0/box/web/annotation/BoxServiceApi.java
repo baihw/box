@@ -14,27 +14,33 @@
  * limitations under the License.
  */
 
-package com.wee0.box.action.user;
+package com.wee0.box.web.annotation;
 
-import com.wee0.box.web.annotation.BoxAction;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.lang.annotation.*;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
- * @CreateDate 2019/9/1 22:32
- * @Description 功能描述
+ * @CreateDate 2019/8/31 23:05
+ * @Description 服务接口
  * <pre>
- * 补充说明
+ * 用来标识一个支持微服务的接口
  * </pre>
  **/
-@BoxAction
-public class SysUser {
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@interface BoxServiceApi {
 
-    public List<Map<String, String>> queryAll() {
-        return new ArrayList<>();
-    }
+    /**
+     * @return 服务标识
+     */
+    String serviceId();
+
+    /**
+     * 如果服务提供方没有使用默认的独立根上下文，则指定请求的上下文
+     *
+     * @return 服务上下文名称
+     */
+    String serviceContext() default "";
 
 }

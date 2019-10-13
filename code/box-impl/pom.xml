@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.wee0.box</groupId>
         <artifactId>box-parent</artifactId>
-        <version>0.1.2</version>
+        <version>0.1.4</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -76,6 +76,18 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>

@@ -14,27 +14,26 @@
  * limitations under the License.
  */
 
-package com.wee0.box.action.user;
+package com.wee0.box.web.servlet;
 
-import com.wee0.box.web.annotation.BoxAction;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
- * @CreateDate 2019/9/1 22:32
- * @Description 功能描述
+ * @CreateDate 2019/10/13 8:18
+ * @Description 文件上传请求对象处理工具
  * <pre>
  * 补充说明
  * </pre>
  **/
-@BoxAction
-public class SysUser {
+public interface IUploadRequestUtil {
 
-    public List<Map<String, String>> queryAll() {
-        return new ArrayList<>();
-    }
+    /**
+     * 从原始请求对象解析出上传请求处理对象
+     *
+     * @param request 原始请求对象
+     * @return 上传请求处理对象
+     */
+    IUploadRequest parseRequest(HttpServletRequest request);
 
 }

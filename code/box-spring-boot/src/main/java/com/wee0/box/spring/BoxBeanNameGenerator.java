@@ -17,7 +17,6 @@
 package com.wee0.box.spring;
 
 import com.wee0.box.beans.annotation.BoxBean;
-import com.wee0.box.beans.annotation.BoxService;
 import com.wee0.box.log.ILogger;
 import com.wee0.box.log.LoggerFactory;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
@@ -68,17 +67,17 @@ public class BoxBeanNameGenerator extends AnnotationBeanNameGenerator implements
         AnnotationMetadata _annotationMetadata = _metadataReader.getAnnotationMetadata();
         Map<String, Object> _annotationAttributes = _annotationMetadata.getAnnotationAttributes(BoxBean.class.getName(), true);
         _result = getValueFromAttr(_annotationAttributes, KEY_NAME);
-        if (null == _result) {
-            _annotationAttributes = _annotationMetadata.getAnnotationAttributes(BoxService.class.getName(), true);
-            _result = getValueFromAttr(_annotationAttributes, KEY_NAME);
-            if (null == _result && null != _annotationAttributes) {
-                String _apiInterfaceName = getValueFromAttr(_annotationAttributes, KEY_SERVICE_API);
-                if (null == _apiInterfaceName) {
-                    throw new IllegalStateException(KEY_SERVICE_API + " can't be empty!");
-                }
-                _result = InternalUtils.generateBeanName(_apiInterfaceName);
-            }
-        }
+//        if (null == _result) {
+//            _annotationAttributes = _annotationMetadata.getAnnotationAttributes(BoxService.class.getName(), true);
+//            _result = getValueFromAttr(_annotationAttributes, KEY_NAME);
+//            if (null == _result && null != _annotationAttributes) {
+//                String _apiInterfaceName = getValueFromAttr(_annotationAttributes, KEY_SERVICE_API);
+//                if (null == _apiInterfaceName) {
+//                    throw new IllegalStateException(KEY_SERVICE_API + " can't be empty!");
+//                }
+//                _result = InternalUtils.generateBeanName(_apiInterfaceName);
+//            }
+//        }
         if (null == _result) {
             if (_metadataReader.getClassMetadata().isInterface()) {
                 _result = InternalUtils.generateInterfaceBeanName(_beanClassName);

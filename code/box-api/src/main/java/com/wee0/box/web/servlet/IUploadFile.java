@@ -14,41 +14,51 @@
  * limitations under the License.
  */
 
-package com.wee0.box.impl;
+package com.wee0.box.web.servlet;
+
+import com.wee0.box.web.IRequest;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
- * @CreateDate 2019/8/31 8:22
- * @Description 框架配置属性键名
+ * @CreateDate 2019/10/13 8:17
+ * @Description 上传文件描述对象
  * <pre>
- * 键名统一汇总在此处，避免使用人员到处查找。
+ * 补充说明
  * </pre>
  **/
-public interface BoxConfigKeys {
+public interface IUploadFile {
 
     /**
-     * 全局默认编码
+     * @return 文件名称
      */
-    String encoding = "encoding";
+    String getName();
 
     /**
-     * 扫描包名称配置
+     * @return 文件内容类型
      */
-    String scanBasePackage = "scan.basePackage";
+    String getContentType();
 
     /**
-     * 业务编码枚举类配置项名称，多个之间用逗号隔开。
+     * @return 文件大小
      */
-    String bizCodeEnums = "bizCodeManager.bizCodeEnums";
+    long getSize();
 
     /**
-     * 业务编码文本默认值初始化器配置项名称，多个之间用逗号隔开。
+     * @return 文件输入流
+     * @throws IOException 读写异常
      */
-    String bizCodeInitializers = "bizCodeManager.bizCodeInitializers";
+    InputStream getInputStream() throws IOException;
 
     /**
-     * 业务编码存储对象, 需要国际化支持时可以设置为："i18nStore"。
+     * 保存到指定文件
+     *
+     * @param file 文件
+     * @throws IOException 读写异常
      */
-    String bizCodeStore = "bizCodeManager.bizCodeStore";
+    void saveTo(File file) throws Exception;
 
 }

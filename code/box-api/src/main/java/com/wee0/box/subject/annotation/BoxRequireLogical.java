@@ -14,20 +14,16 @@
  * limitations under the License.
  */
 
-package com.wee0.box.beans.annotation;
-
-import java.lang.annotation.*;
+package com.wee0.box.subject.annotation;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
- * @CreateDate 2019/8/31 23:07
- * @Description 忽略对返回值的处理
+ * @CreateDate 2019/10/13 7:06
+ * @Description 支持的逻辑关系
  * <pre>
- * 默认情况下，框架会对返回值进行统一的格式处理，当需要直接返回自己的数据类型时，可设置忽略处理。
+ * 补充说明
  * </pre>
  **/
-@Target({ElementType.METHOD})
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-public @interface BoxIgnoreReturnValue {
+public enum BoxRequireLogical {
+    AND, OR
 }

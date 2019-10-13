@@ -74,7 +74,7 @@ final class BoxActionErrorController implements ErrorController {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("error");
         modelAndView.addObject("code", _result.getCode());
-        modelAndView.addObject("msg", _result.getMsg());
+        modelAndView.addObject("msg", _result.getMessage());
         // modelAndView.addObject("data", _result.getData());
         return modelAndView;
     }

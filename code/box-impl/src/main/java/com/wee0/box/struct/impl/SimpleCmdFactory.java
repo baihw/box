@@ -33,8 +33,8 @@ import java.io.ObjectStreamException;
  **/
 public class SimpleCmdFactory implements ICmdFactory {
     @Override
-    public CMD<Integer> create(Integer code, String msg, Object data) {
-        return new SimpleCMD(code, msg, data);
+    public CMD<Integer> create(Integer code, String message, Object data) {
+        return new SimpleCMD(code, message, data);
     }
 
     @Override
@@ -43,13 +43,13 @@ public class SimpleCmdFactory implements ICmdFactory {
     }
 
     @Override
-    public CMD<Integer> create(Integer code, String msg) {
-        return new SimpleCMD(code, msg);
+    public CMD<Integer> create(Integer code, String message) {
+        return new SimpleCMD(code, message);
     }
 
     @Override
-    public CMD<Integer> create(String msg) {
-        return new SimpleCMD(msg);
+    public CMD<Integer> create(String message) {
+        return new SimpleCMD(message);
     }
 
     @Override

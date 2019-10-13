@@ -36,7 +36,7 @@ public class DsManagerTest {
     protected static void initTestDsByMysql() {
         SimpleDsProperty _dsProperty = new SimpleDsProperty();
         _dsProperty.setDriverClassName("com.mysql.jdbc.Driver");
-        _dsProperty.setUrl("jdbc:mysql://192.168.56.10:3306/box_test?charset=utf8mb4&useSSL=false&useAffectedRows=true");
+        _dsProperty.setUrl("jdbc:mysql://testHost:3306/box_example?charset=utf8mb4&useSSL=false&useAffectedRows=true&useUnicode=true&useOldAliasMetadataBehavior=true");
         _dsProperty.setUsername("box");
         _dsProperty.setPassword("box");
         DsManager.impl().addDataSourceByProperty(_dsProperty);

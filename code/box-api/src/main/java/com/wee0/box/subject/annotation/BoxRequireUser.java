@@ -14,34 +14,21 @@
  * limitations under the License.
  */
 
-package com.wee0.box.beans.annotation;
+package com.wee0.box.subject.annotation;
 
 import java.lang.annotation.*;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
- * @CreateDate 2019/8/31 23:06
- * @Description 服务实现
+ * @CreateDate 2019/10/13 7:15
+ * @Description 用户依赖标识
  * <pre>
- * 补充说明
+ * 此标识用在默认允许访问的策略环境中，用来标识需要用户登陆后访问。
  * </pre>
  **/
-@Target({ElementType.TYPE})
+@Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface BoxService {
-
-    /**
-     * @return 对应的服务接口类型
-     */
-    Class<?> serviceApi();
-
-    /**
-     * 如果没指定，将默认使用实现的服务接口去掉I后首字母转小写名称。
-     * 如serviceApi为IHello，则默认生成的标识为hello。
-     *
-     * @return 名称
-     */
-    String name() default "";
+public @interface BoxRequireUser {
 
 }

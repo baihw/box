@@ -14,27 +14,31 @@
  * limitations under the License.
  */
 
-package com.wee0.box.action.user;
+package com.wee0.box.subject.annotation;
 
-import com.wee0.box.web.annotation.BoxAction;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.lang.annotation.*;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
- * @CreateDate 2019/9/1 22:32
- * @Description 功能描述
+ * @CreateDate 2019/10/13 7:09
+ * @Description 权限依赖标识
  * <pre>
  * 补充说明
  * </pre>
  **/
-@BoxAction
-public class SysUser {
+@Target({ElementType.TYPE, ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface BoxRequirePermissions {
 
-    public List<Map<String, String>> queryAll() {
-        return new ArrayList<>();
-    }
+    /**
+     * @return 权限标识
+     */
+    String[] value();
+
+    /**
+     * @return 多个权限标识之间的逻辑关系
+     */
+    BoxRequireLogical logical() default BoxRequireLogical.AND;
 
 }

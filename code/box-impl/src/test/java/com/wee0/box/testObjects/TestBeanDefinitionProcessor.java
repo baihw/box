@@ -17,7 +17,7 @@
 package com.wee0.box.testObjects;
 
 import com.wee0.box.beans.IBeanDefinitionProcessor;
-import com.wee0.box.beans.annotation.BoxServiceApi;
+import com.wee0.box.web.annotation.BoxServiceApi;
 import com.wee0.box.log.ILogger;
 import com.wee0.box.log.LoggerFactory;
 import org.springframework.core.annotation.AnnotationUtils;

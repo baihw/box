@@ -16,6 +16,7 @@
 
 package com.wee0.box.spring.boot;
 
+import com.wee0.box.BoxConfig;
 import com.wee0.box.code.BizCodeDef;
 import com.wee0.box.code.BizCodeManager;
 import com.wee0.box.log.ILogger;
@@ -23,9 +24,14 @@ import com.wee0.box.log.LoggerFactory;
 import com.wee0.box.struct.CmdFactory;
 import com.wee0.box.subject.ISubject;
 import com.wee0.box.subject.SubjectContext;
+import com.wee0.box.subject.annotation.BoxRequireIgnore;
+import com.wee0.box.subject.annotation.BoxRequireLogical;
+import com.wee0.box.subject.annotation.BoxRequirePermissions;
+import com.wee0.box.subject.annotation.BoxRequireRoles;
 import com.wee0.box.util.shortcut.CheckUtils;
 import com.wee0.box.util.shortcut.JsonUtils;
 import com.wee0.box.util.shortcut.StringUtils;
+import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
@@ -81,19 +87,45 @@ final class BoxActionHandlerInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        // 判断当前用户是否已经登陆
-        if (!_subject.isLogin()) {
-            renderJson(response, CmdFactory.create(BizCodeDef.NeedLogin));
-            return false;
+        if (handler instanceof HandlerMethod) {
+            HandlerMethod _handlerMethod = (HandlerMethod) handler;
+            if (_handlerMethod.hasMethodAnnotation(BoxRequireIgnore.class)) {
+                // 不需要权限检查
+                return true;
+            }
+
+            // 判断当前用户是否已经登陆
+            if (!_subject.isLogin()) {
+                renderJson(response, CmdFactory.create(BizCodeDef.NeedLogin));
+                return false;
+            }
+
+            // 角色检查
+            BoxRequireRoles _requireRoles = _handlerMethod.getMethodAnnotation(BoxRequireRoles.class);
+            if (null != _requireRoles) {
+                String[] _roles = _requireRoles.value();
+                BoxRequireLogical _logical = _requireRoles.logical();
+                if (!checkRoles(_subject, _roles, _logical)) {
+                    renderJson(response, CmdFactory.create(BizCodeDef.Unauthorized));
+                    return false;
+                }
+            }
+
+            // 权限检查
+            BoxRequirePermissions _requirePermissions = _handlerMethod.getMethodAnnotation(BoxRequirePermissions.class);
+            if (null != _requirePermissions) {
+                String[] _permissions = _requirePermissions.value();
+                BoxRequireLogical _logical = _requirePermissions.logical();
+                if (!checkPermissions(_subject, _permissions, _logical)) {
+                    renderJson(response, CmdFactory.create(BizCodeDef.Unauthorized));
+                    return false;
+                }
+            }
+
+        } else {
+            log.warn("unKnow method: {}", handler);
         }
 
-//        //:TODO 判断当前用户是否具备资源的访问权限
-//        log.debug("handler: {}", handler.getClass());
-//        try {
-//            response.getOutputStream().write("unAuth".getBytes());
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
         return true;
     }
 
@@ -120,9 +152,9 @@ final class BoxActionHandlerInterceptor implements HandlerInterceptor {
         if (null == _result)
             _result = CheckUtils.checkTrimEmpty(request.getHeader(KEY_BOX_ID), null);
         if (null == _result) {
-            Cookie[] _cookes = request.getCookies();
-            if (null != _cookes && 0 != _cookes.length) {
-                for (Cookie _cookie : _cookes) {
+            Cookie[] _cookies = request.getCookies();
+            if (null != _cookies && 0 != _cookies.length) {
+                for (Cookie _cookie : _cookies) {
                     if (KEY_BOX_ID.equals(_cookie.getName())) {
                         _result = CheckUtils.checkTrimEmpty(_cookie.getValue(), null);
                     }
@@ -144,9 +176,52 @@ final class BoxActionHandlerInterceptor implements HandlerInterceptor {
         return _cookie;
     }
 
+    // 检查指定角色的逻辑关系是否成立
+    private static boolean checkRoles(ISubject subject, String[] roles, BoxRequireLogical logical) {
+        if (null == roles || 0 == roles.length)
+            return true;
+        if (BoxRequireLogical.OR == logical) {
+            for (String _role : roles) {
+                if (subject.hasRole(_role))
+                    return true;
+            }
+            return false;
+        }
+        // 默认为 AND
+        for (String _role : roles) {
+            if (!subject.hasRole(_role)) {
+                log.debug("fail on role: {}", _role);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // 检查指定权限的逻辑关系是否成立
+    private static boolean checkPermissions(ISubject subject, String[] permissions, BoxRequireLogical logical) {
+        if (null == permissions || 0 == permissions.length)
+            return true;
+        if (BoxRequireLogical.OR == logical) {
+            for (String _permission : permissions) {
+                if (subject.hasPermission(_permission))
+                    return true;
+            }
+            return false;
+        }
+        // 默认为 AND
+        for (String _permission : permissions) {
+            if (!subject.hasPermission(_permission)) {
+                log.debug("fail on permission: {}", _permission);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // 渲染错误信息
     private static void renderJson(HttpServletResponse response, Object data) {
-        response.setCharacterEncoding("UTF-8");
-        response.setContentType("application/json; charset=UTF-8");
+        response.setCharacterEncoding(BoxConfig.impl().getEncoding());
+        response.setContentType("application/json; charset=" + BoxConfig.impl().getEncoding());
         try (PrintWriter writer = response.getWriter();) {
             writer.print(JsonUtils.writeToString(data));
         } catch (IOException e) {

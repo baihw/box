@@ -109,7 +109,7 @@ class BoxActionAutoConfiguration implements WebMvcConfigurer {
         registry.addMapping("/api/**")
                 .allowedOrigins("*")
                 .allowCredentials(true)
-                .allowedMethods("OPTIONS", "GET", "POST", "PATCH")
+                .allowedMethods("OPTIONS", "GET", "POST")
                 .allowedHeaders("Content-Type, Accept, Authorization")
                 .maxAge(3600);
     }

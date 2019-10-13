@@ -56,6 +56,13 @@ public interface IBoxConfig {
     String get(String key, String defValue);
 
     /**
+     * 获取全局默认编码
+     *
+     * @return 全局默认编码
+     */
+    String getEncoding();
+
+    /**
      * 获取资源文件存储目录
      *
      * @return 资源文件存储目录

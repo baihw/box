@@ -36,21 +36,21 @@ public class SimpleCMD extends HashMap<String, Object> implements CMD<Integer> {
     private static final String MSG_OK = "ok";
 
     private static final String KEY_CODE = "code";
-    private static final String KEY_MSG = "msg";
+    private static final String KEY_MESSAGE = "message";
     private static final String KEY_DATA = "data";
 
-    public SimpleCMD(Integer code, String msg, Object data) {
+    public SimpleCMD(Integer code, String message, Object data) {
         this.setCode(code);
-        this.setMsg(msg);
+        this.setMessage(message);
         this.setData(data);
     }
 
-    public SimpleCMD(Integer code, String msg) {
-        this(code, msg, null);
+    public SimpleCMD(Integer code, String message) {
+        this(code, message, null);
     }
 
-    public SimpleCMD(String msg) {
-        this(CODE_OK, msg, null);
+    public SimpleCMD(String message) {
+        this(CODE_OK, message, null);
     }
 
     public SimpleCMD(Object data) {
@@ -75,14 +75,14 @@ public class SimpleCMD extends HashMap<String, Object> implements CMD<Integer> {
     }
 
     @Override
-    public CMD<Integer> setMsg(String msg) {
-        this.put(KEY_MSG, msg);
+    public CMD<Integer> setMessage(String message) {
+        this.put(KEY_MESSAGE, message);
         return this;
     }
 
     @Override
-    public String getMsg() {
-        return (String) this.get(KEY_MSG);
+    public String getMessage() {
+        return (String) this.get(KEY_MESSAGE);
     }
 
     @Override

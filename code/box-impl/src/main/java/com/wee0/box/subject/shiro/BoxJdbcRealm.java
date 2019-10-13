@@ -26,6 +26,9 @@ import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
  * @CreateDate 2019/9/8 7:19
@@ -64,22 +67,36 @@ public class BoxJdbcRealm extends AuthorizingRealm {
         IPasswordToken _token = (IPasswordToken) token;
         String _loginId = _token.getUsername();
         String _loginPwd = _token.getPassword();
-        Long _result = SqlHelper.impl().queryScalar(this.queryUser, new Object[]{_loginId, _loginPwd});
-        if (null == _result || 1 != _result)
-            throw new IncorrectCredentialsException("认证失败! result: " + _result);
-        AuthenticationInfo _info = new SimpleAuthenticationInfo(_loginId, _loginPwd, getName());
+        String _userId = SqlHelper.impl().queryScalar(this.queryUser, new Object[]{_loginId, _loginPwd}, String.class);
+        if (null == _userId || 0 == (_userId = _userId.trim()).length())
+            throw new IncorrectCredentialsException("认证失败! userId: " + _userId);
+        AuthenticationInfo _info = new SimpleAuthenticationInfo(_userId, _loginPwd, getName());
         return _info;
     }
 
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-        log.debug("queryUser: {}", this.queryUser);
-        log.debug("queryRole: {}", this.queryRole);
-        log.debug("queryPermission: {}", this.queryPermission);
-        log.debug("principals: {}", principals);
+        String _userId = String.valueOf(principals.getPrimaryPrincipal());
+        log.debug("load authorizationInfo for user: {}", _userId);
+
         SimpleAuthorizationInfo _info = new SimpleAuthorizationInfo();
-        _info.addRole("admin");
-        _info.addStringPermission("url:/api/getUserInfo");
+        List<Map<String, Object>> _roles = SqlHelper.impl().queryMapList(this.queryRole, new Object[]{_userId});
+        if (null == _roles || _roles.isEmpty()) {
+            log.warn("roles is empty!");
+        } else {
+            _roles.forEach(roleMap -> {
+                _info.addRole(String.valueOf(roleMap.values().iterator().next()));
+            });
+        }
+
+        List<Map<String, Object>> _permissions = SqlHelper.impl().queryMapList(this.queryPermission, new Object[]{_userId});
+        if (null == _permissions || _permissions.isEmpty()) {
+            log.warn("permission is empty!");
+        } else {
+            _permissions.forEach(permissionMap -> {
+                _info.addStringPermission(String.valueOf(permissionMap.values().iterator().next()));
+            });
+        }
         return _info;
     }
 

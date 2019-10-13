@@ -127,7 +127,6 @@ public class MyBatisDaoManager implements IDaoManager {
                 continue;
 
             log.debug("generate: {}", _methodId);
-//            String _sqlScript = "<script></script>";
             String _sqlScript = getSqlScript(DsManager.impl().getDefaultDatabaseId(), _method, _entityClass);
             if (null == _sqlScript)
                 continue;

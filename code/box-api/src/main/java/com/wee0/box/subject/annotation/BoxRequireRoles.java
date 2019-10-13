@@ -14,33 +14,31 @@
  * limitations under the License.
  */
 
-package com.wee0.box.beans.annotation;
+package com.wee0.box.subject.annotation;
 
 import java.lang.annotation.*;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
- * @CreateDate 2019/8/31 23:05
- * @Description 服务接口
+ * @CreateDate 2019/10/13 7:12
+ * @Description 角色依赖标识
  * <pre>
- * 用来标识一个支持微服务的接口
+ * 补充说明
  * </pre>
  **/
-@Target({ElementType.TYPE})
+@Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface BoxServiceApi {
+public @interface BoxRequireRoles {
 
     /**
-     * @return 服务标识
+     * @return 角色标识
      */
-    String serviceId();
+    String[] value();
 
     /**
-     * 如果服务提供方没有使用默认的独立根上下文，则指定请求的上下文
-     *
-     * @return 服务上下文名称
+     * @return 多个角色标识之间的逻辑关系
      */
-    String serviceContext() default "";
+    BoxRequireLogical logical() default BoxRequireLogical.AND;
 
 }

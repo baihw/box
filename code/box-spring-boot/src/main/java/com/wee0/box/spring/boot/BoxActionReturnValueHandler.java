@@ -16,8 +16,8 @@
 
 package com.wee0.box.spring.boot;
 
-import com.wee0.box.beans.annotation.BoxAction;
-import com.wee0.box.beans.annotation.BoxIgnoreReturnValue;
+import com.wee0.box.web.annotation.BoxAction;
+import com.wee0.box.web.annotation.BoxIgnoreReturnValue;
 import com.wee0.box.struct.CmdFactory;
 import com.wee0.box.struct.IStruct;
 import org.springframework.core.MethodParameter;
@@ -25,9 +25,6 @@ import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodReturnValueHandler;
 import org.springframework.web.method.support.ModelAndViewContainer;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
@@ -55,7 +52,7 @@ final class BoxActionReturnValueHandler implements HandlerMethodReturnValueHandl
     @Override
     public void handleReturnValue(Object returnValue, MethodParameter returnType, ModelAndViewContainer mavContainer, NativeWebRequest webRequest) throws Exception {
         Object _r = null;
-        if (returnValue instanceof IStruct || returnValue instanceof Map || returnValue instanceof List || null != returnType.getMethodAnnotation(BoxIgnoreReturnValue.class)) {
+        if (returnValue instanceof IStruct || null != returnType.getMethodAnnotation(BoxIgnoreReturnValue.class)) {
             _r = returnValue;
         } else {
             _r = CmdFactory.create(returnValue);

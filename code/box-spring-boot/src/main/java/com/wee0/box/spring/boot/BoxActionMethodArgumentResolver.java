@@ -16,7 +16,7 @@
 
 package com.wee0.box.spring.boot;
 
-import com.wee0.box.beans.annotation.BoxAction;
+import com.wee0.box.web.annotation.BoxAction;
 import com.wee0.box.log.ILogger;
 import com.wee0.box.log.LoggerFactory;
 import com.wee0.box.util.shortcut.JsonUtils;

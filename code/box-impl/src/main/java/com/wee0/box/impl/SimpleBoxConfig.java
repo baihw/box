@@ -58,6 +58,9 @@ public final class SimpleBoxConfig implements IBoxConfig {
     // 默认的资源文件
     public static final String DEF_RESOURCE = "config/box_config.properties";
 
+    // 默认编码
+    public static final String DEF_ENCODING = "UTF-8";
+
     // 全局类加载器
     private static final ClassLoader[] CLASS_LOADERS;
 
@@ -84,6 +87,8 @@ public final class SimpleBoxConfig implements IBoxConfig {
 
     // 数据容器
     private final Map<String, String> DATA;
+    // 全局默认使用的编码
+    private final String ENCODING;
 
     // 接口单例类实例缓存
     private final ConcurrentHashMap<Class, Object> IMPL_DATA = new ConcurrentHashMap<>(128);
@@ -97,6 +102,11 @@ public final class SimpleBoxConfig implements IBoxConfig {
     public String get(String key, String defValue) {
         String _result = this.DATA.get(key);
         return null == _result ? defValue : _result;
+    }
+
+    @Override
+    public String getEncoding() {
+        return this.ENCODING;
     }
 
     @Override
@@ -258,6 +268,12 @@ public final class SimpleBoxConfig implements IBoxConfig {
             }
         }
         loadProperties(_props);
+
+        // 缓存全局默认编码
+        String _encoding = this.DATA.get(BoxConfigKeys.encoding);
+        if (null == _encoding || 0 == (_encoding = _encoding.trim()).length())
+            _encoding = DEF_ENCODING;
+        this.ENCODING = _encoding;
     }
 
     // 当前对象唯一实例持有者。

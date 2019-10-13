@@ -14,27 +14,33 @@
  * limitations under the License.
  */
 
-package com.wee0.box.action.user;
+package com.wee0.box.web;
 
-import com.wee0.box.web.annotation.BoxAction;
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
- * @CreateDate 2019/9/1 22:32
- * @Description 功能描述
+ * @CreateDate 2019/10/13 8:32
+ * @Description 请求对象
  * <pre>
- * 补充说明
+ * 一个通用的基础请求对象，不限于servlet等具体环境。
  * </pre>
  **/
-@BoxAction
-public class SysUser {
+public interface IRequest {
 
-    public List<Map<String, String>> queryAll() {
-        return new ArrayList<>();
-    }
+    /**
+     * 获取指定名称的请求参数
+     *
+     * @param name 参数名称
+     * @return 参数值
+     */
+    String getParameter(String name);
+
+    /**
+     * 获取请求参数集合
+     *
+     * @return 请求参数集合
+     */
+    Map<String, String> getParameters();
 
 }

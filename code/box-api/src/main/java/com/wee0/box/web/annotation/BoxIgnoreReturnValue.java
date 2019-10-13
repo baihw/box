@@ -14,26 +14,20 @@
  * limitations under the License.
  */
 
-package com.wee0.box.beans.annotation;
+package com.wee0.box.web.annotation;
 
 import java.lang.annotation.*;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
- * @CreateDate 2019/8/31 23:08
- * @Description Action映射标识
+ * @CreateDate 2019/8/31 23:07
+ * @Description 忽略对返回值的处理
  * <pre>
- * 补充说明
+ * 默认情况下，框架会对返回值进行统一的格式处理，当需要直接返回自己的数据类型时，可设置忽略处理。
  * </pre>
  **/
-@Target({ElementType.TYPE, ElementType.METHOD})
+@Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface BoxAction {
-
-    /**
-     * @return 映射路径
-     */
-    String value() default "";
-
+public @interface BoxIgnoreReturnValue {
 }
