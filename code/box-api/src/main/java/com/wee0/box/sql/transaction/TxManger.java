@@ -14,44 +14,30 @@
  * limitations under the License.
  */
 
-package com.wee0.box.sql.entity;
+package com.wee0.box.sql.transaction;
 
-import java.util.Collection;
+import com.wee0.box.BoxConfig;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
- * @CreateDate 2019/9/15 10:32
- * @Description 分页数据
+ * @CreateDate 2019/11/10 15:26
+ * @Description 事务管理器快捷操作入口
  * <pre>
  * 补充说明
  * </pre>
  **/
-public interface IPageData {
+public class TxManger {
+
+    // 实现类实例
+    private static final ITxManger IMPL = BoxConfig.impl().getInterfaceImpl(ITxManger.class);
 
     /**
-     * @return 页码
+     * 获取实现类实例
+     *
+     * @return 实现类实例
      */
-    long getPageNum();
-
-    /**
-     * @return 每页数据量
-     */
-    long getPageSize();
-
-    /**
-     * @return 页数
-     */
-    long getPageCount();
-
-    /**
-     * @param <T> 数据类型
-     * @return 分页数据
-     */
-    <T> Collection<T> getPageData();
-
-    /**
-     * @return 总数据量
-     */
-    long getDataCount();
+    public static ITxManger impl() {
+        return IMPL;
+    }
 
 }

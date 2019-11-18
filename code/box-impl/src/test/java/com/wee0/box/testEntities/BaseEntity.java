@@ -27,7 +27,7 @@ import java.util.Date;
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
  * @CreateDate 2019/9/15 8:16
- * @Description 基础实体
+ * @Description 基础实体对象
  * <pre>
  * 补充说明
  * </pre>
@@ -35,7 +35,7 @@ import java.util.Date;
 @BoxIgnore
 public class BaseEntity extends AbstractEntity<String> {
 
-    @BoxId(generationType = BoxId.GenerationType.UUID)
+    @BoxId
     @BoxColumn(name = "ID")
     protected String id;
 
@@ -46,70 +46,38 @@ public class BaseEntity extends AbstractEntity<String> {
     protected Date createTime;
 
     /**
-     * 修改时间
-     */
-    @BoxColumn(name = "UPDATE_TIME")
-    protected Date updateTime;
-
-    /**
      * 创建用户
      */
     @BoxColumn(name = "CREATE_USER")
     protected String createUser;
 
     /**
-     * 更新用户
+     * 修改时间
+     */
+    @BoxColumn(name = "UPDATE_TIME")
+    protected Date updateTime;
+
+    /**
+     * 修改用户
      */
     @BoxColumn(name = "UPDATE_USER")
     protected String updateUser;
 
     /**
-     * 扩展编号
+     * 是否标记删除:0-未标记删除；1-标记删除；
      */
-    @BoxColumn(name = "EXPD_ID")
-    protected String expdId;
-
-    /**
-     * 删除标志:0-未删除；1-删除；
-     */
-    @BoxColumn(name = "DEL_IND")
-    protected String delInd;
-
-    /**
-     * 版本号
-     */
-    @BoxColumn(name = "VERSION")
-    protected int version;
-
-    /**
-     * 租户id
-     */
-    @BoxColumn(name = "TENANT_ID")
-    protected String tenantId;
+    @BoxColumn(name = "IS_DELETED")
+    protected Boolean isDeleted;
 
 
+    @Override
     public void setId(final String id) {
         this.id = id;
     }
 
+    @Override
     public String getId() {
         return this.id;
-    }
-
-    public String getTenantId() {
-        return tenantId;
-    }
-
-    public void setTenantId(String tenantId) {
-        this.tenantId = tenantId;
-    }
-
-    public String getCreateUser() {
-        return createUser;
-    }
-
-    public void setCreateUser(String createUser) {
-        this.createUser = createUser;
     }
 
     public Date getCreateTime() {
@@ -120,12 +88,12 @@ public class BaseEntity extends AbstractEntity<String> {
         this.createTime = createTime;
     }
 
-    public String getUpdateUser() {
-        return updateUser;
+    public String getCreateUser() {
+        return createUser;
     }
 
-    public void setUpdateUser(String updateUser) {
-        this.updateUser = updateUser;
+    public void setCreateUser(String createUser) {
+        this.createUser = createUser;
     }
 
     public Date getUpdateTime() {
@@ -136,27 +104,20 @@ public class BaseEntity extends AbstractEntity<String> {
         this.updateTime = updateTime;
     }
 
-    public String getExpdId() {
-        return expdId;
+    public String getUpdateUser() {
+        return updateUser;
     }
 
-    public void setExpdId(String expdId) {
-        this.expdId = expdId;
+    public void setUpdateUser(String updateUser) {
+        this.updateUser = updateUser;
     }
 
-    public String getDelInd() {
-        return delInd;
+    public Boolean getDeleted() {
+        return isDeleted;
     }
 
-    public void setDelInd(String delInd) {
-        this.delInd = delInd;
+    public void setDeleted(Boolean deleted) {
+        isDeleted = deleted;
     }
 
-    public int getVersion() {
-        return version;
-    }
-
-    public void setVersion(int version) {
-        this.version = version;
-    }
 }

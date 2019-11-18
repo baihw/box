@@ -39,6 +39,8 @@ final class BoxActionAfterConfiguration implements InitializingBean {
     @Autowired
     private RequestMappingHandlerAdapter requestMappingHandlerAdapter;
 
+    private BoxActionReturnValueHandler boxActionReturnValueHandler;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         List<HandlerMethodArgumentResolver> _oldArgumentResolvers = requestMappingHandlerAdapter.getArgumentResolvers();
@@ -51,12 +53,21 @@ final class BoxActionAfterConfiguration implements InitializingBean {
         List<HandlerMethodReturnValueHandler> _newReturnValueHandlers = new ArrayList<>(_oldReturnValueHandlers.size());
         for (HandlerMethodReturnValueHandler _returnValueHandler : _oldReturnValueHandlers) {
             if (_returnValueHandler instanceof RequestResponseBodyMethodProcessor) {
-                _newReturnValueHandlers.add(new BoxActionReturnValueHandler(_returnValueHandler));
+                boxActionReturnValueHandler.setDelegate(_returnValueHandler);
+                _newReturnValueHandlers.add(boxActionReturnValueHandler);
             } else {
                 _newReturnValueHandlers.add(_returnValueHandler);
             }
         }
         requestMappingHandlerAdapter.setReturnValueHandlers(_newReturnValueHandlers);
+    }
+
+    public BoxActionReturnValueHandler getBoxActionReturnValueHandler() {
+        return boxActionReturnValueHandler;
+    }
+
+    public void setBoxActionReturnValueHandler(BoxActionReturnValueHandler boxActionReturnValueHandler) {
+        this.boxActionReturnValueHandler = boxActionReturnValueHandler;
     }
 
 }

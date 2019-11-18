@@ -17,6 +17,7 @@
 package com.wee0.box.subject;
 
 import java.io.Serializable;
+import java.util.Set;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
@@ -29,9 +30,14 @@ import java.io.Serializable;
 public interface ISubject {
 
     /**
-     * @return 对象唯一标识
+     * @return 主体对象唯一标识
      */
     String getId();
+
+    /**
+     * @return 会话唯一标识
+     */
+    String getSessionId();
 
     /**
      * @return 是否已经登陆
@@ -65,5 +71,35 @@ public interface ISubject {
      * @return true / false
      */
     boolean hasPermission(String permission);
+
+    /**
+     * 设置属性
+     *
+     * @param key   属性名
+     * @param value 属性值
+     */
+    void setAttribute(String key, Object value);
+
+    /**
+     * 获取属性
+     *
+     * @param key 属性名
+     * @return 属性值
+     */
+    Object getAttribute(String key);
+
+    /**
+     * 移除属性
+     *
+     * @param key 属性名
+     */
+    void removeAttribute(String key);
+
+    /**
+     * 属性名集合
+     *
+     * @return 属性名集合
+     */
+    Set<String> getAttributeKeys();
 
 }

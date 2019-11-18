@@ -14,26 +14,39 @@
  * limitations under the License.
  */
 
-package com.wee0.box.web.servlet;
+package com.wee0.box.sql.dialect;
 
-import javax.servlet.http.HttpServletRequest;
+import com.wee0.box.sql.ds.DatabaseId;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
- * @CreateDate 2019/10/13 8:18
- * @Description 文件上传请求对象处理工具
+ * @CreateDate 2019/11/10 13:22
+ * @Description 数据库方言管理器
  * <pre>
  * 补充说明
  * </pre>
  **/
-public interface IUploadRequestUtil {
+public interface IDialectManager {
 
     /**
-     * 从原始请求对象解析出上传请求处理对象
-     *
-     * @param request 原始请求对象
-     * @return 上传请求处理对象
+     * 默认的实现类名称
      */
-    IUploadRequest parseRequest(HttpServletRequest request);
+    String DEF_IMPL_CLASS_NAME = "com.wee0.box.sql.dialect.impl.SimpleDialectManager";
+
+    /**
+     * 获取指定标识的数据库方言
+     *
+     * @param databaseId 数据库标识
+     * @return 数据库方言
+     */
+    IDialect getDialect(DatabaseId databaseId);
+
+    /**
+     * 获取当前环境中使用的默认数据库方言
+     *
+     * @return 默认数据库方言
+     */
+    IDialect getDialect();
+
 
 }

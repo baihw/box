@@ -21,6 +21,11 @@ import com.wee0.box.subject.IToken;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.subject.Subject;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
  * @CreateDate 2019/9/13 22:06
@@ -31,15 +36,37 @@ import org.apache.shiro.subject.Subject;
  **/
 final class ShiroSubject implements ISubject {
 
+    // 主体对象唯一标识关联键名
+    private static final String DEF_KEY_SUBJECT_ID = "_subjectId";
+
     // shiro subject
     private final Subject subject;
+
+    // 当前主体对象唯一标识
+    private String subjectId;
 
     ShiroSubject(Subject subject) {
         this.subject = subject;
     }
 
+    // 设置当前主体对象唯一标识
+    void setId(String id) {
+        this.subjectId = id;
+        this.subject.getSession().setAttribute(DEF_KEY_SUBJECT_ID, id);
+    }
+
     @Override
     public String getId() {
+        if (null == subjectId) {
+            Object _id = this.subject.getSession().getAttribute(DEF_KEY_SUBJECT_ID);
+            if (null != _id)
+                this.subjectId = _id.toString();
+        }
+        return this.subjectId;
+    }
+
+    @Override
+    public String getSessionId() {
         return this.subject.getSession().getId().toString();
     }
 
@@ -71,6 +98,27 @@ final class ShiroSubject implements ISubject {
     @Override
     public boolean hasPermission(String permission) {
         return this.subject.isPermitted(permission);
+    }
+
+    @Override
+    public void setAttribute(String key, Object value) {
+        this.subject.getSession().setAttribute(key, value);
+    }
+
+    @Override
+    public Object getAttribute(String key) {
+        return this.subject.getSession().getAttribute(key);
+    }
+
+    @Override
+    public void removeAttribute(String key) {
+        this.subject.getSession().removeAttribute(key);
+    }
+
+    @Override
+    public Set<String> getAttributeKeys() {
+        Collection<Object> _keys = this.subject.getSession().getAttributeKeys();
+        return Collections.unmodifiableSet(_keys.stream().map(String::valueOf).collect(Collectors.toSet()));
     }
 
 }

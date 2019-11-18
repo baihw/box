@@ -150,4 +150,9 @@ abstract class AbstractDialect implements IDialect {
         return _builder.toString();
     }
 
+    @Override
+    public String queryAllByPage(Class<?> entityClass) {
+        // 默认不处理分页逻辑，由分页插件来处理。
+        return queryAll(entityClass);
+    }
 }

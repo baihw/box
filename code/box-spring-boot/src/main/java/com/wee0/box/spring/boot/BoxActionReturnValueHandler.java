@@ -36,11 +36,10 @@ import org.springframework.web.method.support.ModelAndViewContainer;
  **/
 final class BoxActionReturnValueHandler implements HandlerMethodReturnValueHandler {
 
-    private final HandlerMethodReturnValueHandler delegate;
+    private HandlerMethodReturnValueHandler delegate;
 
-    public BoxActionReturnValueHandler(HandlerMethodReturnValueHandler delegate) {
-        this.delegate = delegate;
-    }
+    private String defaultCode = "200";
+    private String defaultMessage = "ok";
 
     @Override
     public boolean supportsReturnType(MethodParameter returnType) {
@@ -55,9 +54,33 @@ final class BoxActionReturnValueHandler implements HandlerMethodReturnValueHandl
         if (returnValue instanceof IStruct || null != returnType.getMethodAnnotation(BoxIgnoreReturnValue.class)) {
             _r = returnValue;
         } else {
-            _r = CmdFactory.create(returnValue);
+            _r = CmdFactory.create(defaultCode, defaultMessage, returnValue);
         }
         this.delegate.handleReturnValue(_r, returnType, mavContainer, webRequest);
 //        this.delegate.handleReturnValue(returnValue, returnType, mavContainer, webRequest);
+    }
+
+    public HandlerMethodReturnValueHandler getDelegate() {
+        return delegate;
+    }
+
+    public void setDelegate(HandlerMethodReturnValueHandler delegate) {
+        this.delegate = delegate;
+    }
+
+    public String getDefaultCode() {
+        return defaultCode;
+    }
+
+    public void setDefaultCode(String defaultCode) {
+        this.defaultCode = defaultCode;
+    }
+
+    public String getDefaultMessage() {
+        return defaultMessage;
+    }
+
+    public void setDefaultMessage(String defaultMessage) {
+        this.defaultMessage = defaultMessage;
     }
 }

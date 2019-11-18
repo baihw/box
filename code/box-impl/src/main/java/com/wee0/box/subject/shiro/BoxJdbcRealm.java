@@ -20,6 +20,7 @@ import com.wee0.box.log.ILogger;
 import com.wee0.box.log.LoggerFactory;
 import com.wee0.box.sql.SqlHelper;
 import com.wee0.box.subject.IPasswordToken;
+import com.wee0.box.subject.SubjectContext;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
@@ -69,7 +70,9 @@ public class BoxJdbcRealm extends AuthorizingRealm {
         String _loginPwd = _token.getPassword();
         String _userId = SqlHelper.impl().queryScalar(this.queryUser, new Object[]{_loginId, _loginPwd}, String.class);
         if (null == _userId || 0 == (_userId = _userId.trim()).length())
-            throw new IncorrectCredentialsException("认证失败! userId: " + _userId);
+            throw new IncorrectCredentialsException("认证失败! loginId: " + _loginId);
+        // 保存当前主体对象唯一标识，便于后期开发人员获取。
+        ((ShiroSubject) SubjectContext.getSubject()).setId(_userId);
         AuthenticationInfo _info = new SimpleAuthenticationInfo(_userId, _loginPwd, getName());
         return _info;
     }

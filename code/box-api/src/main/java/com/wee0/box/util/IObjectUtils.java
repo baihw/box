@@ -51,6 +51,14 @@ public interface IObjectUtils {
     void setProperties(Object bean, Map<String, ?> properties);
 
     /**
+     * 将对象属性信息转换为键值集合对象数据
+     *
+     * @param bean 对象
+     * @return 属性键值集合对象
+     */
+    Map<String, Object> toMap(Object bean);
+
+    /**
      * 通过反射生成对象的toString文本
      *
      * @param bean 对象

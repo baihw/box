@@ -32,4 +32,11 @@ public class JacksonJsonUtilsTest extends IJsonUtilsTest {
     public static void setUp() {
         impl = JacksonJsonUtils.me();
     }
+
+//    @Test
+//    public void test1() {
+//        List<String> _list = impl.readToObject("[\"s1\", \"s2\", \"s3\"]", List.class);
+//        System.out.println("list: " + _list);
+//    }
+
 }

@@ -17,7 +17,10 @@
 package com.wee0.box.util.impl;
 
 import com.wee0.box.testObjects.Level3Obj;
+import com.wee0.box.util.IObjectUtils;
+import com.wee0.box.util.IObjectUtilsTest;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -29,10 +32,14 @@ import org.junit.Test;
  * 补充说明
  * </pre>
  **/
-@Ignore("for manual")
-public class CBUObjectUtilsTest {
+//@Ignore("for manual")
+public class CBUObjectUtilsTest extends IObjectUtilsTest {
 
-    @Test
+    @BeforeClass
+    public static void setUp() {
+        impl = CBUObjectUtils.me();
+    }
+
     public void reflectionToString() {
         Level3Obj _obj = new Level3Obj();
         String _objString = CBUObjectUtils.me().reflectionToString(_obj);

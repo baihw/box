@@ -34,13 +34,13 @@ import java.util.Map;
  **/
 final class MysqlDialect extends AbstractDialect implements IDialect {
 
-    @Override
-    public String queryAllByPage(Class<?> entityClass) {
-        StringBuilder _builder = new StringBuilder(32);
-        TableInfo _tableInfo = MetaDataManager.me().getTableInfo(entityClass);
-        _builder.append("select * from ").append(_tableInfo.getTableName());
-        _builder.append(" limit ${(param1-1)*param2}, #{param2}");
-        return _builder.toString();
-    }
+//    @Override
+//    public String queryAllByPage(Class<?> entityClass) {
+//        StringBuilder _builder = new StringBuilder(32);
+//        TableInfo _tableInfo = MetaDataManager.me().getTableInfo(entityClass);
+//        _builder.append("select * from ").append(_tableInfo.getTableName());
+//        _builder.append(" limit ${(param1-1)*param2}, #{param2}");
+//        return _builder.toString();
+//    }
 
 }

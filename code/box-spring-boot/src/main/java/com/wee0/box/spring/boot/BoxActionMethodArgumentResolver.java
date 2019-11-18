@@ -28,6 +28,9 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
  * @CreateDate 2019/9/1 22:26
@@ -60,6 +63,14 @@ public class BoxActionMethodArgumentResolver implements HandlerMethodArgumentRes
         Class<?> _parameterType = parameter.getParameterType();
 //        Class<?> _parameterType1 = parameter.getNestedParameterType();
 //        final String _parameterName = InternalUtils.convertParameterName(_parameterType, parameter.getParameterIndex());
+        if (HttpServletRequest.class.isAssignableFrom(_parameterType)) {
+            return webRequest.getNativeRequest(HttpServletRequest.class);
+        }
+        if (HttpServletResponse.class.isAssignableFrom(_parameterType)) {
+            return webRequest.getNativeResponse(HttpServletResponse.class);
+        }
+
+        // 参数值获取
         final String _parameterName = parameter.getParameterName();
         String _parameterValue = webRequest.getParameter(_parameterName);
         if (null == _parameterValue)

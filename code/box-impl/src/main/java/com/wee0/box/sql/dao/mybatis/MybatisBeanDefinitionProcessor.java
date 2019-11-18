@@ -36,7 +36,7 @@ public class MybatisBeanDefinitionProcessor implements IBeanDefinitionProcessor 
     @Override
     public void foundBean(Class<?> clazz) {
         if (clazz.isInterface() && null != AnnotationUtils.findAnnotation(clazz, BoxDao.class)) {
-            MyBatisDaoManager.me().registerDao(clazz);
+            MybatisDaoManager.me().registerDao(clazz);
         }
     }
 
@@ -51,7 +51,7 @@ public class MybatisBeanDefinitionProcessor implements IBeanDefinitionProcessor 
     public Object getInstance(Class clazz) {
 //        if (clazz.isInterface() && clazz.isAnnotationPresent(BoxDao.class))
         if (clazz.isInterface() && null != AnnotationUtils.findAnnotation(clazz, BoxDao.class))
-            return MyBatisDaoManager.me().getDao(clazz);
+            return MybatisDaoManager.me().getDao(clazz);
         return null;
     }
 

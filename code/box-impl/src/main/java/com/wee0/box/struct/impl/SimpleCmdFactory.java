@@ -33,33 +33,41 @@ import java.io.ObjectStreamException;
  **/
 public class SimpleCmdFactory implements ICmdFactory {
     @Override
-    public CMD<Integer> create(Integer code, String message, Object data) {
+    public CMD<String> create(String code, String message, Object data) {
         return new SimpleCMD(code, message, data);
     }
 
     @Override
-    public CMD<Integer> create(Object data) {
+    public CMD<String> create(Object data) {
         return new SimpleCMD(data);
     }
 
     @Override
-    public CMD<Integer> create(Integer code, String message) {
+    public CMD<String> create(String code, String message) {
         return new SimpleCMD(code, message);
     }
 
     @Override
-    public CMD<Integer> create(String message) {
+    public CMD<String> create(String message) {
         return new SimpleCMD(message);
     }
 
     @Override
-    public CMD<Integer> create(IBizCode bizCode) {
+    public CMD<String> create(IBizCode bizCode) {
         if (null == bizCode)
             throw new IllegalArgumentException("bizCode can't be null!");
         String _bizText = BizCodeManager.impl().getText(bizCode);
         if (null == _bizText)
             throw new IllegalStateException("invalid bizCode: " + bizCode.getCode());
-        return new SimpleCMD(_bizText);
+        return new SimpleCMD(bizCode.getCode(), _bizText);
+    }
+
+    @Override
+    public CMD<String> create(IBizCode bizCode, String... args) {
+        if (null == bizCode)
+            throw new IllegalArgumentException("bizCode can't be null!");
+        String _msg = BizCodeManager.impl().getCodeInfo(bizCode, args).formatText();
+        return new SimpleCMD(bizCode.getCode(), _msg);
     }
 
     /************************************************************

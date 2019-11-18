@@ -74,11 +74,11 @@ final class BoxActionHandlerInterceptor implements HandlerInterceptor {
             return true;
 
         // 判断当前会话标识是否发生改变
-        String _boxId = findId(request);
+        String _boxId = findSessionId(request);
         ISubject _subject = SubjectContext.getSubject(_boxId);
-        if (!_subject.getId().equals(_boxId)) {
-            log.trace("sessionId from {} to {}", _boxId, _subject.getId());
-            response.addCookie(createIdCookie(_subject.getId(), cookieDomain));
+        if (!_subject.getSessionId().equals(_boxId)) {
+            log.trace("sessionId from {} to {}", _boxId, _subject.getSessionId());
+            response.addCookie(createIdCookie(_subject.getSessionId(), cookieDomain));
         }
 
         // 判断请求的资源是否允许匿名访问
@@ -147,7 +147,7 @@ final class BoxActionHandlerInterceptor implements HandlerInterceptor {
     private static final String KEY_BOX_ID = "boxId";
 
     // 获取标识
-    private static String findId(HttpServletRequest request) {
+    private static String findSessionId(HttpServletRequest request) {
         String _result = CheckUtils.checkTrimEmpty(request.getParameter(KEY_BOX_ID), null);
         if (null == _result)
             _result = CheckUtils.checkTrimEmpty(request.getHeader(KEY_BOX_ID), null);
@@ -220,6 +220,7 @@ final class BoxActionHandlerInterceptor implements HandlerInterceptor {
 
     // 渲染错误信息
     private static void renderJson(HttpServletResponse response, Object data) {
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         response.setCharacterEncoding(BoxConfig.impl().getEncoding());
         response.setContentType("application/json; charset=" + BoxConfig.impl().getEncoding());
         try (PrintWriter writer = response.getWriter();) {

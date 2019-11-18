@@ -20,6 +20,7 @@ import com.wee0.box.sql.annotation.BoxDao;
 import com.wee0.box.sql.dao.IBaseDao;
 import com.wee0.box.testEntities.SysUserEntity;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -32,30 +33,22 @@ import java.util.Map;
  * </pre>
  **/
 @BoxDao
-public interface ISysUserDao extends IBaseDao<SysUserEntity, Integer> {
+public interface ISysUserDao extends IBaseDao<SysUserEntity, String> {
 
-    /**
-     * 获取用户列表
-     *
-     * @param params
-     * @return
-     */
-    List<Map<String, Object>> findUserList(Map<String, Object> params);
+    List<SysUserEntity> findAll();
 
-    /**
-     * 获取用户简单列表
-     *
-     * @param params
-     * @return
-     */
-    List<Map<String, Object>> findUserSimpleList(Map<String, Object> params);
+    List<SysUserEntity> finaAllByPage(Map<String, Object> params);
 
-    /**
-     * 根据登录名统计用户数量，作唯一性判断使用
-     *
-     * @param loginName 登陆名称
-     * @return
-     */
-    public Integer countSysUserByLoginName(String loginName);
+    SysUserEntity findById(String id);
+
+    Map<String, Object> findLimit1();
+
+    List<SysUserEntity> findByCreateTime1(Date createTime);
+
+    List<SysUserEntity> findByCreateTime2(Date createTime);
+
+    Integer updatePassword(String password, String id);
+
+    List<Map<String, Object>> nativeQuery(String sql);
 
 }

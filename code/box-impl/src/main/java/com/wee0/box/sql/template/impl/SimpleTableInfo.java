@@ -14,49 +14,46 @@
  * limitations under the License.
  */
 
-package com.wee0.box.sql.entity;
+package com.wee0.box.sql.template.impl;
 
-import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
- * @CreateDate 2019/9/15 10:52
- * @Description 一个简单的分页数据实现
+ * @CreateDate 2019/10/26 7:25
+ * @Description 一个简单的表信息描述对象
  * <pre>
  * 补充说明
  * </pre>
  **/
-public class SimplePageData implements IPageData {
+final class SimpleTableInfo {
 
-    private long pageNum;
-    private long pageSize;
-    private long pageCount;
-    private Collection pageData;
-    private long dataCount;
+    // 表名
+    private String name;
+    // 表注释
+    private String comment;
+    // 列集合
+    private List<Map<String, Object>> columns;
 
-    @Override
-    public long getPageNum() {
-        return this.pageNum;
+    SimpleTableInfo(String name, String comment, List<Map<String, Object>> columns) {
+        this.name = name;
+        this.comment = comment;
+        this.columns = columns;
     }
 
-    @Override
-    public long getPageSize() {
-        return this.pageSize;
+    public String getName() {
+        return name;
     }
 
-    @Override
-    public long getPageCount() {
-        return this.pageCount;
+    public String getComment() {
+        return comment;
     }
 
-    @Override
-    public <T> Collection<T> getPageData() {
-        return this.pageData;
+    public List<Map<String, Object>> getColumns() {
+        return columns;
     }
 
-    @Override
-    public long getDataCount() {
-        return this.dataCount;
-    }
 
 }

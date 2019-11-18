@@ -49,7 +49,7 @@ public class CmdFactory {
      * @param data 数据
      * @return 数据对象
      */
-    public static CMD<Integer> create(Integer code, String msg, Object data) {
+    public static CMD<String> create(String code, String msg, Object data) {
         return IMPL.create(code, msg, data);
     }
 
@@ -59,7 +59,7 @@ public class CmdFactory {
      * @param data 数据
      * @return 数据对象
      */
-    public static CMD<Integer> create(Object data) {
+    public static CMD<String> create(Object data) {
         return IMPL.create(data);
     }
 
@@ -70,7 +70,7 @@ public class CmdFactory {
      * @param msg  消息
      * @return 数据对象
      */
-    public static CMD<Integer> create(Integer code, String msg) {
+    public static CMD<String> create(String code, String msg) {
         return IMPL.create(code, msg);
     }
 
@@ -80,7 +80,7 @@ public class CmdFactory {
      * @param msg 消息
      * @return 数据对象
      */
-    public static CMD<Integer> create(String msg) {
+    public static CMD<String> create(String msg) {
         return IMPL.create(msg);
     }
 
@@ -90,8 +90,19 @@ public class CmdFactory {
      * @param bizCode 业务编码
      * @return 数据对象
      */
-    public static CMD<Integer> create(IBizCode bizCode) {
+    public static CMD<String> create(IBizCode bizCode) {
         return IMPL.create(bizCode);
+    }
+
+    /**
+     * 根据业务编码对应的消息创建数据对象
+     *
+     * @param bizCode 业务编码
+     * @param args    消息参数
+     * @return 数据对象
+     */
+    public static CMD<String> create(IBizCode bizCode, String... args) {
+        return IMPL.create(bizCode, args);
     }
 
 }

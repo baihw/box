@@ -35,7 +35,7 @@ import java.util.Map;
 final class DefaultDaoHandler implements IDaoHandler {
 
     // 数据库方言集合
-    private final Map<DatabaseId, IDialect> dialectMap = new HashMap<>(2);
+    private final Map<DatabaseId, IDialect> dialectMap = new HashMap<>(3);
 
     DefaultDaoHandler() {
         IDialect _defaultDialect = new MysqlDialect();

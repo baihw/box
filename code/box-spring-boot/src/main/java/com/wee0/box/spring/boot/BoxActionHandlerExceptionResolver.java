@@ -17,6 +17,7 @@
 package com.wee0.box.spring.boot;
 
 import com.wee0.box.BoxConstants;
+import com.wee0.box.code.BizCodeDef;
 import com.wee0.box.exception.BizException;
 import com.wee0.box.exception.BoxRuntimeException;
 import com.wee0.box.log.ILogger;
@@ -71,7 +72,7 @@ final class BoxActionHandlerExceptionResolver implements HandlerExceptionResolve
             _sb.append(ex.getMessage());
         }
 
-        CMD _result = CmdFactory.create(500, _sb.toString());
+        CMD _result = CmdFactory.create(BizCodeDef.S000001, _sb.toString());
         request.setAttribute("javax.servlet.error.status_code", 500);
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);

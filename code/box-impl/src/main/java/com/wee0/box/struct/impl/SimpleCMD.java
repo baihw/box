@@ -28,24 +28,24 @@ import java.util.HashMap;
  * 补充说明
  * </pre>
  **/
-public class SimpleCMD extends HashMap<String, Object> implements CMD<Integer> {
+public class SimpleCMD extends HashMap<String, Object> implements CMD<String> {
 
     private static final long serialVersionUID = 1L;
 
-    private static final int CODE_OK = 200;
+    private static final String CODE_OK = "200";
     private static final String MSG_OK = "ok";
 
     private static final String KEY_CODE = "code";
     private static final String KEY_MESSAGE = "message";
     private static final String KEY_DATA = "data";
 
-    public SimpleCMD(Integer code, String message, Object data) {
+    public SimpleCMD(String code, String message, Object data) {
         this.setCode(code);
         this.setMessage(message);
         this.setData(data);
     }
 
-    public SimpleCMD(Integer code, String message) {
+    public SimpleCMD(String code, String message) {
         this(code, message, null);
     }
 
@@ -62,7 +62,7 @@ public class SimpleCMD extends HashMap<String, Object> implements CMD<Integer> {
     }
 
     @Override
-    public CMD<Integer> setCode(Integer code) {
+    public CMD<String> setCode(String code) {
         if (null == code)
             throw new IllegalArgumentException("status can't be null!");
         this.put(KEY_CODE, code);
@@ -70,12 +70,12 @@ public class SimpleCMD extends HashMap<String, Object> implements CMD<Integer> {
     }
 
     @Override
-    public Integer getCode() {
-        return (Integer) this.get(KEY_CODE);
+    public String getCode() {
+        return String.valueOf(this.get(KEY_CODE));
     }
 
     @Override
-    public CMD<Integer> setMessage(String message) {
+    public CMD<String> setMessage(String message) {
         this.put(KEY_MESSAGE, message);
         return this;
     }
@@ -86,7 +86,7 @@ public class SimpleCMD extends HashMap<String, Object> implements CMD<Integer> {
     }
 
     @Override
-    public CMD<Integer> setData(Object data) {
+    public CMD<String> setData(Object data) {
         this.put(KEY_DATA, data);
         return this;
     }
@@ -98,7 +98,7 @@ public class SimpleCMD extends HashMap<String, Object> implements CMD<Integer> {
 
     @Override
     public boolean isOK() {
-        return CODE_OK == getCode();
+        return CODE_OK.equals(getCode());
     }
 
 }

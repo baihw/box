@@ -17,7 +17,7 @@
 //package com.wee0.box.web.servlet.cos;
 //
 //import com.wee0.box.web.servlet.IUploadRequest;
-//import com.wee0.box.web.servlet.IUploadRequestUtil;
+//import com.wee0.box.web.servlet.IUploadRequestUtils;
 //
 //import javax.servlet.http.HttpServletRequest;
 //
@@ -29,7 +29,7 @@
 // * 补充说明
 // * </pre>
 // **/
-//public class CosUploadRequestUtil implements IUploadRequestUtil {
+//public class CosUploadRequestUtil implements IUploadRequestUtils {
 //    @Override
 //    public IUploadRequest parseRequest(HttpServletRequest request) {
 //        String _diskPath = "";

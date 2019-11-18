@@ -104,7 +104,6 @@ public class ICacheTest {
 
     @Test
     public void testGet() {
-
         _do(new _HANDLER() {
             @Override
             public void handle(ICache cache) {

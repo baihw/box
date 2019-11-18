@@ -16,31 +16,29 @@
 
 package com.wee0.box.sql.dao.mybatis;
 
-import com.wee0.box.exception.BoxRuntimeException;
 import com.wee0.box.log.ILogger;
 import com.wee0.box.log.LoggerFactory;
+import com.wee0.box.sql.dao.IPage;
+import com.wee0.box.sql.dao.PageHelper;
 import com.wee0.box.sql.ds.DsManagerTest;
+import com.wee0.box.sql.transaction.TxManger;
 import com.wee0.box.testDaos.ISysUserDao;
 import com.wee0.box.testEntities.SysUserEntity;
+import com.wee0.box.util.IDateUtils;
+import com.wee0.box.util.shortcut.DateUtils;
 import org.apache.ibatis.binding.MapperMethod;
 import org.apache.ibatis.builder.SqlSourceBuilder;
-import org.apache.ibatis.io.DefaultVFS;
 import org.apache.ibatis.mapping.*;
 import org.apache.ibatis.scripting.xmltags.DynamicContext;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSessionFactory;
+import org.h2.store.Page;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.lang.reflect.Method;
-import java.net.JarURLConnection;
-import java.net.URL;
+import java.sql.Connection;
 import java.util.*;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
-
-import static org.junit.Assert.*;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
@@ -62,8 +60,8 @@ public class MyBatisDaoManagerTest {
 
     //    @Test
     public void test01() {
-        log.debug("myBatisHelper: {}", MyBatisDaoManager.me());
-        SqlSessionFactory _sqlSessionFactory = MyBatisDaoManager.me().getSqlSessionFactory();
+        log.debug("myBatisHelper: {}", MybatisDaoManager.me());
+        SqlSessionFactory _sqlSessionFactory = MybatisDaoManager.me().getSqlSessionFactory();
         Configuration _configuration = _sqlSessionFactory.getConfiguration();
         log.debug("configuration: {}", _configuration);
         for (String _mapName : _configuration.getResultMapNames()) {
@@ -139,38 +137,99 @@ public class MyBatisDaoManagerTest {
 
     }
 
+    //    @Test
+//    public void test02() {
+//        MybatisDaoManager.me().registerDao(ISysUserDao.class);
+//        ISysUserDao _sysUserDao = MybatisDaoManager.me().getDao(ISysUserDao.class);
+//        log.debug("sysUserDao: {}", _sysUserDao);
+//        log.debug("sysUserDao.countAll: {}", _sysUserDao.countAll());
+//        Map<String, Object> _pageParams = PageHelper.impl().createPageParams(3, 2);
+//        log.debug("sysUserDao.queryAllByPage: {}", _sysUserDao.queryAllByPage(_pageParams));
+//        log.debug("sysUserDao.existsById[43]: {}", _sysUserDao.existsById(43)); //47
+//        log.debug("sysUserDao.existsById[99]: {}", _sysUserDao.existsById(99)); //47
+////        log.debug("sysUserDao.deleteAll: {}", _sysUserDao.deleteAll());
+//        List<Integer> _ids = new ArrayList<>(2);
+//        _ids.add(43);
+//        _ids.add(47);
+//        log.debug("sysUserDao.queryByIds[43, 47]: {}", _sysUserDao.queryByIds(_ids));
+//        SysUserEntity _entity = _sysUserDao.queryById(47);
+//        log.debug("sysUserDao.queryById[47]: {}", _entity);
+//        _entity.setWechat("test_weChat");
+//        log.debug("sysUserDao.updateEntity[47]: {}", _sysUserDao.updateEntity(_entity));
+//        log.debug("sysUserDao.queryById[47]: {}", _entity);
+//        _entity.setId("99");
+//        _entity.setWechat("test_weChat_99");
+//        log.debug("sysUserDao.insertEntity[99]: {}", _sysUserDao.insertEntity(_entity));
+//        log.debug("sysUserDao.queryById[99]: {}", _sysUserDao.queryById(99));
+////        log.debug("sysUserDao.deleteById[99]: {}", _sysUserDao.deleteById(99));
+//        _ids.clear();
+//        _ids.add(99);
+//        log.debug("sysUserDao.deleteByIds[99]: {}", _sysUserDao.deleteByIds(_ids));
+//        log.debug("sysUserDao.queryById[99]: {}", _sysUserDao.queryById(99));
+////        log.debug("sysUserDao.queryById[47]: {}", _sysUserDao.queryById(47));
+//
+////        JdbcTransactionFactory;
+////        ManagedTransactionFactory;
+////        JdbcTransactionFactory _transactionFactory = new JdbcTransactionFactory();
+////        Transaction _transaction = _transactionFactory.newTransaction(null);
+//
+//    }
+
     @Test
-    public void test02() {
-        MyBatisDaoManager.me().registerDao(ISysUserDao.class);
-        ISysUserDao _sysUserDao = MyBatisDaoManager.me().getDao(ISysUserDao.class);
-        log.debug("sysUserDao: {}", _sysUserDao);
-        log.debug("sysUserDao.countAll: {}", _sysUserDao.countAll());
-        log.debug("sysUserDao.queryAllByPage: {}", _sysUserDao.queryAllByPage(3, 2));
-        log.debug("sysUserDao.existsById[43]: {}", _sysUserDao.existsById(43)); //47
-        log.debug("sysUserDao.existsById[99]: {}", _sysUserDao.existsById(99)); //47
-//        log.debug("sysUserDao.deleteAll: {}", _sysUserDao.deleteAll());
-        List<Integer> _ids = new ArrayList<>(2);
-        _ids.add(43);
-        _ids.add(47);
-        log.debug("sysUserDao.queryByIds[43, 47]: {}", _sysUserDao.queryByIds(_ids));
-        SysUserEntity _entity = _sysUserDao.queryById(47);
-        log.debug("sysUserDao.queryById[47]: {}", _entity);
-        _entity.setWechat("test_weChat");
-        log.debug("sysUserDao.updateEntity[47]: {}", _sysUserDao.updateEntity(_entity));
-        log.debug("sysUserDao.queryById[47]: {}", _entity);
-        _entity.setId("99");
-        _entity.setWechat("test_weChat_99");
-        log.debug("sysUserDao.insertEntity[99]: {}", _sysUserDao.insertEntity(_entity));
-        log.debug("sysUserDao.queryById[99]: {}", _sysUserDao.queryById(99));
-//        log.debug("sysUserDao.deleteById[99]: {}", _sysUserDao.deleteById(99));
-        _ids.clear();
-        _ids.add(99);
-        log.debug("sysUserDao.deleteByIds[99]: {}", _sysUserDao.deleteByIds(_ids));
-        log.debug("sysUserDao.queryById[99]: {}", _sysUserDao.queryById(99));
-//        log.debug("sysUserDao.queryById[47]: {}", _sysUserDao.queryById(47));
+    public void test03() {
+        MybatisDaoManager.me().registerDao(ISysUserDao.class);
+        ISysUserDao _sysUserDao = MybatisDaoManager.me().getDao(ISysUserDao.class);
 
+        final String _ID = "89232296e8a911e9b3700242ac12010a";
+        final String _PWD = "admin";
+        final String _PWD_NEW = "123456";
+        final Date _DATE1 = DateUtils.parse("20191115132735", IDateUtils.PATTERN_CHAR_14);
+        final Date _DATE2 = DateUtils.parse("2019-11-15 15:14:17", IDateUtils.PATTERN_DATE_TIME);
 
+        log.debug("queryAll: {}", _sysUserDao.queryAll());
+        log.debug("findAll: {}", _sysUserDao.findAll());
+        Map<String, Object> _params = PageHelper.impl().createPageParams(1, 10);
+        log.debug("finaAllByPage: {}", _sysUserDao.finaAllByPage(_params));
+        log.debug("findById: {}", _sysUserDao.findById(_ID));
+        log.debug("findLimit1: {}", _sysUserDao.findLimit1());
+        log.debug("findByCreateTime1: {}", _sysUserDao.findByCreateTime1(_DATE1));
+        log.debug("findByCreateTime2: {}", _sysUserDao.findByCreateTime2(_DATE1));
+        log.debug("updatePassword: {}", _sysUserDao.updatePassword(_PWD_NEW, _ID));
+        log.debug("nativeQuery: {}", _sysUserDao.nativeQuery("select * from sys_user;"));
+        log.debug("updatePassword: {}", _sysUserDao.updatePassword(_PWD, _ID));
+//        Map<String, Object> _sqlMap = new HashMap<>(2);
+//        _sqlMap.put("sql", "select * from sys_user;");
+//        log.debug("nativeQuery1: {}", _sysUserDao.nativeQuery1(_sqlMap));
     }
+
+//    @Test
+//    public void testPage() {
+//        MybatisDaoManager.me().registerDao(ISysUserDao.class);
+//        ISysUserDao _sysUserDao = MybatisDaoManager.me().getDao(ISysUserDao.class);
+//        log.debug("sysUserDao: {}", _sysUserDao);
+//        Map<String, Object> _pageParams = PageHelper.impl().createPageParams(1, 1);
+//        _pageParams.put("id", "001");
+//        _pageParams.put("isDeleted", false);
+//        log.debug("queryAllByPage: {}", _sysUserDao.queryAllByPage(_pageParams));
+//        log.debug("_pageParams: {}", _pageParams);
+//        IPage _page = PageHelper.impl().parseMap(_pageParams);
+//        log.debug("_page: {}", _page);
+////        _sysUserDao.findUserListByPage(_pageParams);
+//    }
+
+//    @Test
+//    public void testTx() {
+//        MybatisDaoManager.me().registerDao(ISysUserDao.class);
+//        ISysUserDao _sysUserDao = MybatisDaoManager.me().getDao(ISysUserDao.class);
+//        SysUserEntity _user = _sysUserDao.queryById("89232296e8a911e9b3700242ac12010a");
+//        _user.setNickName("nickName1");
+//        boolean _result = TxManger.impl().tx(() -> {
+//            _sysUserDao.updateEntity(_user);
+//            _sysUserDao.insertEntity(_user);
+//        });
+//        log.debug("transaction result: {}", _result);
+//
+//    }
 
 //    void _test() {
 //        try (SqlSession _session = MyBatisHelper.me().getSqlSessionFactory().openSession();) {

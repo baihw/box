@@ -31,6 +31,7 @@ import java.io.ObjectStreamException;
 import java.lang.reflect.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
@@ -67,22 +68,38 @@ public class CBUObjectUtils implements IObjectUtils {
     }
 
     @Override
+    public Map<String, Object> toMap(Object bean) {
+        if (null == bean)
+            throw new BoxRuntimeException("bean can not be null!");
+        Map<String, Object> _result = new HashMap<>(32);
+        Class<?> _cla = bean.getClass();
+        visitFields(_cla, bean, (_fieldName, _fieldValue) -> _result.put(_fieldName, _fieldValue));
+        while (null != _cla.getSuperclass() && Object.class != _cla) {
+            _cla = _cla.getSuperclass();
+            visitFields(_cla, bean, (_fieldName, _fieldValue) -> _result.put(_fieldName, _fieldValue));
+        }
+        return _result;
+    }
+
+    @Override
     public String reflectionToString(Object bean) {
+        if (null == bean)
+            throw new BoxRuntimeException("bean can not be null!");
         Class<?> _cla = bean.getClass();
         StringBuilder _sb = new StringBuilder(256);
         _sb.append(_cla.getName()).append('@').append(Integer.toHexString(System.identityHashCode(bean)));
         _sb.append('[');
-        appendFields(_cla, bean, _sb);
+        visitFields(_cla, bean, (_fieldName, _fieldValue) -> _sb.append(_fieldName).append('=').append(_fieldValue).append(','));
         while (null != _cla.getSuperclass() && Object.class != _cla) {
             _cla = _cla.getSuperclass();
-            appendFields(_cla, bean, _sb);
+            visitFields(_cla, bean, (_fieldName, _fieldValue) -> _sb.append(_fieldName).append('=').append(_fieldValue).append(','));
         }
         if (',' == _sb.charAt(_sb.length() - 1))
             _sb.deleteCharAt(_sb.length() - 1);
         return _sb.append(']').toString();
     }
 
-    static void appendFields(Class<?> clazz, Object bean, StringBuilder builder) {
+    static void visitFields(Class<?> clazz, Object bean, BiConsumer<String, Object> consumer) {
         Field[] _fields = clazz.getDeclaredFields();
         if (null == _fields || 0 == _fields.length)
             return;
@@ -97,7 +114,8 @@ public class CBUObjectUtils implements IObjectUtils {
                 continue;
             try {
                 final Object _fieldValue = _field.get(bean);
-                builder.append(_fieldName).append('=').append(_fieldValue).append(',');
+                consumer.accept(_fieldName, _fieldValue);
+//                builder.append(_fieldName).append('=').append(_fieldValue).append(',');
             } catch (final IllegalAccessException ex) {
                 throw new InternalError("Unexpected IllegalAccessException: " + ex.getMessage());
             }

@@ -72,6 +72,11 @@ public enum BizCodeDef implements IBizCode, IBizCodeInitializer {
     QueryFailed("B000007"),
 
     /**
+     * 数据校验失败
+     */
+    ValidateFailed("B000008"),
+
+    /**
      * 默认的无参系统异常
      */
     S000000("S000000"),
@@ -114,8 +119,9 @@ public enum BizCodeDef implements IBizCode, IBizCodeInitializer {
         setter.set(DeleteFailed, "删除失败");
         setter.set(QuerySuccess, "查询成功");
         setter.set(QueryFailed, "查询失败");
+        setter.set(ValidateFailed, "数据非法：{0}");
         setter.set(S000000, "系统异常，请跟管理员联系");
-        setter.set(S000001, "系统异常，请跟管理员联系，信息：{0} param{1}  param{2} ");
+        setter.set(S000001, "系统异常，请跟管理员联系，信息：{0}");
         setter.set(NeedLogin, "请先登陆后访问");
         setter.set(Unauthorized, "没有访问权限，请联系管理员");
     }

@@ -19,6 +19,8 @@ package com.wee0.box.subject.impl;
 import com.wee0.box.subject.ISubject;
 import com.wee0.box.subject.IToken;
 
+import java.util.Set;
+
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
  * @CreateDate 2019/9/1 8:56
@@ -31,6 +33,11 @@ final class SimpleSubject implements ISubject {
 
     @Override
     public String getId() {
+        throw new UnsupportedOperationException("This method is not yet implemented.");
+    }
+
+    @Override
+    public String getSessionId() {
         throw new UnsupportedOperationException("This method is not yet implemented.");
     }
 
@@ -56,6 +63,26 @@ final class SimpleSubject implements ISubject {
 
     @Override
     public boolean hasPermission(String permission) {
+        throw new UnsupportedOperationException("This method is not yet implemented.");
+    }
+
+    @Override
+    public void setAttribute(String key, Object value) {
+        throw new UnsupportedOperationException("This method is not yet implemented.");
+    }
+
+    @Override
+    public Object getAttribute(String key) {
+        throw new UnsupportedOperationException("This method is not yet implemented.");
+    }
+
+    @Override
+    public void removeAttribute(String key) {
+        throw new UnsupportedOperationException("This method is not yet implemented.");
+    }
+
+    @Override
+    public Set<String> getAttributeKeys() {
         throw new UnsupportedOperationException("This method is not yet implemented.");
     }
 }

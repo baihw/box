@@ -22,6 +22,7 @@ import org.springframework.web.servlet.View;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.PrintWriter;
 import java.util.Map;
 
 /**
@@ -45,7 +46,7 @@ final class BoxActionErrorView implements View {
             response.setContentType(getContentType());
         }
         response.setCharacterEncoding(BoxConstants.UTF8);
-        response.setStatus(StringUtils.parseInt(model.get("code"), 500));
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         StringBuilder sb = new StringBuilder();
         sb.append("<html><body>");
         sb.append("<h1>Box Error Page</h1>");
@@ -56,7 +57,9 @@ final class BoxActionErrorView implements View {
         sb.append("<br/><div>msg: ").append(model.get("msg")).append("</div>");
         // sb.append("<br/><div>data:").append(model.get("data")).append("</div>");
         sb.append("</body></html>");
-        response.getWriter().append(sb.toString());
+        try (PrintWriter _writer = response.getWriter();) {
+            _writer.append(sb.toString()).flush();
+        }
     }
 
 }

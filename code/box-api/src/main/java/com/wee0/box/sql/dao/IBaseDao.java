@@ -16,11 +16,9 @@
 
 package com.wee0.box.sql.dao;
 
-import com.wee0.box.sql.entity.IPageData;
-
 import java.io.Serializable;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
@@ -112,10 +110,9 @@ public interface IBaseDao<T, ID extends Serializable> extends IDao<T, ID> {
     /**
      * 查询分页数据
      *
-     * @param pageNum  页码
-     * @param pageSize 每页大小
+     * @param params 参数集合
      * @return 分页数据
      */
-    List<T> queryAllByPage(int pageNum, int pageSize);
+    List<T> queryAllByPage(Map<String, Object> params);
 
 }

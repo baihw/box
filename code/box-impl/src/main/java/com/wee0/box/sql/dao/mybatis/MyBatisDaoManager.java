@@ -29,34 +29,23 @@ import com.wee0.box.sql.ds.DatabaseId;
 import com.wee0.box.sql.ds.DsManager;
 import com.wee0.box.util.shortcut.CheckUtils;
 import com.wee0.box.util.shortcut.StringUtils;
-import org.apache.commons.beanutils.MethodUtils;
-import org.apache.ibatis.builder.SqlSourceBuilder;
 import org.apache.ibatis.builder.xml.XMLConfigBuilder;
 import org.apache.ibatis.builder.xml.XMLMapperBuilder;
 import org.apache.ibatis.executor.ErrorContext;
-import org.apache.ibatis.io.ResolverUtil;
 import org.apache.ibatis.io.Resources;
-import org.apache.ibatis.javassist.tools.reflect.Reflection;
 import org.apache.ibatis.logging.slf4j.Slf4jImpl;
 import org.apache.ibatis.mapping.*;
-import org.apache.ibatis.parsing.XNode;
-import org.apache.ibatis.plugin.Interceptor;
-import org.apache.ibatis.reflection.Reflector;
-import org.apache.ibatis.reflection.ReflectorFactory;
 import org.apache.ibatis.reflection.TypeParameterResolver;
 import org.apache.ibatis.scripting.LanguageDriver;
-import org.apache.ibatis.scripting.xmltags.DynamicContext;
 import org.apache.ibatis.scripting.xmltags.XMLLanguageDriver;
 import org.apache.ibatis.session.*;
+import org.apache.ibatis.transaction.Transaction;
 import org.apache.ibatis.transaction.TransactionFactory;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeAliasRegistry;
-import org.apache.ibatis.type.TypeHandlerRegistry;
-import org.springframework.core.ResolvableType;
-import org.springframework.util.ClassUtils;
-import org.w3c.dom.Node;
 
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectStreamException;
@@ -72,10 +61,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * 补充说明
  * </pre>
  **/
-public class MyBatisDaoManager implements IDaoManager {
+public class MybatisDaoManager implements IDaoManager {
 
     // 日志对象
-    private static ILogger log = LoggerFactory.getLogger(MyBatisDaoManager.class);
+    private static ILogger log = LoggerFactory.getLogger(MybatisDaoManager.class);
 
     // 默认的配置文件
     private static final String DEF_CONFIG_FILE = "mybatis/mybatis-config.xml";
@@ -88,6 +77,11 @@ public class MyBatisDaoManager implements IDaoManager {
 
     // 数据容器
     private final Map<Class<? extends IBaseDao>, IBaseDao> DATA = new ConcurrentHashMap<>(256);
+
+    // 数据源
+    private final DataSource dataSource = DsManager.impl().getDefaultDataSource();
+    // 事务工厂
+    private final TransactionFactory transactionFactory = new JdbcTransactionFactory();
 
     // 配置对象
     private final Configuration configuration;
@@ -245,36 +239,35 @@ public class MyBatisDaoManager implements IDaoManager {
 //        configuration.setObjectFactory();
 //        configuration.setObjectWrapperFactory();
 
-        // 别名注册
-        TypeAliasRegistry _typeAliasRegistry = configuration.getTypeAliasRegistry();
-        Class<?> _typeAliasesSuperType = null;
-        String[] _packages = new String[]{};
-        for (String _package : _packages) {
-            _typeAliasRegistry.registerAliases(_package, null == _typeAliasesSuperType ? Object.class : _typeAliasesSuperType);
-        }
-        Class<?>[] _typeAliases = new Class[]{};
-        for (Class<?> _typeAlias : _typeAliases) {
-            _typeAliasRegistry.registerAlias(_typeAlias);
-        }
-
-        // 类型注册
-        TypeHandlerRegistry _typeHandlerRegistry = configuration.getTypeHandlerRegistry();
-        for (String _package : _packages) {
-            _typeHandlerRegistry.register(_package);
-        }
-
-        // 插件注册
-        Interceptor[] _interceptors = new Interceptor[]{};
-        for (Interceptor _interceptor : _interceptors) {
-            configuration.addInterceptor(_interceptor);
-        }
+//        // 别名注册
+//        TypeAliasRegistry _typeAliasRegistry = configuration.getTypeAliasRegistry();
+//        Class<?> _typeAliasesSuperType = null;
+//        String[] _packages = new String[]{};
+//        for (String _package : _packages) {
+//            _typeAliasRegistry.registerAliases(_package, null == _typeAliasesSuperType ? Object.class : _typeAliasesSuperType);
+//        }
+//        Class<?>[] _typeAliases = new Class[]{};
+//        for (Class<?> _typeAlias : _typeAliases) {
+//            _typeAliasRegistry.registerAlias(_typeAlias);
+//        }
+//
+//        // 类型注册
+//        TypeHandlerRegistry _typeHandlerRegistry = configuration.getTypeHandlerRegistry();
+//        for (String _package : _packages) {
+//            _typeHandlerRegistry.register(_package);
+//        }
+//
+//        // 插件注册
+//        Interceptor[] _interceptors = new Interceptor[]{};
+//        for (Interceptor _interceptor : _interceptors) {
+//            configuration.addInterceptor(_interceptor);
+//        }
     }
 
     // 加载映射文件
     private void loadMappers() {
         // 设置环境
-        TransactionFactory _transactionFactory = new JdbcTransactionFactory();
-        Environment _environment = new Environment(getClass().getSimpleName(), _transactionFactory, DsManager.impl().getDefaultDataSource());
+        Environment _environment = new Environment(getClass().getSimpleName(), transactionFactory, dataSource);
         configuration.setEnvironment(_environment);
 
         // 解析mapper文件
@@ -335,30 +328,51 @@ public class MyBatisDaoManager implements IDaoManager {
      */
     private static Configuration createDefaultConfiguration() {
         Configuration _configuration = new Configuration();
-        // 全局映射器缓存
+        // 配置默认的执行器。SIMPLE 就是普通的执行器；REUSE 执行器会重用预处理语句（prepared statements）； BATCH 执行器将重用语句并执行批量更新。
+        _configuration.setDefaultExecutorType(ExecutorType.REUSE);
+        // 局地开启或关闭配置文件中的所有映射器已经配置的任何缓存（二级缓存）。
         _configuration.setCacheEnabled(false);
-        // 查询时,关闭关联对象加载以提高性能
+        // MyBatis 利用本地缓存机制（Local Cache）防止循环引用（circular references）和加速重复嵌套查询。 默认值为 SESSION，这种情况下会缓存一个会话中执行的所有查询。 若设置值为 STATEMENT，本地会话仅用在语句执行上，对相同 SqlSession 的不同调用将不会共享数据。
+        _configuration.setLocalCacheScope(LocalCacheScope.SESSION);
+        // 关闭关联对象加载以提高性能。延迟加载的全局开关。当开启时，所有关联对象都会延迟加载。 特定关联关系中可通过设置 fetchType 属性来覆盖该项的开关状态。
         _configuration.setLazyLoadingEnabled(false);
         // 设置关联对象加载的形态,此处为按需加载字段(加载字段由SQL指定),不会加载关联表的所有字段,以提高性能
         _configuration.setAggressiveLazyLoading(false);
         // 对于未知的SQL查询,允许返回不同的结果集以达到通用的效果
         _configuration.setMultipleResultSetsEnabled(true);
+        // 允许 JDBC 支持自动生成主键，需要驱动支持。 如果设置为 true 则这个设置强制使用自动生成主键。
+        _configuration.setUseGeneratedKeys(false);
+        // 指定 MyBatis 应如何自动映射列到字段或属性。 NONE 表示取消自动映射；PARTIAL 只会自动映射没有定义嵌套结果集映射的结果集。 FULL 会自动映射任意复杂的结果集（无论是否嵌套）。
+        _configuration.setAutoMappingBehavior(AutoMappingBehavior.PARTIAL);
+        // 当没有为参数提供特定的 JDBC 类型时，为空值指定 JDBC 类型。
+        _configuration.setJdbcTypeForNull(JdbcType.NULL);
         // 允许使用列标签代替列名
         _configuration.setUseColumnLabel(true);
-        // 允许使用自定义的主键值(比如由程序生成的UUID 32位编码作为键值), 数据表的pk生成策略将被覆盖
-        _configuration.setUseGeneratedKeys(false);
-        // 给予被嵌套的resultMap以字段-属性的映射支持
-        _configuration.setAutoMappingBehavior(AutoMappingBehavior.PARTIAL);
-        // 对于批量更新操作缓存SQL以提高性能
-        _configuration.setDefaultExecutorType(ExecutorType.REUSE);
         // 下划线命名转驼峰命名
         _configuration.setMapUnderscoreToCamelCase(true);
+        // 当属性值为空时，保留属性，不要剔除。
+        _configuration.setCallSettersOnNulls(true);
+        // 当返回行的所有列都是空时，MyBatis默认返回 null。 当开启这个设置时，MyBatis会返回一个空实例。 请注意，它也适用于嵌套的结果集 （如集合或关联）。
+        _configuration.setReturnInstanceForEmptyRow(false);
         // 默认数据库响应超时时间
-        _configuration.setDefaultStatementTimeout(120);
-        _configuration.setLocalCacheScope(LocalCacheScope.SESSION);
-        _configuration.setJdbcTypeForNull(JdbcType.NULL);
+        _configuration.setDefaultStatementTimeout(15);
+        // 指定 MyBatis 所用日志的具体实现，未指定时将自动查找。
         _configuration.setLogImpl(Slf4jImpl.class);
 //        _configuration.setLogImpl(StdOutImpl.class);
+//        // logPrefix 指定 MyBatis 增加到日志名称的前缀。
+//        _configuration.setLogPrefix("mybatis_");
+
+        // 增加默认的别名映射
+        TypeAliasRegistry _typeAliasRegistry = _configuration.getTypeAliasRegistry();
+        _typeAliasRegistry.registerAlias("Integer", Integer.class);
+        _typeAliasRegistry.registerAlias("Long", Long.class);
+        _typeAliasRegistry.registerAlias("HashMap", HashMap.class);
+        _typeAliasRegistry.registerAlias("LinkedHashMap", LinkedHashMap.class);
+        _typeAliasRegistry.registerAlias("ArrayList", ArrayList.class);
+        _typeAliasRegistry.registerAlias("LinkedList", LinkedList.class);
+
+        // 增加默认启用的自定义插件
+        _configuration.addInterceptor(new MybatisPageInterceptor());
         return _configuration;
     }
 
@@ -366,8 +380,8 @@ public class MyBatisDaoManager implements IDaoManager {
     /************************************************************
      ************* 单例样板代码。
      ************************************************************/
-    private MyBatisDaoManager() {
-        if (null != MyBatisDaoManagerHolder._INSTANCE) {
+    private MybatisDaoManager() {
+        if (null != MybatisDaoManagerHolder._INSTANCE) {
             // 防止使用反射API创建对象实例。
             throw new IllegalStateException("that's not allowed!");
         }
@@ -409,16 +423,19 @@ public class MyBatisDaoManager implements IDaoManager {
         log.debug("sqlSessionFactory: {}", this.sqlSessionFactory);
         this.sqlSessionManager = SqlSessionManager.newInstance(this.sqlSessionFactory);
         log.debug("sqlSessionManager: {}", this.sqlSessionManager);
+
+        // 事务管理器初始化
+        MybatisTxManager.me().init(this.sqlSessionManager, this.transactionFactory, this.dataSource);
     }
 
     // 当前对象唯一实例持有者。
-    private static final class MyBatisDaoManagerHolder {
-        private static final MyBatisDaoManager _INSTANCE = new MyBatisDaoManager();
+    private static final class MybatisDaoManagerHolder {
+        private static final MybatisDaoManager _INSTANCE = new MybatisDaoManager();
     }
 
     // 防止使用反序列化操作获取多个对象实例。
     private Object readResolve() throws ObjectStreamException {
-        return MyBatisDaoManagerHolder._INSTANCE;
+        return MybatisDaoManagerHolder._INSTANCE;
     }
 
     /**
@@ -426,8 +443,8 @@ public class MyBatisDaoManager implements IDaoManager {
      *
      * @return 当前对象唯一实例
      */
-    public static MyBatisDaoManager me() {
-        return MyBatisDaoManagerHolder._INSTANCE;
+    public static MybatisDaoManager me() {
+        return MybatisDaoManagerHolder._INSTANCE;
     }
 
 

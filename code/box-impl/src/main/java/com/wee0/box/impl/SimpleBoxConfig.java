@@ -29,10 +29,16 @@ import com.wee0.box.log.ILoggerContext;
 import com.wee0.box.log.ILoggerFactory;
 import com.wee0.box.sql.ISqlHelper;
 import com.wee0.box.sql.dao.IDaoManager;
+import com.wee0.box.sql.dao.IPageHelper;
+import com.wee0.box.sql.dialect.IDialect;
+import com.wee0.box.sql.dialect.IDialectManager;
 import com.wee0.box.sql.ds.IDsHelper;
 import com.wee0.box.sql.ds.IDsManager;
+import com.wee0.box.sql.template.ISqlTemplateHelper;
+import com.wee0.box.sql.transaction.ITxManger;
 import com.wee0.box.struct.ICmdFactory;
 import com.wee0.box.subject.ISubjectContext;
+import com.wee0.box.template.ITemplateHandler;
 import com.wee0.box.util.*;
 
 import java.io.*;
@@ -219,17 +225,25 @@ public final class SimpleBoxConfig implements IBoxConfig {
         this.DATA.put(IObjectUtils.class.getName(), IObjectUtils.DEF_IMPL_CLASS_NAME);
         this.DATA.put(IThreadUtils.class.getName(), IThreadUtils.DEF_IMPL_CLASS_NAME);
         this.DATA.put(IClassUtils.class.getName(), IClassUtils.DEF_IMPL_CLASS_NAME);
+        this.DATA.put(IValidateUtils.class.getName(), IValidateUtils.DEF_IMPL_CLASS_NAME);
+        this.DATA.put(IIoUtils.class.getName(), IIoUtils.DEF_IMPL_CLASS_NAME);
 
         this.DATA.put(IBizCodeManager.class.getName(), IBizCodeManager.DEF_IMPL_CLASS_NAME);
         this.DATA.put(IBizExceptionFactory.class.getName(), IBizExceptionFactory.DEF_IMPL_CLASS_NAME);
         this.DATA.put(ILocale.class.getName(), ILocale.DEF_IMPL_CLASS_NAME);
 
         this.DATA.put(IBoxContext.class.getName(), IBoxContext.DEF_IMPL_CLASS_NAME);
+        this.DATA.put(ITemplateHandler.class.getName(), ITemplateHandler.DEF_IMPL_CLASS_NAME);
 
         this.DATA.put(ICacheManager.class.getName(), ICacheManager.DEF_IMPL_CLASS_NAME);
         this.DATA.put(IDsHelper.class.getName(), IDsHelper.DEF_IMPL_CLASS_NAME);
         this.DATA.put(IDsManager.class.getName(), IDsManager.DEF_IMPL_CLASS_NAME);
         this.DATA.put(ISqlHelper.class.getName(), ISqlHelper.DEF_IMPL_CLASS_NAME);
+        this.DATA.put(ITxManger.class.getName(), ITxManger.DEF_IMPL_CLASS_NAME);
+        this.DATA.put(IDialectManager.class.getName(), IDialectManager.DEF_IMPL_CLASS_NAME);
+        this.DATA.put(IPageHelper.class.getName(), IPageHelper.DEF_IMPL_CLASS_NAME);
+        this.DATA.put(ISqlTemplateHelper.class.getName(), ISqlTemplateHelper.DEF_IMPL_CLASS_NAME);
+
         this.DATA.put(ICmdFactory.class.getName(), ICmdFactory.DEF_IMPL_CLASS_NAME);
         this.DATA.put(ISubjectContext.class.getName(), ISubjectContext.DEF_IMPL_CLASS_NAME);
     }

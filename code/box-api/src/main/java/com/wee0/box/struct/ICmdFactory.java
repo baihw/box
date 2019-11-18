@@ -41,7 +41,7 @@ public interface ICmdFactory {
      * @param data 数据
      * @return 数据对象
      */
-    CMD<Integer> create(Integer code, String msg, Object data);
+    CMD<String> create(String code, String msg, Object data);
 
     /**
      * 根据指定设置创建数据对象
@@ -49,7 +49,7 @@ public interface ICmdFactory {
      * @param data 数据
      * @return 数据对象
      */
-    CMD<Integer> create(Object data);
+    CMD<String> create(Object data);
 
     /**
      * 根据指定设置创建数据对象
@@ -58,7 +58,7 @@ public interface ICmdFactory {
      * @param msg  消息
      * @return 数据对象
      */
-    CMD<Integer> create(Integer code, String msg);
+    CMD<String> create(String code, String msg);
 
     /**
      * 根据指定设置创建数据对象
@@ -66,7 +66,7 @@ public interface ICmdFactory {
      * @param msg 消息
      * @return 数据对象
      */
-    CMD<Integer> create(String msg);
+    CMD<String> create(String msg);
 
     /**
      * 根据业务编码对应的消息创建数据对象
@@ -74,5 +74,14 @@ public interface ICmdFactory {
      * @param bizCode 业务编码
      * @return 数据对象
      */
-    CMD<Integer> create(IBizCode bizCode);
+    CMD<String> create(IBizCode bizCode);
+
+    /**
+     * 根据业务编码对应的消息创建数据对象
+     *
+     * @param bizCode 业务编码
+     * @param args    消息参数
+     * @return 数据对象
+     */
+    CMD<String> create(IBizCode bizCode, String... args);
 }

@@ -19,16 +19,19 @@ package com.wee0.box.spring.boot;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wee0.box.BoxConstants;
 import com.wee0.box.util.impl.JacksonJsonUtils;
+import com.wee0.box.web.servlet.IUploadRequestUtils;
+import com.wee0.box.web.servlet.commons.CommonsUploadRequestUtils;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.config.annotation.*;
 
 import java.util.List;
@@ -51,6 +54,15 @@ class BoxActionAutoConfiguration implements WebMvcConfigurer {
 
     @Value("${box.auth.cookieDomain:#{null}}")
     private String authCookieDomain;
+
+    @Value("${box.upload.maxFileSize:#{10485760}}")
+    private long maxFileSize;
+
+    @Value("${box.action.default.resultCode:200}")
+    private String defaultResultCode;
+
+    @Value("${box.action.default.resultMessage:ok}")
+    private String defaultResultMessage;
 
     @Override
     public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
@@ -129,10 +141,22 @@ class BoxActionAutoConfiguration implements WebMvcConfigurer {
         return new BoxActionRegistrationsAdapter();
     }
 
-    @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
     @Bean
+    @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
     BoxActionAfterConfiguration boxActionAfterConfiguration() {
-        return new BoxActionAfterConfiguration();
+        BoxActionAfterConfiguration _afterConfiguration = new BoxActionAfterConfiguration();
+        BoxActionReturnValueHandler _returnValueHandler = new BoxActionReturnValueHandler();
+        _returnValueHandler.setDefaultCode(this.defaultResultCode);
+        _returnValueHandler.setDefaultMessage(this.defaultResultMessage);
+        _afterConfiguration.setBoxActionReturnValueHandler(_returnValueHandler);
+        return _afterConfiguration;
+    }
+
+    @Bean
+    @ConditionalOnClass(ServletFileUpload.class)
+    IUploadRequestUtils uploadRequestUtils() {
+        ServletFileUpload _fileUpload = CommonsUploadRequestUtils.createServletFileUpload(maxFileSize, null);
+        return new CommonsUploadRequestUtils(_fileUpload);
     }
 
 //    @Bean

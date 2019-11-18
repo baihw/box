@@ -35,7 +35,7 @@ public class MybatisDaoFactoryBean<T> implements FactoryBean<T> {
 
     @Override
     public T getObject() throws Exception {
-        return MyBatisDaoManager.me().getDao(this.interfaceClass);
+        return MybatisDaoManager.me().getDao(this.interfaceClass);
     }
 
     @Override

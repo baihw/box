@@ -16,6 +16,7 @@
 
 package com.wee0.box.spring.boot;
 
+import com.wee0.box.exception.BizException;
 import com.wee0.box.log.ILogger;
 import com.wee0.box.log.LoggerFactory;
 import com.wee0.box.struct.CMD;
@@ -87,15 +88,35 @@ final class BoxActionErrorController implements ErrorController {
 
     private CMD parseError(HttpServletRequest request) {
         // getErrorAttributes(request, isIncludeStackTrace(request, MediaType.ALL));
-        // getErrorAttributes(request, isIncludeStackTrace(request, MediaType.APPLICATION_JSON));
-        Map<String, Object> _errorMap = getErrorAttributes(request, true);
-        // errorMap.get("path");
-        // errorMap.get("timestamp");
+        Map<String, Object> _errorMap = getErrorAttributes(request, false);
+        // errorMap.get("path"); // timestamp, status, error, message, trace, path, _throwable
 
-        int _code = StringUtils.parseInt(_errorMap.get("status"), 0);
-        String _msg = String.format("%s - %s", _errorMap.get("error"), _errorMap.get("message"));
+        if (_errorMap.containsKey("_throwable")) {
+            Throwable _throwable = (Throwable) _errorMap.get("_throwable");
+            if (_throwable instanceof BizException) {
+                BizException _bizException = (BizException) _throwable;
+                String _bizCode = _bizException.getBizCodeInfo().getCode();
+                return CmdFactory.create(_bizCode, _bizException.getMessage());
+            }
+        }
+
+        String _code = String.valueOf(_errorMap.get("status"));
+//        String _msg = String.format("%s - %s", _errorMap.get("error"), _errorMap.get("message"));
+        String _msg = StringUtils.parseString(_errorMap.get("message"), null);
+        if (null == _msg)
+            _msg = String.valueOf(_errorMap.get("error"));
         return CmdFactory.create(_code, _msg);
 //        return CmdFactory.create(_code, _msg, _errorMap);
+    }
+
+
+    protected Map<String, Object> getErrorAttributes(HttpServletRequest request, boolean includeStackTrace) {
+        WebRequest _webRequest = new ServletWebRequest(request);
+        Map<String, Object> _result = this.errorAttributes.getErrorAttributes(_webRequest, includeStackTrace);
+        Throwable _throwable = this.errorAttributes.getError(_webRequest);
+        if (null != _throwable)
+            _result.put("_throwable", _throwable);
+        return _result;
     }
 
     // protected boolean isIncludeStackTrace(HttpServletRequest request, MediaType produces) {
@@ -109,10 +130,6 @@ final class BoxActionErrorController implements ErrorController {
     // return false;
     // }
 
-    protected Map<String, Object> getErrorAttributes(HttpServletRequest request, boolean includeStackTrace) {
-        WebRequest webRequest = new ServletWebRequest(request);
-        return this.errorAttributes.getErrorAttributes(webRequest, includeStackTrace);
-    }
 
     @Bean(name = "error")
     @ConditionalOnMissingBean(name = "error")
