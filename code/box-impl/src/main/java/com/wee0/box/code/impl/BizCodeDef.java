@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-package com.wee0.box.code;
+package com.wee0.box.code.impl;
+
+import com.wee0.box.code.IBizCode;
+import com.wee0.box.code.IBizCodeInitializer;
+import com.wee0.box.code.IBizCodeSetter;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>

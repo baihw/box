@@ -20,9 +20,13 @@ import com.wee0.box.BoxConfig;
 import com.wee0.box.code.IBizCode;
 import com.wee0.box.code.IBizCodeInfo;
 import com.wee0.box.code.IBizCodeStore;
+import com.wee0.box.log.ILogger;
+import com.wee0.box.log.LoggerFactory;
 import com.wee0.box.util.shortcut.PropertiesUtils;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -36,6 +40,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * </pre>
  **/
 public class SimpleBizCodeStore implements IBizCodeStore {
+
+    // 日志对象
+    private static ILogger log = LoggerFactory.getLogger(SimpleBizCodeStore.class);
 
     // 存储名称
     public static final String NAME = "simpleStore";
@@ -101,11 +108,12 @@ public class SimpleBizCodeStore implements IBizCodeStore {
 
     @Override
     public void loadData() {
-        String _filePath = BoxConfig.impl().getResourcePath(DEF_RESOURCE);
-        File _file = new File(_filePath);
-        if (!_file.exists())
-            return;
-        Map<String, String> _propsMap = PropertiesUtils.loadToMap(_file);
-        this.DATA.putAll(_propsMap);
+        try (InputStream _inStream = BoxConfig.impl().getResourceAsStream(DEF_RESOURCE);) {
+            Map<String, String> _propsMap = PropertiesUtils.loadToMap(_inStream);
+            this.DATA.putAll(_propsMap);
+            log.info("{} loaded.", DEF_RESOURCE);
+        } catch (IOException e) {
+            log.debug("{} not found.", DEF_RESOURCE, e);
+        }
     }
 }

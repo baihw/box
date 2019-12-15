@@ -18,6 +18,7 @@ package com.wee0.box.impl;
 
 import com.wee0.box.BoxConfig;
 import com.wee0.box.IBoxConfig;
+import com.wee0.box.IBoxConfigObject;
 import com.wee0.box.IBoxContext;
 import com.wee0.box.cache.ICacheManager;
 import com.wee0.box.code.IBizCodeManager;
@@ -28,9 +29,7 @@ import com.wee0.box.io.IFileSystem;
 import com.wee0.box.log.ILoggerContext;
 import com.wee0.box.log.ILoggerFactory;
 import com.wee0.box.sql.ISqlHelper;
-import com.wee0.box.sql.dao.IDaoManager;
 import com.wee0.box.sql.dao.IPageHelper;
-import com.wee0.box.sql.dialect.IDialect;
 import com.wee0.box.sql.dialect.IDialectManager;
 import com.wee0.box.sql.ds.IDsHelper;
 import com.wee0.box.sql.ds.IDsManager;
@@ -61,6 +60,9 @@ public final class SimpleBoxConfig implements IBoxConfig {
     // 资源文件根目录
     public static final String RESOURCE_DIR = SimpleBoxConfig.class.getResource("/").getPath().replaceAll(REG_FILE_SEPARATOR, "/");
 
+    // 外部化资源文件根目录，默认为用户运行程序时所在的目录。外部化资源文件优先级高于jar包内资源文件。
+    public static final String EXTERNAL_DIR = System.getProperty("user.dir").replaceAll(REG_FILE_SEPARATOR, "/");
+
     // 默认的资源文件
     public static final String DEF_RESOURCE = "config/box_config.properties";
 
@@ -71,6 +73,7 @@ public final class SimpleBoxConfig implements IBoxConfig {
     private static final ClassLoader[] CLASS_LOADERS;
 
     static {
+//        System.setProperty("java.net.preferIPv4Stack", "true");
         // 初始化一些第三方组件的默认配置
         System.setProperty("org.jboss.logging.provider", "slf4j");
         System.setProperty("druid.logType", "slf4j");
@@ -99,6 +102,14 @@ public final class SimpleBoxConfig implements IBoxConfig {
     // 接口单例类实例缓存
     private final ConcurrentHashMap<Class, Object> IMPL_DATA = new ConcurrentHashMap<>(128);
 
+    // 框架组件定制对象
+    private final IBoxConfigObject CONFIG_OBJECT;
+
+    @Override
+    public IBoxConfigObject getConfigObject() {
+        return this.CONFIG_OBJECT;
+    }
+
     @Override
     public String get(String key) {
         return this.DATA.get(key);
@@ -113,6 +124,11 @@ public final class SimpleBoxConfig implements IBoxConfig {
     @Override
     public String getEncoding() {
         return this.ENCODING;
+    }
+
+    @Override
+    public String getExternalDir() {
+        return EXTERNAL_DIR;
     }
 
     @Override
@@ -134,6 +150,9 @@ public final class SimpleBoxConfig implements IBoxConfig {
     public InputStream getResourceAsStream(String resource) throws IOException {
         if (null == resource)
             throw new IOException("resource can not be null!");
+        File _external_file = new File(EXTERNAL_DIR, resource);
+        if (_external_file.exists())
+            return new FileInputStream(_external_file);
         InputStream _inStream = getResourceAsStreamByClassLoader(Thread.currentThread().getContextClassLoader(), resource);
         if (null != _inStream)
             return _inStream;
@@ -227,6 +246,7 @@ public final class SimpleBoxConfig implements IBoxConfig {
         this.DATA.put(IClassUtils.class.getName(), IClassUtils.DEF_IMPL_CLASS_NAME);
         this.DATA.put(IValidateUtils.class.getName(), IValidateUtils.DEF_IMPL_CLASS_NAME);
         this.DATA.put(IIoUtils.class.getName(), IIoUtils.DEF_IMPL_CLASS_NAME);
+        this.DATA.put(IHttpUtils.class.getName(), IHttpUtils.DEF_IMPL_CLASS_NAME);
 
         this.DATA.put(IBizCodeManager.class.getName(), IBizCodeManager.DEF_IMPL_CLASS_NAME);
         this.DATA.put(IBizExceptionFactory.class.getName(), IBizExceptionFactory.DEF_IMPL_CLASS_NAME);
@@ -288,6 +308,13 @@ public final class SimpleBoxConfig implements IBoxConfig {
         if (null == _encoding || 0 == (_encoding = _encoding.trim()).length())
             _encoding = DEF_ENCODING;
         this.ENCODING = _encoding;
+
+        // 框架组件定制对象
+        String _configObject = this.DATA.get(BoxConfigKeys.configObject);
+        if (null == _configObject || 0 == (_configObject = _configObject.trim()).length())
+            this.CONFIG_OBJECT = new SimpleBoxConfigObject();
+        else
+            this.CONFIG_OBJECT = BoxConfig.createInstance(_configObject, IBoxConfigObject.class);
     }
 
     // 当前对象唯一实例持有者。

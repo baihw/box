@@ -22,10 +22,7 @@ import java.io.ObjectStreamException;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
@@ -159,6 +156,29 @@ public class SimpleMapUtils implements IMapUtils {
             return 0 != ((Object[]) _obj).length;
         }
         return 0 != _obj.toString().length();
+    }
+
+    @Override
+    public void remove(Map map, Object... keys) {
+        if (null == map || null == keys || 0 == keys.length)
+            return;
+        for (Object _key : keys) {
+            map.remove(_key);
+        }
+    }
+
+    @Override
+    public void keep(Map map, Object... keys) {
+        if (null == map || null == keys || 0 == keys.length)
+            return;
+        Set<Object> _keys = new HashSet<>(Arrays.asList(keys));
+        Iterator _iterator = map.entrySet().iterator();
+        while (_iterator.hasNext()) {
+            Map.Entry _entry = (Map.Entry) _iterator.next();
+            if (!_keys.contains(_entry.getKey())) {
+                _iterator.remove();
+            }
+        }
     }
 
     /************************************************************

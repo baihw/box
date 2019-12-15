@@ -19,7 +19,6 @@ package com.wee0.box;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
@@ -37,6 +36,11 @@ import java.util.Map;
  * </pre>
  **/
 public interface IBoxConfig {
+
+    /**
+     * @return 获取可定制组件的定制对象
+     */
+    IBoxConfigObject getConfigObject();
 
     /**
      * 获取指定键名对应的配置值
@@ -61,6 +65,13 @@ public interface IBoxConfig {
      * @return 全局默认编码
      */
     String getEncoding();
+
+    /**
+     * 获取外部化资源文件存储目录
+     *
+     * @return 外部化资源文件存储目录
+     */
+    String getExternalDir();
 
     /**
      * 获取资源文件存储目录

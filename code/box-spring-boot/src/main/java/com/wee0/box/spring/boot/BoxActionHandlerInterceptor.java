@@ -17,8 +17,6 @@
 package com.wee0.box.spring.boot;
 
 import com.wee0.box.BoxConfig;
-import com.wee0.box.code.BizCodeDef;
-import com.wee0.box.code.BizCodeManager;
 import com.wee0.box.log.ILogger;
 import com.wee0.box.log.LoggerFactory;
 import com.wee0.box.struct.CmdFactory;
@@ -37,12 +35,10 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
 import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.lang.reflect.Proxy;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
@@ -58,14 +54,15 @@ final class BoxActionHandlerInterceptor implements HandlerInterceptor {
     private static ILogger log = LoggerFactory.getLogger(BoxActionHandlerInterceptor.class);
 
     private final String ignoreUrls;
-    private final String cookieDomain;
+//    private final String cookieDomain;
 
-    BoxActionHandlerInterceptor(String ignoreUrls, String cookieDomain) {
+    BoxActionHandlerInterceptor(String ignoreUrls) {
         ignoreUrls = CheckUtils.checkNotTrimEmpty(ignoreUrls, "ignoreUrls can't be empty!");
         ignoreUrls = StringUtils.endsWithChar(ignoreUrls, ',');
         this.ignoreUrls = ignoreUrls;
-        this.cookieDomain = CheckUtils.checkTrimEmpty(cookieDomain, null);
-        log.debug("cookieDomain: {}, ignoreUrls: {}", this.cookieDomain, this.ignoreUrls);
+//        this.cookieDomain = CheckUtils.checkTrimEmpty(cookieDomain, null);
+//        log.debug("cookieDomain: {}, ignoreUrls: {}", this.cookieDomain, this.ignoreUrls);
+        log.debug("ignoreUrls: {}", this.ignoreUrls);
     }
 
     @Override
@@ -73,13 +70,8 @@ final class BoxActionHandlerInterceptor implements HandlerInterceptor {
         if (handler instanceof ResourceHttpRequestHandler || handler instanceof ParameterizableViewController)
             return true;
 
-        // 判断当前会话标识是否发生改变
-        String _boxId = findSessionId(request);
-        ISubject _subject = SubjectContext.getSubject(_boxId);
-        if (!_subject.getSessionId().equals(_boxId)) {
-            log.trace("sessionId from {} to {}", _boxId, _subject.getSessionId());
-            response.addCookie(createIdCookie(_subject.getSessionId(), cookieDomain));
-        }
+        // 初始化当前会话主体对象
+        ISubject _subject = SubjectContext.getSubject(request, response);
 
         // 判断请求的资源是否允许匿名访问
         String _uri = request.getRequestURI();
@@ -96,7 +88,8 @@ final class BoxActionHandlerInterceptor implements HandlerInterceptor {
 
             // 判断当前用户是否已经登陆
             if (!_subject.isLogin()) {
-                renderJson(response, CmdFactory.create(BizCodeDef.NeedLogin));
+                log.debug("session {} is not login.", _subject.getSessionId());
+                renderJson(response, CmdFactory.create(BoxConfig.impl().getConfigObject().getNeedLoginBizCode()));
                 return false;
             }
 
@@ -106,7 +99,7 @@ final class BoxActionHandlerInterceptor implements HandlerInterceptor {
                 String[] _roles = _requireRoles.value();
                 BoxRequireLogical _logical = _requireRoles.logical();
                 if (!checkRoles(_subject, _roles, _logical)) {
-                    renderJson(response, CmdFactory.create(BizCodeDef.Unauthorized));
+                    renderJson(response, CmdFactory.create(BoxConfig.impl().getConfigObject().getUnauthorizedBizCode()));
                     return false;
                 }
             }
@@ -117,7 +110,7 @@ final class BoxActionHandlerInterceptor implements HandlerInterceptor {
                 String[] _permissions = _requirePermissions.value();
                 BoxRequireLogical _logical = _requirePermissions.logical();
                 if (!checkPermissions(_subject, _permissions, _logical)) {
-                    renderJson(response, CmdFactory.create(BizCodeDef.Unauthorized));
+                    renderJson(response, CmdFactory.create(BoxConfig.impl().getConfigObject().getUnauthorizedBizCode()));
                     return false;
                 }
             }
@@ -141,39 +134,6 @@ final class BoxActionHandlerInterceptor implements HandlerInterceptor {
         if (handler instanceof ResourceHttpRequestHandler || handler instanceof ParameterizableViewController)
             return;
 //        log.trace("handler: {}", handler);
-    }
-
-    // 默认的客户端标识关联键名
-    private static final String KEY_BOX_ID = "boxId";
-
-    // 获取标识
-    private static String findSessionId(HttpServletRequest request) {
-        String _result = CheckUtils.checkTrimEmpty(request.getParameter(KEY_BOX_ID), null);
-        if (null == _result)
-            _result = CheckUtils.checkTrimEmpty(request.getHeader(KEY_BOX_ID), null);
-        if (null == _result) {
-            Cookie[] _cookies = request.getCookies();
-            if (null != _cookies && 0 != _cookies.length) {
-                for (Cookie _cookie : _cookies) {
-                    if (KEY_BOX_ID.equals(_cookie.getName())) {
-                        _result = CheckUtils.checkTrimEmpty(_cookie.getValue(), null);
-                    }
-                }
-            }
-        }
-        return _result;
-    }
-
-    private static Cookie createIdCookie(String value, String domain) {
-        Cookie _cookie = new Cookie(KEY_BOX_ID, value);
-        if (null != domain) {
-            _cookie.setDomain(domain);
-        }
-        _cookie.setPath("/");
-        _cookie.setMaxAge(-1);
-        _cookie.setHttpOnly(true);
-//        _cookie.setSecure(true);
-        return _cookie;
     }
 
     // 检查指定角色的逻辑关系是否成立
@@ -220,7 +180,8 @@ final class BoxActionHandlerInterceptor implements HandlerInterceptor {
 
     // 渲染错误信息
     private static void renderJson(HttpServletResponse response, Object data) {
-        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+//        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        response.setStatus(BoxConfig.impl().getConfigObject().getPermissionExceptionHttpStatusCode());
         response.setCharacterEncoding(BoxConfig.impl().getEncoding());
         response.setContentType("application/json; charset=" + BoxConfig.impl().getEncoding());
         try (PrintWriter writer = response.getWriter();) {

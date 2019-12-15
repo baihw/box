@@ -34,8 +34,8 @@ public class SimpleIoUtils implements IIoUtils {
     // 结束标志
     private static final int EOF = -1;
 
-    // 默认的缓冲大小
-    private static final int DEF_BUFFER_SIZE = 1024 * 4;
+    // 默认的缓冲大小 1024K。
+    private static final int DEF_BUFFER_SIZE = 1024 * 1024;
 
     // 默认的编码
     private static final String DEF_ENCODING = BoxConfig.impl().getEncoding();

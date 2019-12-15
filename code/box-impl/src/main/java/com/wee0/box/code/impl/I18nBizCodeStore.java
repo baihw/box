@@ -26,7 +26,8 @@ import com.wee0.box.log.ILogger;
 import com.wee0.box.log.LoggerFactory;
 import com.wee0.box.util.shortcut.PropertiesUtils;
 
-import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -91,25 +92,23 @@ public class I18nBizCodeStore implements IBizCodeStore {
 
     @Override
     public void loadData() {
-        String _defaultFilePath = BoxConfig.impl().getResourcePath(defaultResource);
-        File _defaultFile = new File(_defaultFilePath);
-        if (_defaultFile.exists()) {
-            Map<String, String> _propsMap = PropertiesUtils.loadToMap(_defaultFile);
+        try (InputStream _inStream = BoxConfig.impl().getResourceAsStream(defaultResource);) {
+            Map<String, String> _propsMap = PropertiesUtils.loadToMap(_inStream);
             this.defaultData.putAll(_propsMap);
             log.info("{} loaded.", defaultResource);
+        } catch (IOException e) {
+            log.debug("{} not found.", defaultResource, e);
         }
 
         for (Language _lang : Language.values()) {
             String _resourceName = getLanguageResource(_lang);
-            String _filePath = BoxConfig.impl().getResourcePath(_resourceName);
-            File _file = new File(_filePath);
-            if (!_file.exists()) {
-                log.debug("{} not found.", _resourceName);
-                continue;
+            try (InputStream _inStream = BoxConfig.impl().getResourceAsStream(_resourceName);) {
+                Map<String, String> _propsMap = PropertiesUtils.loadToMap(_inStream);
+                this.DATA.put(_lang, _propsMap);
+                log.info("{} loaded.", _resourceName);
+            } catch (IOException e) {
+                log.debug("{} not found.", _resourceName, e);
             }
-            Map<String, String> _propsMap = PropertiesUtils.loadToMap(_file);
-            this.DATA.put(_lang, _propsMap);
-            log.info("{} loaded.", _resourceName);
         }
     }
 

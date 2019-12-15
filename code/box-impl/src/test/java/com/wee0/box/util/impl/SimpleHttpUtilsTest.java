@@ -14,30 +14,33 @@
  * limitations under the License.
  */
 
-package com.wee0.box.struct.impl;
+package com.wee0.box.util.impl;
 
-import com.wee0.box.code.BizCodeManager;
-import com.wee0.box.code.impl.BizCodeDef;
-import com.wee0.box.code.impl.SimpleBizCodeManager;
-import com.wee0.box.struct.ICmdFactoryTest;
+import com.wee0.box.util.IHttpUtils;
+import com.wee0.box.util.IHttpUtilsTest;
+import com.wee0.box.util.IMapUtilsTest;
 import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
- * @CreateDate 2019/9/1 8:08
+ * @CreateDate 2019/12/15 7:52
  * @Description 功能描述
  * <pre>
  * 补充说明
  * </pre>
  **/
-public class SimpleCmdFactoryTest extends ICmdFactoryTest {
+public class SimpleHttpUtilsTest extends IHttpUtilsTest {
 
     @BeforeClass
-    public static void setUp() {
-        SimpleBizCodeManager _bizCodeManager = (SimpleBizCodeManager) BizCodeManager.impl();
-        _bizCodeManager.addBizCodeEnum(BizCodeDef.class);
-//        _bizCodeManager.addBizCodeInitializer(BizCodeDef.SaveSuccess);
-        _bizCodeManager.init();
-        impl = SimpleCmdFactory.me();
+    public static void setup() {
+        impl = SimpleHttpUtils.me();
     }
+
+    @Test
+    public void test1() {
+        IHttpUtils.IHttpResult _result = impl.httpGet("https://cn.bing.com");
+        System.out.println("result:" + _result);
+    }
+
 }

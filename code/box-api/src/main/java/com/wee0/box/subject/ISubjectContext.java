@@ -16,6 +16,9 @@
 
 package com.wee0.box.subject;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
  * @CreateDate 2019/9/1 8:53
@@ -30,6 +33,15 @@ public interface ISubjectContext {
      * 默认的实现类名称
      */
     String DEF_IMPL_CLASS_NAME = "com.wee0.box.subject.shiro.ShiroSubjectContext";
+
+    /**
+     * 获取当前请求关联的使用者主体对象
+     *
+     * @param request 请求对象
+     * @param response 响应对象
+     * @return 使用者主体对象
+     */
+    ISubject getSubject(HttpServletRequest request, HttpServletResponse response);
 
     /**
      * 获取指定标识使用者主体对象

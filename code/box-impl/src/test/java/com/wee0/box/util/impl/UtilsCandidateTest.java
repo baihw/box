@@ -80,4 +80,9 @@ public class UtilsCandidateTest {
         Assert.assertFalse(_cache.containsKey("k3"));
     }
 
+    public static void main(String[] args) {
+        System.out.println(Boolean.valueOf(""));
+        System.out.println(Short.valueOf(""));
+    }
+
 }

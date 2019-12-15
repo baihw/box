@@ -16,7 +16,7 @@
 
 package com.wee0.box.exception.impl;
 
-import com.wee0.box.code.BizCodeDef;
+import com.wee0.box.BoxConfig;
 import com.wee0.box.code.BizCodeManager;
 import com.wee0.box.code.IBizCode;
 import com.wee0.box.code.IBizCodeInfo;
@@ -36,7 +36,7 @@ import java.io.ObjectStreamException;
 public class SimpleBizExceptionFactory implements IBizExceptionFactory {
 
     // 默认编码信息
-    private static final IBizCodeInfo DEF_CODE_INFO = BizCodeManager.impl().getCodeInfo(BizCodeDef.S000000);
+    private static final IBizCodeInfo DEF_CODE_INFO = BizCodeManager.impl().getCodeInfo(BoxConfig.impl().getConfigObject().getSystemErrorBizCode());
 
     @Override
     public BizException create(IBizCode bizCode, Throwable e, String... args) {

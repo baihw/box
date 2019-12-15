@@ -17,7 +17,6 @@
 package com.wee0.box.code.impl;
 
 import com.wee0.box.BoxConfig;
-import com.wee0.box.code.BizCodeDef;
 import com.wee0.box.testObjects.BizCodeExt1;
 import com.wee0.box.code.IBizCode;
 import com.wee0.box.code.IBizCodeInfo;

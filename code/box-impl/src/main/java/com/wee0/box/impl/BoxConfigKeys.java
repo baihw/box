@@ -27,9 +27,19 @@ package com.wee0.box.impl;
 public interface BoxConfigKeys {
 
     /**
+     * 框架可定制组件定制类
+     */
+    String configObject = "configObject";
+
+    /**
      * 全局默认编码
      */
     String encoding = "encoding";
+
+    /**
+     * 应用主机域，用于需要识别主机环境的组件中，如cookie。
+     */
+    String domain = "domain";
 
     /**
      * 扫描包名称配置

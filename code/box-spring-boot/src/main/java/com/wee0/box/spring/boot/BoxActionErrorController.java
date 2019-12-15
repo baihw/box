@@ -16,6 +16,7 @@
 
 package com.wee0.box.spring.boot;
 
+import com.wee0.box.BoxConfig;
 import com.wee0.box.exception.BizException;
 import com.wee0.box.log.ILogger;
 import com.wee0.box.log.LoggerFactory;
@@ -71,18 +72,29 @@ final class BoxActionErrorController implements ErrorController {
 
     @RequestMapping(produces = "text/html")
     public ModelAndView errorHtml(HttpServletRequest request, HttpServletResponse response) {
+//        request.setAttribute("javax.servlet.error.status_code", 200);
+//        HttpStatus _status = this.getStatus(request);
+//        response.setStatus(_status.value());
+//
+//        Map<String, Object> _model = Collections.unmodifiableMap(this.getErrorAttributes(request, false));
+////        return new ModelAndView("error", _model);
+//        return new ResponseEntity<>(_model, HttpStatus.OK);
+
         CMD _result = parseError(request);
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("error");
-        modelAndView.addObject("code", _result.getCode());
-        modelAndView.addObject("msg", _result.getMessage());
+        ModelAndView _model = new ModelAndView();
+        _model.setViewName("error");
+        _model.addObject("code", _result.getCode());
+        _model.addObject("msg", _result.getMessage());
+//        _model.setStatus(HttpStatus.resolve(BizCodeDefault.impl().getBizExceptionStatusCode()));
+//        response.setStatus(BizCodeDefault.impl().getBizExceptionStatusCode());
         // modelAndView.addObject("data", _result.getData());
-        return modelAndView;
+        return _model;
     }
 
     @RequestMapping
     @ResponseBody
     public CMD error(HttpServletRequest request, HttpServletResponse response) {
+        response.setStatus(BoxConfig.impl().getConfigObject().getBizExceptionHttpStatusCode());
         return parseError(request);
     }
 
@@ -141,6 +153,34 @@ final class BoxActionErrorController implements ErrorController {
 //    @ConditionalOnMissingBean(name = "index")
 //    public View defaultIndexView() {
 //        return new BoxActionIndexView();
+//    }
+
+//    protected HttpStatus getStatus(HttpServletRequest request) {
+//        Integer statusCode = (Integer) request.getAttribute("javax.servlet.error.status_code");
+//        if (statusCode == null) {
+//            return HttpStatus.OK;
+////            return HttpStatus.INTERNAL_SERVER_ERROR;
+//        } else {
+//            try {
+//                return HttpStatus.valueOf(statusCode);
+//            } catch (Exception e) {
+//                return HttpStatus.OK;
+////                return HttpStatus.INTERNAL_SERVER_ERROR;
+//            }
+//        }
+//    }
+
+//    protected boolean isIncludeStackTrace(HttpServletRequest request, MediaType produces) {
+//        ErrorProperties.IncludeStacktrace include = this.getErrorProperties().getIncludeStacktrace();
+//        if (include == ErrorProperties.IncludeStacktrace.ALWAYS) {
+//            return true;
+//        } else {
+//            return include == ErrorProperties.IncludeStacktrace.ON_TRACE_PARAM ? this.getTraceParameter(request) : false;
+//        }
+//    }
+//
+//    protected ErrorProperties getErrorProperties() {
+//        return this.errorProperties;
 //    }
 
 }

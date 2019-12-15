@@ -157,6 +157,7 @@ public class DruidDsManager implements IDsManager {
         _ds.setFailFast(true);
         _ds.setProxyFilters(Arrays.asList(new DruidLogFilter()));
 
+        log.info("add datasource name:{}, url:{}.", _dsName, _ds.getUrl());
         return addDataSource(_dsName, _ds);
     }
 

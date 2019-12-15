@@ -16,6 +16,8 @@
 
 package com.wee0.box.spring.boot;
 
+import com.wee0.box.util.shortcut.CheckUtils;
+import com.wee0.box.util.shortcut.StringUtils;
 import com.wee0.box.web.annotation.BoxAction;
 import com.wee0.box.log.ILogger;
 import com.wee0.box.log.LoggerFactory;
@@ -30,6 +32,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.text.NumberFormat;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
@@ -72,7 +75,7 @@ public class BoxActionMethodArgumentResolver implements HandlerMethodArgumentRes
 
         // 参数值获取
         final String _parameterName = parameter.getParameterName();
-        String _parameterValue = webRequest.getParameter(_parameterName);
+        String _parameterValue = CheckUtils.checkTrimEmpty(webRequest.getParameter(_parameterName), null);
         if (null == _parameterValue)
             return null;
         if (BeanUtils.isSimpleProperty(_parameterType)) {
@@ -110,24 +113,23 @@ public class BoxActionMethodArgumentResolver implements HandlerMethodArgumentRes
     static Object convertStringPrimitive(String str, Class primitiveType) {
         if (null == str)
             return null;
-        if (Boolean.class == primitiveType)
-            return Boolean.valueOf(str);
-        if (Short.class == primitiveType)
-            return Short.valueOf(str);
-        if (Integer.class == primitiveType)
-            return Integer.valueOf(str);
-        if (Long.class == primitiveType)
-            return Long.valueOf(str);
-        if (Float.class == primitiveType)
-            return Float.valueOf(str);
-        if (Double.class == primitiveType)
-            return Double.valueOf(str);
-        if (Byte.class == primitiveType)
-            return Byte.valueOf(str);
         if (String.class == primitiveType)
             return str;
+        if (Boolean.class == primitiveType || boolean.class == primitiveType)
+            return Boolean.valueOf(str);
+        if (Short.class == primitiveType || short.class == primitiveType)
+            return Short.valueOf(str);
+        if (Integer.class == primitiveType || int.class == primitiveType)
+            return Integer.valueOf(str);
+        if (Long.class == primitiveType || long.class == primitiveType)
+            return Long.valueOf(str);
+        if (Float.class == primitiveType || float.class == primitiveType)
+            return Float.valueOf(str);
+        if (Double.class == primitiveType || double.class == primitiveType || Number.class == primitiveType)
+            return Double.valueOf(str);
+        if (Byte.class == primitiveType || byte.class == primitiveType)
+            return Byte.valueOf(str);
 //        throw new IllegalStateException("unSupport type:" + primitiveType);
         return str;
     }
-
 }

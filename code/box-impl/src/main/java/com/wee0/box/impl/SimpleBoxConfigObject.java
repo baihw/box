@@ -14,30 +14,43 @@
  * limitations under the License.
  */
 
-package com.wee0.box.struct.impl;
+package com.wee0.box.impl;
 
-import com.wee0.box.code.BizCodeManager;
+import com.wee0.box.IBoxConfigObject;
+import com.wee0.box.code.IBizCode;
 import com.wee0.box.code.impl.BizCodeDef;
-import com.wee0.box.code.impl.SimpleBizCodeManager;
-import com.wee0.box.struct.ICmdFactoryTest;
-import org.junit.BeforeClass;
+import com.wee0.box.struct.CmdFactory;
+
+import java.io.ObjectStreamException;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
- * @CreateDate 2019/9/1 8:08
- * @Description 功能描述
+ * @CreateDate 2019/12/8 7:32
+ * @Description 一个简单的可定制组件默认实现
  * <pre>
  * 补充说明
  * </pre>
  **/
-public class SimpleCmdFactoryTest extends ICmdFactoryTest {
+final class SimpleBoxConfigObject implements IBoxConfigObject {
 
-    @BeforeClass
-    public static void setUp() {
-        SimpleBizCodeManager _bizCodeManager = (SimpleBizCodeManager) BizCodeManager.impl();
-        _bizCodeManager.addBizCodeEnum(BizCodeDef.class);
-//        _bizCodeManager.addBizCodeInitializer(BizCodeDef.SaveSuccess);
-        _bizCodeManager.init();
-        impl = SimpleCmdFactory.me();
+    @Override
+    public IBizCode getSystemErrorBizCode() {
+        return BizCodeDef.S000000;
     }
+
+    @Override
+    public IBizCode getSystemErrorInfoBizCode() {
+        return BizCodeDef.S000001;
+    }
+
+    @Override
+    public IBizCode getNeedLoginBizCode() {
+        return BizCodeDef.NeedLogin;
+    }
+
+    @Override
+    public IBizCode getUnauthorizedBizCode() {
+        return BizCodeDef.Unauthorized;
+    }
+
 }

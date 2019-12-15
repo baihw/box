@@ -21,6 +21,9 @@ import com.wee0.box.subject.ISubjectContext;
 import com.wee0.box.subject.ITokenFactory;
 import com.wee0.box.util.shortcut.ThreadUtils;
 
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.ObjectStreamException;
 
 /**
@@ -42,6 +45,11 @@ public class SimpleSubjectContext implements ISubjectContext {
             return;
         }
         SUBJECT_HOLDER.set(subject);
+    }
+
+    @Override
+    public ISubject getSubject(HttpServletRequest request, HttpServletResponse response) {
+        throw new UnsupportedOperationException("This method is not yet implemented.");
     }
 
     @Override

@@ -14,30 +14,27 @@
  * limitations under the License.
  */
 
-package com.wee0.box.struct.impl;
+package com.wee0.box.util.impl;
 
-import com.wee0.box.code.BizCodeManager;
-import com.wee0.box.code.impl.BizCodeDef;
-import com.wee0.box.code.impl.SimpleBizCodeManager;
-import com.wee0.box.struct.ICmdFactoryTest;
+import com.wee0.box.BoxConfig;
+import com.wee0.box.util.IDateUtils;
+import com.wee0.box.util.IDateUtilsTest;
+import com.wee0.box.util.IMapUtilsTest;
 import org.junit.BeforeClass;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
- * @CreateDate 2019/9/1 8:08
+ * @CreateDate 2019/11/23 7:05
  * @Description 功能描述
  * <pre>
  * 补充说明
  * </pre>
  **/
-public class SimpleCmdFactoryTest extends ICmdFactoryTest {
+public class SimpleMapUtilsTest extends IMapUtilsTest {
 
     @BeforeClass
-    public static void setUp() {
-        SimpleBizCodeManager _bizCodeManager = (SimpleBizCodeManager) BizCodeManager.impl();
-        _bizCodeManager.addBizCodeEnum(BizCodeDef.class);
-//        _bizCodeManager.addBizCodeInitializer(BizCodeDef.SaveSuccess);
-        _bizCodeManager.init();
-        impl = SimpleCmdFactory.me();
+    public static void setup() {
+        impl = SimpleMapUtils.me();
     }
+
 }

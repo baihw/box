@@ -18,6 +18,9 @@ package com.wee0.box.subject;
 
 import com.wee0.box.BoxConfig;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
  * @CreateDate 2019/9/2 8:55
@@ -31,6 +34,15 @@ public class SubjectContext {
     // 实现类实例
     private static final ISubjectContext IMPL = BoxConfig.impl().getInterfaceImpl(ISubjectContext.class);
 
+    /**
+     * 获取实现类实例
+     *
+     * @return 实现类实例
+     */
+    public static ISubjectContext impl() {
+        return IMPL;
+    }
+
 //    /**
 //     * 设置当前使用者主体对象
 //     *
@@ -39,6 +51,17 @@ public class SubjectContext {
 //    public static void setSubject(ISubject subject) {
 //        IMPL.setSubject(subject);
 //    }
+
+    /**
+     * 获取当前请求关联的使用者主体对象
+     *
+     * @param request  请求对象
+     * @param response 响应对象
+     * @return 使用者主体对象
+     */
+    public static ISubject getSubject(HttpServletRequest request, HttpServletResponse response) {
+        return IMPL.getSubject(request, response);
+    }
 
     /**
      * 获取指定标识使用者主体对象

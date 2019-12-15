@@ -14,30 +14,31 @@
  * limitations under the License.
  */
 
-package com.wee0.box.struct.impl;
+package com.wee0.box.util.shortcut;
 
-import com.wee0.box.code.BizCodeManager;
-import com.wee0.box.code.impl.BizCodeDef;
-import com.wee0.box.code.impl.SimpleBizCodeManager;
-import com.wee0.box.struct.ICmdFactoryTest;
-import org.junit.BeforeClass;
+import com.wee0.box.BoxConfig;
+import com.wee0.box.util.IHttpUtils;
+import com.wee0.box.util.IThreadUtils;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
- * @CreateDate 2019/9/1 8:08
- * @Description 功能描述
+ * @CreateDate 2019/12/15 7:06
+ * @Description Http处理工具快捷入口
  * <pre>
  * 补充说明
  * </pre>
  **/
-public class SimpleCmdFactoryTest extends ICmdFactoryTest {
+public class HttpUtils {
 
-    @BeforeClass
-    public static void setUp() {
-        SimpleBizCodeManager _bizCodeManager = (SimpleBizCodeManager) BizCodeManager.impl();
-        _bizCodeManager.addBizCodeEnum(BizCodeDef.class);
-//        _bizCodeManager.addBizCodeInitializer(BizCodeDef.SaveSuccess);
-        _bizCodeManager.init();
-        impl = SimpleCmdFactory.me();
+    // 实现类实例
+    private static final IHttpUtils IMPL = BoxConfig.impl().getInterfaceImpl(IHttpUtils.class);
+
+    /**
+     * 获取实现类实例
+     *
+     * @return 实现类实例
+     */
+    public static IHttpUtils impl() {
+        return IMPL;
     }
 }

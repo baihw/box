@@ -39,7 +39,7 @@ final class BoxActionAfterConfiguration implements InitializingBean {
     @Autowired
     private RequestMappingHandlerAdapter requestMappingHandlerAdapter;
 
-    private BoxActionReturnValueHandler boxActionReturnValueHandler;
+    private BoxActionReturnValueHandler boxActionReturnValueHandler = new BoxActionReturnValueHandler();
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -62,12 +62,12 @@ final class BoxActionAfterConfiguration implements InitializingBean {
         requestMappingHandlerAdapter.setReturnValueHandlers(_newReturnValueHandlers);
     }
 
-    public BoxActionReturnValueHandler getBoxActionReturnValueHandler() {
-        return boxActionReturnValueHandler;
-    }
-
-    public void setBoxActionReturnValueHandler(BoxActionReturnValueHandler boxActionReturnValueHandler) {
-        this.boxActionReturnValueHandler = boxActionReturnValueHandler;
-    }
+//    public BoxActionReturnValueHandler getBoxActionReturnValueHandler() {
+//        return boxActionReturnValueHandler;
+//    }
+//
+//    public void setBoxActionReturnValueHandler(BoxActionReturnValueHandler boxActionReturnValueHandler) {
+//        this.boxActionReturnValueHandler = boxActionReturnValueHandler;
+//    }
 
 }

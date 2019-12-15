@@ -20,6 +20,7 @@ import com.wee0.box.io.IFileSystem;
 import com.wee0.box.log.ILogger;
 import com.wee0.box.log.LoggerFactory;
 import com.wee0.box.util.shortcut.StringUtils;
+import sun.util.resources.cldr.pa.CurrencyNames_pa;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -29,6 +30,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
+import java.util.stream.Collectors;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
@@ -47,9 +49,25 @@ public class SimpleFileSystem implements IFileSystem {
     public List<String> list(String directory, Function<String, Boolean> nameFilter) throws IOException {
         List<String> _result = new ArrayList<>();
         Enumeration<URL> _urls = Thread.currentThread().getContextClassLoader().getResources(directory);
+        String _directory = directory;
         while (_urls.hasMoreElements()) {
             URL _url = _urls.nextElement();
-            _result.addAll(list(_url, directory, nameFilter));
+            String _urlPath = _url.getPath();
+            String _dirPrefix = null;
+            int _ndx = _urlPath.indexOf(".jar");
+            if (-1 != _ndx) {
+                _url = new URL(_urlPath.substring(0, _ndx + 4));
+                _directory = _urlPath.substring(_ndx + 4);
+                if (-1 != _directory.indexOf('!'))
+                    _directory = _directory.replace("!", "");
+                _dirPrefix = _directory.substring(0, _directory.indexOf(directory));
+            }
+            List<String> _names = list(_url, _directory, nameFilter);
+            if (null != _dirPrefix) {
+                final int _prefixLen = '/' == _dirPrefix.charAt(0) ? _dirPrefix.length() - 1 : _dirPrefix.length();
+                _names = _names.stream().map(_name -> _name.substring(_prefixLen)).collect(Collectors.toList());
+            }
+            _result.addAll(_names);
         }
         return _result;
     }

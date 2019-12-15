@@ -16,6 +16,7 @@
 
 package com.wee0.box.spring.boot;
 
+import com.wee0.box.BoxConfig;
 import com.wee0.box.web.annotation.BoxAction;
 import com.wee0.box.web.annotation.BoxIgnoreReturnValue;
 import com.wee0.box.struct.CmdFactory;
@@ -38,8 +39,8 @@ final class BoxActionReturnValueHandler implements HandlerMethodReturnValueHandl
 
     private HandlerMethodReturnValueHandler delegate;
 
-    private String defaultCode = "200";
-    private String defaultMessage = "ok";
+//    private String defaultCode = "200";
+//    private String defaultMessage = "ok";
 
     @Override
     public boolean supportsReturnType(MethodParameter returnType) {
@@ -54,7 +55,8 @@ final class BoxActionReturnValueHandler implements HandlerMethodReturnValueHandl
         if (returnValue instanceof IStruct || null != returnType.getMethodAnnotation(BoxIgnoreReturnValue.class)) {
             _r = returnValue;
         } else {
-            _r = CmdFactory.create(defaultCode, defaultMessage, returnValue);
+//            _r = CmdFactory.create(defaultCode, defaultMessage, returnValue);
+            _r = BoxConfig.impl().getConfigObject().getWrappedActionReturnValue(returnValue);
         }
         this.delegate.handleReturnValue(_r, returnType, mavContainer, webRequest);
 //        this.delegate.handleReturnValue(returnValue, returnType, mavContainer, webRequest);
@@ -68,19 +70,19 @@ final class BoxActionReturnValueHandler implements HandlerMethodReturnValueHandl
         this.delegate = delegate;
     }
 
-    public String getDefaultCode() {
-        return defaultCode;
-    }
-
-    public void setDefaultCode(String defaultCode) {
-        this.defaultCode = defaultCode;
-    }
-
-    public String getDefaultMessage() {
-        return defaultMessage;
-    }
-
-    public void setDefaultMessage(String defaultMessage) {
-        this.defaultMessage = defaultMessage;
-    }
+//    public String getDefaultCode() {
+//        return defaultCode;
+//    }
+//
+//    public void setDefaultCode(String defaultCode) {
+//        this.defaultCode = defaultCode;
+//    }
+//
+//    public String getDefaultMessage() {
+//        return defaultMessage;
+//    }
+//
+//    public void setDefaultMessage(String defaultMessage) {
+//        this.defaultMessage = defaultMessage;
+//    }
 }

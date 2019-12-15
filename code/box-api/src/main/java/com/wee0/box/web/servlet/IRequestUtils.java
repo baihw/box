@@ -14,30 +14,18 @@
  * limitations under the License.
  */
 
-package com.wee0.box.struct.impl;
+package com.wee0.box.web.servlet;
 
-import com.wee0.box.code.BizCodeManager;
-import com.wee0.box.code.impl.BizCodeDef;
-import com.wee0.box.code.impl.SimpleBizCodeManager;
-import com.wee0.box.struct.ICmdFactoryTest;
-import org.junit.BeforeClass;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
- * @CreateDate 2019/9/1 8:08
- * @Description 功能描述
+ * @CreateDate 2019/11/23 11:12
+ * @Description 请求对象处理工具
  * <pre>
  * 补充说明
  * </pre>
  **/
-public class SimpleCmdFactoryTest extends ICmdFactoryTest {
+public interface IRequestUtils {
 
-    @BeforeClass
-    public static void setUp() {
-        SimpleBizCodeManager _bizCodeManager = (SimpleBizCodeManager) BizCodeManager.impl();
-        _bizCodeManager.addBizCodeEnum(BizCodeDef.class);
-//        _bizCodeManager.addBizCodeInitializer(BizCodeDef.SaveSuccess);
-        _bizCodeManager.init();
-        impl = SimpleCmdFactory.me();
-    }
 }

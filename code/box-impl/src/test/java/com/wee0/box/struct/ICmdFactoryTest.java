@@ -16,8 +16,8 @@
 
 package com.wee0.box.struct;
 
-import com.wee0.box.code.BizCodeDef;
 import com.wee0.box.code.BizCodeManager;
+import com.wee0.box.code.impl.BizCodeDef;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;

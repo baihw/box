@@ -278,6 +278,7 @@ public class MybatisDaoManager implements IDaoManager {
             log.warn("Failed to access mapper directory!", e);
             return;
         }
+        log.debug("resources: {}", _resources);
         for (String _resource : _resources) {
             try (InputStream _inStream = Resources.getResourceAsStream(_resource);) {
                 XMLMapperBuilder _mapperBuilder = new XMLMapperBuilder(_inStream, this.configuration, _resource, this.configuration.getSqlFragments());

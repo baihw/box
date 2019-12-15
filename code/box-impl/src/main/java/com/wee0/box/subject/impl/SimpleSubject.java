@@ -19,6 +19,8 @@ package com.wee0.box.subject.impl;
 import com.wee0.box.subject.ISubject;
 import com.wee0.box.subject.IToken;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Set;
 
 /**
@@ -42,6 +44,11 @@ final class SimpleSubject implements ISubject {
     }
 
     @Override
+    public ISubject sessionTouch() {
+        throw new UnsupportedOperationException("This method is not yet implemented.");
+    }
+
+    @Override
     public boolean isLogin() {
         throw new UnsupportedOperationException("This method is not yet implemented.");
     }
@@ -52,8 +59,18 @@ final class SimpleSubject implements ISubject {
     }
 
     @Override
+    public void login(IToken token, HttpServletRequest request, HttpServletResponse response) {
+        throw new UnsupportedOperationException("This method is not yet implemented.");
+    }
+
+    @Override
     public void logout() {
         throw new UnsupportedOperationException("This method is not yet implemented.");
+    }
+
+    @Override
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
+
     }
 
     @Override

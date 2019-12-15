@@ -88,4 +88,30 @@ public final class BoxConfig {
         }
     }
 
+    /**
+     * 创建指定类对象实例。
+     *
+     * @param className 类名称
+     * @param classType 类型
+     * @param <T>       类型接口
+     * @return 类对象实例
+     */
+    public static final <T> T createInstance(String className, Class<T> classType) {
+        if (null == className || 0 == (className = className.trim()).length())
+            throw new IllegalArgumentException("className can't be empty!");
+        if (null == classType)
+            throw new IllegalArgumentException("classType can't be null!");
+        try {
+            Class<?> _implCla = Class.forName(className);
+            if (null == _implCla)
+                throw new IllegalStateException("invalid class name:" + className);
+            if (!classType.isAssignableFrom(_implCla))
+                throw new IllegalStateException(className + " is not " + classType);
+            Object _result = _implCla.newInstance();
+            return (T) _result;
+        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }

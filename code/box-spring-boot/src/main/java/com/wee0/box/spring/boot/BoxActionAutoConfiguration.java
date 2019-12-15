@@ -52,8 +52,8 @@ class BoxActionAutoConfiguration implements WebMvcConfigurer {
     @Value("${box.auth.ignoreUrls:#{null}}")
     private String authIgnoreUrls;
 
-    @Value("${box.auth.cookieDomain:#{null}}")
-    private String authCookieDomain;
+//    @Value("${box.auth.cookieDomain:#{null}}")
+//    private String authCookieDomain;
 
     @Value("${box.upload.maxFileSize:#{10485760}}")
     private long maxFileSize;
@@ -128,7 +128,7 @@ class BoxActionAutoConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new BoxActionHandlerInterceptor(authIgnoreUrls, authCookieDomain));
+        registry.addInterceptor(new BoxActionHandlerInterceptor(authIgnoreUrls));
     }
 
     @Override
@@ -145,11 +145,17 @@ class BoxActionAutoConfiguration implements WebMvcConfigurer {
     @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
     BoxActionAfterConfiguration boxActionAfterConfiguration() {
         BoxActionAfterConfiguration _afterConfiguration = new BoxActionAfterConfiguration();
-        BoxActionReturnValueHandler _returnValueHandler = new BoxActionReturnValueHandler();
-        _returnValueHandler.setDefaultCode(this.defaultResultCode);
-        _returnValueHandler.setDefaultMessage(this.defaultResultMessage);
-        _afterConfiguration.setBoxActionReturnValueHandler(_returnValueHandler);
+//        BoxActionReturnValueHandler _returnValueHandler = new BoxActionReturnValueHandler();
+//        _returnValueHandler.setDefaultCode(this.defaultResultCode);
+//        _returnValueHandler.setDefaultMessage(this.defaultResultMessage);
+//        _afterConfiguration.setBoxActionReturnValueHandler(_returnValueHandler);
         return _afterConfiguration;
+    }
+
+    @Bean
+    @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+    BoxActionExceptionHandler boxActionExceptionHandler() {
+        return new BoxActionExceptionHandler();
     }
 
     @Bean

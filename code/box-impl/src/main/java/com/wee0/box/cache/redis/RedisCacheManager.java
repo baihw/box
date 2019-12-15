@@ -19,6 +19,8 @@ package com.wee0.box.cache.redis;
 import com.wee0.box.cache.ICache;
 import com.wee0.box.cache.ICacheManager;
 import com.wee0.box.impl.SimpleBoxConfig;
+import com.wee0.box.log.ILogger;
+import com.wee0.box.log.LoggerFactory;
 import com.wee0.box.util.shortcut.CheckUtils;
 import com.wee0.box.util.shortcut.ObjectUtils;
 import com.wee0.box.util.shortcut.PropertiesUtils;
@@ -42,6 +44,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * </pre>
  **/
 public class RedisCacheManager implements ICacheManager {
+
+    // 日志对象
+    private static ILogger log = LoggerFactory.getLogger(RedisCacheManager.class);
 
     // 配置文件
     static final String DEF_CONFIG_FILE = "config/redis.properties";
@@ -117,6 +122,7 @@ public class RedisCacheManager implements ICacheManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        log.info("connect redis {}:{}:{}", _host, _port, _database);
         this.POOL = new JedisPool(_config, _host, _port, _timeout, _password, _database);
     }
 

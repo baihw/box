@@ -51,8 +51,10 @@ public class BoxInitializer implements ApplicationContextInitializer<Configurabl
         _beanFactory.addBeanPostProcessor(new BoxBeanDefinitionMerge());
         _beanFactory.registerSingleton("boxContext", SpringBoxContext.me());
 
-        BeanDefinitionBuilder _beanDefinitionBuilder = BeanDefinitionBuilder.genericBeanDefinition(BoxActionErrorController.class);
-        _beanFactory.registerBeanDefinition("boxActionErrorController", _beanDefinitionBuilder.getRawBeanDefinition());
+////        BeanDefinitionBuilder _builder1 = BeanDefinitionBuilder.genericBeanDefinition(BoxActionErrorController.class);
+////        _beanFactory.registerBeanDefinition("boxActionErrorController", _builder1.getRawBeanDefinition());
+//        BeanDefinitionBuilder _builder2 = BeanDefinitionBuilder.genericBeanDefinition(BoxActionExceptionHandler.class);
+//        _beanFactory.registerBeanDefinition("boxActionExceptionHandler", _builder2.getRawBeanDefinition());
     }
 
 }

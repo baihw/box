@@ -117,4 +117,20 @@ public interface IMapUtils {
      */
     boolean isContainsValue(final Map map, final Object key);
 
+    /**
+     * 删除数据源中指定键值
+     *
+     * @param map  数据源
+     * @param keys 键名集合
+     */
+    void remove(final Map map, Object... keys);
+
+    /**
+     * 保持数据源中指定键值，其它删除。
+     *
+     * @param map  数据源
+     * @param keys 要保留的键名集合
+     */
+    void keep(final Map map, Object... keys);
+
 }

@@ -16,6 +16,9 @@
 
 package com.wee0.box.subject;
 
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.Serializable;
 import java.util.Set;
 
@@ -40,21 +43,43 @@ public interface ISubject {
     String getSessionId();
 
     /**
+     * 标记当前会话活跃状态
+     */
+    ISubject sessionTouch();
+
+    /**
      * @return 是否已经登陆
      */
     boolean isLogin();
 
     /**
-     * 执行登陆逻辑
+     * 执行登入逻辑
      *
      * @param token 登陆令牌
      */
     void login(IToken token);
 
     /**
+     * 执行web环境下的登入逻辑
+     *
+     * @param token    登陆令牌
+     * @param request  请求对象
+     * @param response 响应对象
+     */
+    void login(IToken token, HttpServletRequest request, HttpServletResponse response);
+
+    /**
      * 执行登出逻辑
      */
     void logout();
+
+    /**
+     * 执行web环境下的登出逻辑
+     *
+     * @param request  请求对象
+     * @param response 响应对象
+     */
+    void logout(HttpServletRequest request, HttpServletResponse response);
 
     /**
      * 判断是否具备指定角色

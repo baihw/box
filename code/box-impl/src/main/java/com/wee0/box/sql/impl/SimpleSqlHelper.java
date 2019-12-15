@@ -410,12 +410,6 @@ public class SimpleSqlHelper implements ISqlHelper {
             return (T) Double.valueOf(_numberValue.doubleValue());
         if (BigDecimal.class == requiredType)
             return (T) new BigDecimal(_numberValue.toString());
-        if (Float.class == requiredType)
-            return (T) Float.valueOf(_numberValue.floatValue());
-        if (Float.class == requiredType)
-            return (T) Float.valueOf(_numberValue.floatValue());
-        if (Float.class == requiredType)
-            return (T) Float.valueOf(_numberValue.floatValue());
 
         throw new IllegalArgumentException("Could not convert number [" + _numberValue + "] of type [" + _numberValue.getClass().getName() + "] to unsupported target class [" + requiredType.getName() + "]");
     }

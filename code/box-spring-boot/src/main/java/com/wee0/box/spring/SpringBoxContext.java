@@ -19,13 +19,14 @@ package com.wee0.box.spring;
 import com.wee0.box.BoxConfig;
 import com.wee0.box.IBoxContext;
 import com.wee0.box.beans.IDestroyable;
-import com.wee0.box.code.BizCodeDef;
 import com.wee0.box.code.BizCodeManager;
 import com.wee0.box.code.IBizCodeManager;
+import com.wee0.box.code.impl.BizCodeDef;
 import com.wee0.box.log.ILogger;
 import com.wee0.box.log.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
+import java.io.File;
 import java.io.ObjectStreamException;
 import java.util.Collection;
 
@@ -67,7 +68,11 @@ public class SpringBoxContext implements IBoxContext, IDestroyable {
 
     @Override
     public void init() {
+        log.info("externalDir:{}.", BoxConfig.impl().getExternalDir());
         log.info("resourceDir:{}.", BoxConfig.impl().getResourceDir());
+//        log.info("user.dir:{}.", System.getProperty("user.dir"));
+//        log.info("/resource:{}.", BoxConfig.class.getResource("/"));
+//        log.info(".dir:{}.", new File(".").getAbsoluteFile().getParent());
         log.trace("before init...");
         // 初始化业务编码管理器
         IBizCodeManager _bizCodeManager = BizCodeManager.impl();
