@@ -20,7 +20,6 @@ import com.wee0.box.io.IFileSystem;
 import com.wee0.box.log.ILogger;
 import com.wee0.box.log.LoggerFactory;
 import com.wee0.box.util.shortcut.StringUtils;
-import sun.util.resources.cldr.pa.CurrencyNames_pa;
 
 import java.io.*;
 import java.net.MalformedURLException;
