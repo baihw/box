@@ -44,6 +44,11 @@ final class SimpleBoxConfigObject implements IBoxConfigObject {
     }
 
     @Override
+    public IBizCode getSignErrorBizCode() {
+        return BizCodeDef.SignError;
+    }
+
+    @Override
     public IBizCode getNeedLoginBizCode() {
         return BizCodeDef.NeedLogin;
     }

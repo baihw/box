@@ -28,6 +28,8 @@ import com.wee0.box.i18n.ILocale;
 import com.wee0.box.io.IFileSystem;
 import com.wee0.box.log.ILoggerContext;
 import com.wee0.box.log.ILoggerFactory;
+import com.wee0.box.notify.sms.ISmsHelper;
+import com.wee0.box.plugin.IPluginManager;
 import com.wee0.box.sql.ISqlHelper;
 import com.wee0.box.sql.dao.IPageHelper;
 import com.wee0.box.sql.dialect.IDialectManager;
@@ -37,6 +39,7 @@ import com.wee0.box.sql.template.ISqlTemplateHelper;
 import com.wee0.box.sql.transaction.ITxManger;
 import com.wee0.box.struct.ICmdFactory;
 import com.wee0.box.subject.ISubjectContext;
+import com.wee0.box.task.ITaskManager;
 import com.wee0.box.template.ITemplateHandler;
 import com.wee0.box.util.*;
 
@@ -73,7 +76,8 @@ public final class SimpleBoxConfig implements IBoxConfig {
     private static final ClassLoader[] CLASS_LOADERS;
 
     static {
-//        System.setProperty("java.net.preferIPv4Stack", "true");
+        // 使用IPv4网络
+        System.setProperty("java.net.preferIPv4Stack", "true");
         // 初始化一些第三方组件的默认配置
         System.setProperty("org.jboss.logging.provider", "slf4j");
         System.setProperty("druid.logType", "slf4j");
@@ -122,6 +126,21 @@ public final class SimpleBoxConfig implements IBoxConfig {
     }
 
     @Override
+    public Map<String, String> getByPrefix(String prefix) {
+        if (null == prefix || 0 == (prefix = prefix.trim()).length())
+            throw new IllegalArgumentException("prefix can't be empty!");
+        final String _PREFIX = prefix;
+        final int _PREFIX_LEN = prefix.length();
+        final Map<String, String> _result = new HashMap<>(32);
+        this.DATA.forEach((key, val) -> {
+            if (key.startsWith(_PREFIX)) {
+                _result.put(key.substring(_PREFIX_LEN), val);
+            }
+        });
+        return _result;
+    }
+
+    @Override
     public String getEncoding() {
         return this.ENCODING;
     }
@@ -148,31 +167,8 @@ public final class SimpleBoxConfig implements IBoxConfig {
 
     @Override
     public InputStream getResourceAsStream(String resource) throws IOException {
-        if (null == resource)
-            throw new IOException("resource can not be null!");
-        File _external_file = new File(EXTERNAL_DIR, resource);
-        if (_external_file.exists())
-            return new FileInputStream(_external_file);
-        InputStream _inStream = getResourceAsStreamByClassLoader(Thread.currentThread().getContextClassLoader(), resource);
-        if (null != _inStream)
-            return _inStream;
-        for (ClassLoader _loader : CLASS_LOADERS) {
-            _inStream = getResourceAsStreamByClassLoader(_loader, resource);
-            if (null != _inStream)
-                return _inStream;
-        }
-        throw new IOException("not found resource: " + resource);
+        return _getResourceAsStream(resource);
     }
-
-    // 使用ClassLoader加载资源文件。
-    private InputStream getResourceAsStreamByClassLoader(ClassLoader classLoader, String resource) {
-        InputStream _inStream = classLoader.getResourceAsStream(resource);
-        if (null == _inStream && '/' != resource.charAt(0)) {
-            _inStream = classLoader.getResourceAsStream("/" + resource);
-        }
-        return _inStream;
-    }
-
 
     @Override
     public <T> T getInterfaceImpl(Class<T> interfaceClass) {
@@ -266,6 +262,43 @@ public final class SimpleBoxConfig implements IBoxConfig {
 
         this.DATA.put(ICmdFactory.class.getName(), ICmdFactory.DEF_IMPL_CLASS_NAME);
         this.DATA.put(ISubjectContext.class.getName(), ISubjectContext.DEF_IMPL_CLASS_NAME);
+
+        this.DATA.put(ISmsHelper.class.getName(), ISmsHelper.DEF_IMPL_CLASS_NAME);
+
+        this.DATA.put(ITaskManager.class.getName(), ITaskManager.DEF_IMPL_CLASS_NAME);
+        this.DATA.put(IPluginManager.class.getName(), IPluginManager.DEF_IMPL_CLASS_NAME);
+    }
+
+    // 使用ClassLoader加载资源文件。
+    private static InputStream _getResourceAsStreamByClassLoader(ClassLoader classLoader, String resource) {
+        InputStream _inStream = classLoader.getResourceAsStream(resource);
+        if (null == _inStream && '/' != resource.charAt(0)) {
+            _inStream = classLoader.getResourceAsStream("/" + resource);
+        }
+        return _inStream;
+    }
+
+    // 获取资源文件流
+    private static InputStream _getResourceAsStream(String resource) throws IOException {
+        if (null == resource)
+            throw new IOException("resource can not be null!");
+        // 如果存在同名的外瓿配置文件，优先加载
+        File _file = new File(EXTERNAL_DIR, resource);
+        if (_file.exists())
+            return new FileInputStream(_file);
+        // 查找资源文件
+        _file = new File(RESOURCE_DIR, resource);
+        if (_file.exists())
+            return new FileInputStream(_file);
+        InputStream _inStream = _getResourceAsStreamByClassLoader(Thread.currentThread().getContextClassLoader(), resource);
+        if (null != _inStream)
+            return _inStream;
+        for (ClassLoader _loader : CLASS_LOADERS) {
+            _inStream = _getResourceAsStreamByClassLoader(_loader, resource);
+            if (null != _inStream)
+                return _inStream;
+        }
+        throw new IOException("not found resource: " + resource);
     }
 
     /************************************************************
@@ -282,26 +315,50 @@ public final class SimpleBoxConfig implements IBoxConfig {
         initDefaultValues();
         // 加载外部配置数据，如果存在同名配置，以外部配置为准。
         Properties _props = new Properties();
-        if (-1 != RESOURCE_DIR.indexOf(".jar")) {
-            try (InputStream _inStream = SimpleBoxConfig.class.getResourceAsStream("/" + DEF_RESOURCE)) {
-                _props.load(_inStream);
-            } catch (IOException e) {
-                throw new BoxRuntimeException(e);
-            }
-        } else {
-            String _filePath = RESOURCE_DIR + DEF_RESOURCE;
-            File _file = new File(_filePath);
-            if (_file.exists()) {
-                try (FileInputStream _inStream = new FileInputStream(_file)) {
-                    _props.load(_inStream);
-                } catch (IOException e) {
-                    throw new BoxRuntimeException(e);
+        try (InputStream _inStream = _getResourceAsStream(DEF_RESOURCE);) {
+            _props.load(_inStream);
+        } catch (IOException e) {
+            System.err.println(e);
+//            throw new BoxRuntimeException(e);
+        }
+//        if (-1 != RESOURCE_DIR.indexOf(".jar")) {
+//            try (InputStream _inStream = SimpleBoxConfig.class.getResourceAsStream("/" + DEF_RESOURCE)) {
+//                _props.load(_inStream);
+//            } catch (IOException e) {
+//                throw new BoxRuntimeException(e);
+//            }
+//        } else {
+//            String _filePath = RESOURCE_DIR + DEF_RESOURCE;
+//            File _file = new File(_filePath);
+//            if (_file.exists()) {
+//                try (FileInputStream _inStream = new FileInputStream(_file)) {
+//                    _props.load(_inStream);
+//                } catch (IOException e) {
+//                    throw new BoxRuntimeException(e);
+//                }
+//            } else {
+//                throw new BoxRuntimeException("not found config file: " + _filePath);
+//            }
+//        }
+        loadProperties(_props);
+
+        // 加载系统环境变量数据
+        Map<String, String> _envData = System.getenv();
+        if (null != _envData && !_envData.isEmpty()) {
+            for (Map.Entry<String, String> _env : _envData.entrySet()) {
+                String _key = _env.getKey();
+                String _value = _env.getValue();
+                if (null == _key || 0 == (_key = _key.trim()).length())
+                    continue;
+                if (null == _value || 0 == (_value = _value.trim()).length()) {
+                    _value = null;
                 }
-            } else {
-                throw new BoxRuntimeException("not found config file: " + _filePath);
+                this.DATA.put(_key, _value);
             }
         }
-        loadProperties(_props);
+
+        // 加载JVM环境变量数据
+        loadProperties(System.getProperties());
 
         // 缓存全局默认编码
         String _encoding = this.DATA.get(BoxConfigKeys.encoding);
@@ -315,6 +372,9 @@ public final class SimpleBoxConfig implements IBoxConfig {
             this.CONFIG_OBJECT = new SimpleBoxConfigObject();
         else
             this.CONFIG_OBJECT = BoxConfig.createInstance(_configObject, IBoxConfigObject.class);
+
+        // 允许开发人员重设最终配置数据
+        this.CONFIG_OBJECT.overrideBoxConfig(this.DATA);
     }
 
     // 当前对象唯一实例持有者。

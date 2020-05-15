@@ -17,7 +17,6 @@
 package com.wee0.box.cache;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -53,6 +52,14 @@ public interface ICache {
      * @param expire 过期时间，单位：秒，最大不能超过30天：60 * 60 * 24 * 30
      */
     public void put(String key, Object value, int expire);
+
+    /**
+     * 是否存在指定键名
+     *
+     * @param key 键名
+     * @return 存在返回True
+     */
+    public boolean exists(String key);
 
     /**
      * 获取指定名称的缓存值

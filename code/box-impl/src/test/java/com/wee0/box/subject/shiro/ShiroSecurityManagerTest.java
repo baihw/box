@@ -64,14 +64,14 @@ public class ShiroSecurityManagerTest {
 
         Subject _keepSubject;
 //        _keepSubject = new Subject.Builder().sessionId("a910d13577c94cb586c371119895b946").buildSubject();
-        _keepSubject = new Subject.Builder().sessionId("98769fe4fda54c8e96da7f405496bf3c").buildSubject();
+        _keepSubject = new Subject.Builder().sessionId("946047175826490e9ddf9a190a73de3c").buildSubject();
         ThreadContext.bind(_keepSubject);
 
         Subject _subject = SecurityUtils.getSubject();
         if (!_subject.isAuthenticated()) {
             log.debug("please login...");
 //            ShiroPasswordToken _token = new ShiroPasswordToken("admin", "123");
-            ShiroPasswordToken _token = new ShiroPasswordToken("superadmin", "b401f11862ae17d6397a7202cf985dc3");
+            ShiroPasswordToken _token = new ShiroPasswordToken("admin", "admin");
             _subject.login(_token);
             log.debug("login success!");
         }

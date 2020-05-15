@@ -16,9 +16,8 @@
 
 package com.wee0.box.web.servlet;
 
-import com.wee0.box.web.IRequest;
+import com.wee0.box.web.IActionRequest;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,7 +28,7 @@ import java.util.Map;
  * 补充说明
  * </pre>
  **/
-public interface IUploadRequest extends IRequest {
+public interface IUploadRequest extends IActionRequest {
 
     /**
      * 获取指定名称的上传文件描述对象

@@ -87,6 +87,11 @@ public class RedisCacheManager implements ICacheManager {
     }
 
     @Override
+    public ICache getDefaultCache() {
+        return getCache(DEF_CACHE_NAME);
+    }
+
+    @Override
     public void init() {
         String _host = DEF_HOST;
         int _port = DEF_PORT;

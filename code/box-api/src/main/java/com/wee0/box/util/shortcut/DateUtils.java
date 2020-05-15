@@ -103,6 +103,14 @@ public class DateUtils {
     }
 
     /**
+     * @return 当前日期时间，以GMT格式"EEE, dd MMM yyyy HH:mm:ss 'GMT'"显示。
+     */
+    public static String getCurrentDateTimeGMT() {
+        return IMPL.getCurrentDateTimeGMT();
+    }
+
+
+    /**
      * @return 14位年月日时分秒，中间无空格的当前日期时间。
      */
     public static String getCurrentDateTime14() {

@@ -20,13 +20,12 @@ import com.wee0.box.BoxConfig;
 import com.wee0.box.log.ILogger;
 import com.wee0.box.log.LoggerFactory;
 import com.wee0.box.struct.CmdFactory;
+import com.wee0.box.subject.IServletRequestSignChecker;
 import com.wee0.box.subject.ISubject;
 import com.wee0.box.subject.SubjectContext;
-import com.wee0.box.subject.annotation.BoxRequireIgnore;
-import com.wee0.box.subject.annotation.BoxRequireLogical;
-import com.wee0.box.subject.annotation.BoxRequirePermissions;
-import com.wee0.box.subject.annotation.BoxRequireRoles;
+import com.wee0.box.subject.annotation.*;
 import com.wee0.box.util.shortcut.CheckUtils;
+import com.wee0.box.util.shortcut.DateUtils;
 import com.wee0.box.util.shortcut.JsonUtils;
 import com.wee0.box.util.shortcut.StringUtils;
 import org.springframework.web.method.HandlerMethod;
@@ -53,16 +52,37 @@ final class BoxActionHandlerInterceptor implements HandlerInterceptor {
     // 日志对象
     private static ILogger log = LoggerFactory.getLogger(BoxActionHandlerInterceptor.class);
 
+    // 默认的签名校验者对象
+    private static final String DEF_SIGN_CHECKER = "com.wee0.box.subject.impl.SimpleServletRequestSignChecker";
+    // 默认的签名密钥
+    private static final String DEF_SIGN_SECRET_KEY = "aW8Kd5Qe56db11eIa29002D2aG12010w";
+
     private final String ignoreUrls;
+    private final String servletRequestSignCheckerName;
+    private final String signSecretKey;
 //    private final String cookieDomain;
 
-    BoxActionHandlerInterceptor(String ignoreUrls) {
+    //  签名检查者
+    private final IServletRequestSignChecker signChecker;
+
+    BoxActionHandlerInterceptor(String ignoreUrls, String signSecretKey, String servletRequestSignCheckerName) {
         ignoreUrls = CheckUtils.checkNotTrimEmpty(ignoreUrls, "ignoreUrls can't be empty!");
         ignoreUrls = StringUtils.endsWithChar(ignoreUrls, ',');
         this.ignoreUrls = ignoreUrls;
 //        this.cookieDomain = CheckUtils.checkTrimEmpty(cookieDomain, null);
 //        log.debug("cookieDomain: {}, ignoreUrls: {}", this.cookieDomain, this.ignoreUrls);
         log.debug("ignoreUrls: {}", this.ignoreUrls);
+
+//        this.cookieDomain = cookieDomain;
+//        log.debug("cookieDomain: {}", this.cookieDomain);
+
+        this.signSecretKey = CheckUtils.checkTrimEmpty(signSecretKey, DEF_SIGN_SECRET_KEY);
+        log.debug("signSecretKey: {}", this.signSecretKey);
+
+        this.servletRequestSignCheckerName = CheckUtils.checkTrimEmpty(servletRequestSignCheckerName, DEF_SIGN_CHECKER);
+        log.debug("servletRequestSignCheckerName: {}", this.servletRequestSignCheckerName);
+        this.signChecker = BoxConfig.createInstance(this.servletRequestSignCheckerName, IServletRequestSignChecker.class);
+        this.signChecker.setSecretKey(this.signSecretKey);
     }
 
     @Override
@@ -70,8 +90,11 @@ final class BoxActionHandlerInterceptor implements HandlerInterceptor {
         if (handler instanceof ResourceHttpRequestHandler || handler instanceof ParameterizableViewController)
             return true;
 
+        // 使用自己的日期时间工具类返回响应头中的日期
+        response.addHeader("Date", DateUtils.getCurrentDateTimeGMT());
+
         // 初始化当前会话主体对象
-        ISubject _subject = SubjectContext.getSubject(request, response);
+//        ISubject _subject = SubjectContext.getSubject(request, response);
 
         // 判断请求的资源是否允许匿名访问
         String _uri = request.getRequestURI();
@@ -86,9 +109,17 @@ final class BoxActionHandlerInterceptor implements HandlerInterceptor {
                 return true;
             }
 
-            // 判断当前用户是否已经登陆
-            if (!_subject.isLogin()) {
-                log.debug("session {} is not login.", _subject.getSessionId());
+            if (_handlerMethod.hasMethodAnnotation(BoxRequireSign.class)) {
+                // 签名检查
+                if (this.signChecker.check(request))
+                    return true;
+                renderJson(response, CmdFactory.create(BoxConfig.impl().getConfigObject().getSignErrorBizCode()));
+                return false;
+            }
+
+            // 以下情况都需要登陆，判断当前用户是否已经登陆。
+            ISubject _subject = SubjectContext.getSubject(request, response);
+            if (null == _subject || !_subject.isLogin()) {
                 renderJson(response, CmdFactory.create(BoxConfig.impl().getConfigObject().getNeedLoginBizCode()));
                 return false;
             }
@@ -190,4 +221,5 @@ final class BoxActionHandlerInterceptor implements HandlerInterceptor {
             log.error("render error", e);
         }
     }
+
 }

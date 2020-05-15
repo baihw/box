@@ -156,6 +156,11 @@ public interface IDateUtils {
     String getCurrentDateTime();
 
     /**
+     * @return 当前日期时间，以GMT格式"EEE, dd MMM yyyy HH:mm:ss 'GMT'"显示。
+     */
+    String getCurrentDateTimeGMT();
+
+    /**
      * @return 14位年月日时分秒，中间无空格的当前日期时间。
      */
     String getCurrentDateTime14();

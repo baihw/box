@@ -34,11 +34,23 @@ public interface ICacheManager extends IDestroyable {
     String DEF_IMPL_CLASS_NAME = "com.wee0.box.cache.caffeine.CaffeineCacheManager";
 
     /**
+     * 默认的缓存对象标识
+     */
+    String DEF_CACHE_NAME = "__DEFAULT__";
+
+    /**
      * 获取指定标识的缓存对象
      *
      * @param id 标识
      * @return 缓存对象
      */
     public ICache getCache(String id);
+
+    /**
+     * 获取默认的缓存对象
+     *
+     * @return 默认的缓存对象
+     */
+    public ICache getDefaultCache();
 
 }

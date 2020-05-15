@@ -169,6 +169,52 @@ public interface IHttpUtils {
     }
 
     /**
+     * 执行一个简单的POST请求
+     *
+     * @param url 请求地址
+     * @return 响应结果
+     */
+    default IHttpResult httpPost(String url) {
+        return httpAction(METHOD.POST, url, null, null, DEF_CHARSET, DEF_TIMEOUT);
+    }
+
+    /**
+     * 模拟表单上传，当前版本的formData集合中遇到File类型对象时作为文件上传，其它类型对象统一作为文本处理。
+     *
+     * @param method   请求方法
+     * @param url      请求地址
+     * @param headMap  请求头信息
+     * @param formData 请求数据
+     * @param charset  使用的编码
+     * @param timeout  超时时间
+     * @return 响应结果
+     */
+    IHttpResult formUpload(METHOD method, String url, Map<String, String> headMap, Map<String, Object> formData, String charset, int timeout);
+
+    /**
+     * 模拟表单上传
+     *
+     * @param url      请求地址
+     * @param formData 请求数据
+     * @param timeout  超时时间
+     * @return 响应结果
+     */
+    default IHttpResult formUpload(String url, Map<String, Object> formData, int timeout) {
+        return formUpload(METHOD.POST, url, null, formData, DEF_CHARSET, timeout);
+    }
+
+    /**
+     * 模拟表单上传
+     *
+     * @param url      请求地址
+     * @param formData 请求数据
+     * @return 响应结果
+     */
+    default IHttpResult formUpload(String url, Map<String, Object> formData) {
+        return formUpload(METHOD.POST, url, null, formData, DEF_CHARSET, DEF_TIMEOUT);
+    }
+
+    /**
      * 上传资源
      *
      * @param method   请求方法

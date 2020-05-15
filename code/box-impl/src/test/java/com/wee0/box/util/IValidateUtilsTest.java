@@ -53,6 +53,23 @@ public class IValidateUtilsTest {
     }
 
     @Test
+    public void validatePattern(){
+        Assert.assertTrue(impl.validatePattern("13012345678", "m"));
+        Assert.assertTrue(impl.validatePattern("13112345678", "m"));
+        Assert.assertTrue(impl.validatePattern("14012345678", "m"));
+        Assert.assertTrue(impl.validatePattern("15012345678", "m"));
+        Assert.assertTrue(impl.validatePattern("16012345678", "m"));
+        Assert.assertTrue(impl.validatePattern("17012345678", "m"));
+        Assert.assertTrue(impl.validatePattern("18012345678", "m"));
+        Assert.assertTrue(impl.validatePattern("19012345678", "m"));
+
+        Assert.assertFalse(impl.validatePattern("11012345678", "m"));
+        Assert.assertFalse(impl.validatePattern("12012345678", "m"));
+        Assert.assertFalse(impl.validatePattern("1301234567", "m"));
+        Assert.assertFalse(impl.validatePattern("130123456789", "m"));
+    }
+
+    @Test
     public void validateUrl() {
         Assert.assertTrue(impl.validateUrl("http://www.wee0.com"));
         Assert.assertTrue(impl.validateUrl("https://www.wee0.com"));

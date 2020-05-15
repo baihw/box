@@ -16,11 +16,8 @@
 
 package com.wee0.box.subject;
 
-import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.Serializable;
-import java.util.Set;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
@@ -38,14 +35,19 @@ public interface ISubject {
     String getId();
 
     /**
-     * @return 会话唯一标识
+     * @return 主体对象访问令牌
      */
-    String getSessionId();
+    String getToken();
 
-    /**
-     * 标记当前会话活跃状态
-     */
-    ISubject sessionTouch();
+//    /**
+//     * @return 会话唯一标识
+//     */
+//    String getSessionId();
+//
+//    /**
+//     * 标记当前会话活跃状态
+//     */
+//    ISubject sessionTouch();
 
     /**
      * @return 是否已经登陆
@@ -97,34 +99,34 @@ public interface ISubject {
      */
     boolean hasPermission(String permission);
 
-    /**
-     * 设置属性
-     *
-     * @param key   属性名
-     * @param value 属性值
-     */
-    void setAttribute(String key, Object value);
-
-    /**
-     * 获取属性
-     *
-     * @param key 属性名
-     * @return 属性值
-     */
-    Object getAttribute(String key);
-
-    /**
-     * 移除属性
-     *
-     * @param key 属性名
-     */
-    void removeAttribute(String key);
-
-    /**
-     * 属性名集合
-     *
-     * @return 属性名集合
-     */
-    Set<String> getAttributeKeys();
+//    /**
+//     * 设置属性
+//     *
+//     * @param key   属性名
+//     * @param value 属性值
+//     */
+//    void setAttribute(String key, Object value);
+//
+//    /**
+//     * 获取属性
+//     *
+//     * @param key 属性名
+//     * @return 属性值
+//     */
+//    Object getAttribute(String key);
+//
+//    /**
+//     * 移除属性
+//     *
+//     * @param key 属性名
+//     */
+//    void removeAttribute(String key);
+//
+//    /**
+//     * 属性名集合
+//     *
+//     * @return 属性名集合
+//     */
+//    Set<String> getAttributeKeys();
 
 }

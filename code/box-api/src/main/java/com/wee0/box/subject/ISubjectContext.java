@@ -37,19 +37,19 @@ public interface ISubjectContext {
     /**
      * 获取当前请求关联的使用者主体对象
      *
-     * @param request 请求对象
+     * @param request  请求对象
      * @param response 响应对象
      * @return 使用者主体对象
      */
     ISubject getSubject(HttpServletRequest request, HttpServletResponse response);
 
     /**
-     * 获取指定标识使用者主体对象
+     * 获取指定令牌使用者主体对象
      *
-     * @param id 唯一标识
+     * @param token 令牌对象
      * @return 使用者主体对象
      */
-    ISubject getSubject(String id);
+    ISubject getSubject(String token);
 
     /**
      * 获取当前使用者主体对象
@@ -57,6 +57,11 @@ public interface ISubjectContext {
      * @return 当前使用者主体对象
      */
     ISubject getSubject();
+
+    /**
+     * 清除所有缓存的授权数据，不清除登陆状态。
+     */
+    void clearAuthorizationCache();
 
     /**
      * 获取令牌工厂实例对象

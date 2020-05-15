@@ -21,7 +21,6 @@ import com.wee0.box.exception.BoxRuntimeException;
 import com.wee0.box.util.shortcut.CheckUtils;
 import org.springframework.util.SerializationUtils;
 import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.util.Pool;
 
 import java.io.IOException;
@@ -83,6 +82,18 @@ final class RedisCache implements ICache {
             } else {
                 _client.setex(_keyName.getBytes(), expire, _data);
             }
+        } catch (Exception e) {
+            throw new BoxRuntimeException(e);
+        }
+    }
+
+    @Override
+    public boolean exists(String key) {
+        if (null == key)
+            return false;
+        try (Jedis _client = POOL.getResource();) {
+            final String _keyName = convertKeyName(key);
+            return _client.exists(_keyName.getBytes());
         } catch (Exception e) {
             throw new BoxRuntimeException(e);
         }

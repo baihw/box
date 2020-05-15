@@ -16,16 +16,13 @@
 
 package com.wee0.box.subject.shiro;
 
+import com.wee0.box.cache.CacheManager;
 import com.wee0.box.sql.ds.DsManagerTest;
 import com.wee0.box.subject.ISubject;
 import com.wee0.box.subject.SubjectContext;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
@@ -44,33 +41,56 @@ public class ShiroSubjectContextTest {
     }
 
     @Test
-    public void test01() {
-//        ISubject _subject = SubjectContext.getSubject();
-        ISubject _subject = SubjectContext.getSubject("b211fab9f83b4763a23621ef1edf3099");
+    public void testTokenLogin() {
+
+        // admin: B4A9ABDC32A81CB29EBF28D5610F4FCD0402231AF1527BE61933B5952938F30EE7D719AF3BD154ACC8659BA6F4B70A5D
+        // guest: E7C0AEAD81C0D00C504819D41B0FC9100402231AF1527BE61933B5952938F30EE7D719AF3BD154ACCADDCE22F00E6796
+        ISubject _subject = SubjectContext.getSubject("B4A9ABDC32A81CB29EBF28D5610F4FCD0402231AF1527BE61933B5952938F30EE7D719AF3BD154ACC8659BA6F4B70A5D");
+        printInfo(_subject);
+        _subject.logout();
+    }
+
+    @Test
+    public void testPasswordLogin() {
+        ISubject _subject = SubjectContext.getSubject();
         if (!_subject.isLogin()) {
             System.out.println("login admin:admin");
             String _loginId = "admin";
             String _loginPwd = "admin";
-            _subject.login(SubjectContext.getTokenFactory().createPasswordToken(_loginId, _loginPwd));
-        }
-        printInfo(_subject);
-    }
 
-    @Test
-    public void test02() {
-        ISubject _subject = SubjectContext.getSubject("015b8047b6344e40ab7c6d3b804a2172");
-        if (!_subject.isLogin()) {
-            System.out.println("login guest:123456");
-            String _loginId = "guest";
-            String _loginPwd = "123456";
             _subject.login(SubjectContext.getTokenFactory().createPasswordToken(_loginId, _loginPwd));
         }
         printInfo(_subject);
         _subject.logout();
     }
 
+    @Test
+    public void testMobileLogin() {
+//        System.out.println("login guest:123456");
+//        String _loginId = "guest";
+////            String _loginId = "13112345678";
+////            String _loginId = "a@a.com";
+//        String _loginPwd = "123456";
+
+        String _mobile = "13112345678";
+        String _userId = "0a19ba58e8ab11e9b3700242ac12010a";
+        String _code = "1234";
+        String _cacheKey = "BoxQueryCode_" + "_" + _mobile + "_" + _code;
+        CacheManager.impl().getDefaultCache().put(_cacheKey, _userId, 30);
+        ISubject _subject = SubjectContext.getSubject();
+        if (!_subject.isLogin()) {
+            System.out.println("login " + _mobile + ":1234");
+            _subject.login(SubjectContext.getTokenFactory().createPasswordToken(_mobile, _code));
+        }
+        printInfo(_subject);
+        _subject.logout();
+    }
+
     private static void printInfo(ISubject subject) {
+        System.out.println("subject : " + subject);
         System.out.println("subject id: " + subject.getId());
+//        System.out.println("subject sessionId: " + subject.getSessionId());
+        System.out.println("subject isLogin: " + subject.isLogin());
         System.out.println("hasRole[admin]: " + subject.hasRole("admin"));
         System.out.println("hasRole[guest]: " + subject.hasRole("guest"));
         System.out.println("hasPermission[common_add]: " + subject.hasPermission("common_add"));

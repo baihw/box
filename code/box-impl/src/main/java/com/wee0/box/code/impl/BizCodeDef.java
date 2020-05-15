@@ -98,7 +98,12 @@ public enum BizCodeDef implements IBizCode, IBizCodeInitializer {
     /**
      * 需要授权后访问
      */
-    Unauthorized("S000003");
+    Unauthorized("S000003"),
+
+    /**
+     * 签名错误
+     */
+    SignError("S000004");
 
 
     // 实际的业务编码
@@ -128,6 +133,7 @@ public enum BizCodeDef implements IBizCode, IBizCodeInitializer {
         setter.set(S000001, "系统异常，请跟管理员联系，信息：{0}");
         setter.set(NeedLogin, "请先登陆后访问");
         setter.set(Unauthorized, "没有访问权限，请联系管理员");
+        setter.set(SignError, "签名错误");
     }
 
 }

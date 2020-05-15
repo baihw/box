@@ -122,7 +122,7 @@ public class JacksonJsonUtils implements IJsonUtils {
         objectMapper = new ObjectMapper();
 //        //不把值为null的字段映射到json字符串中
 //        objectMapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
-        //空值不序列化
+        //空值不序列化，此配置项会有争议，建议后期改为默认输出所有字段。
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         //序列化时，日期的统一格式
         objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));

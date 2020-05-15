@@ -107,6 +107,8 @@ public class ICacheTest {
         _do(new _HANDLER() {
             @Override
             public void handle(ICache cache) {
+                Assert.assertTrue(cache.exists("string1"));
+                Assert.assertTrue(cache.exists("string2"));
                 Assert.assertEquals("string1.v", cache.get("string1"));
                 Assert.assertEquals("string2.v", cache.get("string2"));
                 Assert.assertEquals("string3.v", cache.get("string3"));

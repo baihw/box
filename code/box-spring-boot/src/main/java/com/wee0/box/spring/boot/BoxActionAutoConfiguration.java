@@ -52,6 +52,12 @@ class BoxActionAutoConfiguration implements WebMvcConfigurer {
     @Value("${box.auth.ignoreUrls:#{null}}")
     private String authIgnoreUrls;
 
+    @Value("${box.auth.signChecker:#{null}}")
+    private String authSignChecker;
+
+    @Value("${box.auth.signSecretKey:#{null}}")
+    private String authSignSecretKey;
+
 //    @Value("${box.auth.cookieDomain:#{null}}")
 //    private String authCookieDomain;
 
@@ -63,6 +69,9 @@ class BoxActionAutoConfiguration implements WebMvcConfigurer {
 
     @Value("${box.action.default.resultMessage:ok}")
     private String defaultResultMessage;
+
+    @Value("${box.action.filterNames:#{null}}")
+    private String actionFilterNames;
 
     @Override
     public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
@@ -128,7 +137,8 @@ class BoxActionAutoConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new BoxActionHandlerInterceptor(authIgnoreUrls));
+        registry.addInterceptor(new BoxActionHandlerInterceptor(authIgnoreUrls, authSignSecretKey, authSignChecker));
+        registry.addInterceptor(new BoxActionFilterInterceptor(actionFilterNames));
     }
 
     @Override

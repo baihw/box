@@ -91,6 +91,14 @@ final class CaffeineCache implements ICache {
     }
 
     @Override
+    public boolean exists(String key) {
+        if (null != key) {
+            return null != this.DATA.getIfPresent(key);
+        }
+        return false;
+    }
+
+    @Override
     public Object get(String key) {
         if (null == key)
             return null;

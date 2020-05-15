@@ -19,8 +19,16 @@ package com.wee0.box.util.impl;
 import com.wee0.box.util.IHttpUtils;
 import com.wee0.box.util.IHttpUtilsTest;
 import com.wee0.box.util.IMapUtilsTest;
+import com.wee0.box.util.shortcut.HttpUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
@@ -38,9 +46,22 @@ public class SimpleHttpUtilsTest extends IHttpUtilsTest {
     }
 
     @Test
-    public void test1() {
+    public void testGet() {
         IHttpUtils.IHttpResult _result = impl.httpGet("https://cn.bing.com");
         System.out.println("result:" + _result);
+    }
+
+    @Test
+    public void testFormUpload() {
+//        File _file = new File("/D/test/test.data");
+        File _file = new File("F:\\win10\\cn_windows_10_enterprise_ltsc_2019_x64_dvd_9c09ff24.iso");
+        String _url = "http://192.168.1.204:9000/api/up/upload2";
+        Map<String, Object> _params = new HashMap<String, Object>();
+        _params.put("medicalId", "123321");
+        _params.put("file1", _file);
+
+        IHttpUtils.IHttpResult _r = HttpUtils.impl().formUpload(_url, _params);
+        System.out.println("_r:" + _r);
     }
 
 }

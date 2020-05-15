@@ -24,6 +24,7 @@ import com.wee0.box.code.IBizCodeManager;
 import com.wee0.box.code.impl.BizCodeDef;
 import com.wee0.box.log.ILogger;
 import com.wee0.box.log.LoggerFactory;
+import com.wee0.box.plugin.PluginManager;
 import org.springframework.context.ApplicationContext;
 
 import java.io.File;
@@ -68,6 +69,7 @@ public class SpringBoxContext implements IBoxContext, IDestroyable {
 
     @Override
     public void init() {
+        log.info("user.timezone:{}.", System.getProperty("user.timezone"));
         log.info("externalDir:{}.", BoxConfig.impl().getExternalDir());
         log.info("resourceDir:{}.", BoxConfig.impl().getResourceDir());
 //        log.info("user.dir:{}.", System.getProperty("user.dir"));
@@ -80,11 +82,15 @@ public class SpringBoxContext implements IBoxContext, IDestroyable {
         if (_bizCodeManager instanceof IDestroyable) {
             ((IDestroyable) _bizCodeManager).init();
         }
+        // 启动插件管理器
+        PluginManager.impl().start();
         log.trace("after init...");
     }
 
     @Override
     public void destroy() {
+        // 停止插件管理器
+        PluginManager.impl().stop();
         // 清理资源
         Collection _allImpl = BoxConfig.impl().getAllInterfaceImpl();
         for (Object _impl : _allImpl) {

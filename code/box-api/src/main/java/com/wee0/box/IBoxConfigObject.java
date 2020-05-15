@@ -19,6 +19,8 @@ package com.wee0.box;
 import com.wee0.box.code.IBizCode;
 import com.wee0.box.struct.CmdFactory;
 
+import java.util.Map;
+
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
  * @CreateDate 2019/12/8 7:12
@@ -35,9 +37,29 @@ public interface IBoxConfigObject {
     int DEF_BIZ_EXCEPTION_HTTP_STATUS_CODE = 500;
 
     /**
+     * 默认的签名校验异常HTTP状态码
+     */
+    int DEF_SIGN_EXCEPTION_HTTP_STATUS_CODE = 401;
+
+    /**
      * 默认的权限异常HTTP状态码
      */
     int DEF_PERMISSION_EXCEPTION_HTTP_STATUS_CODE = 403;
+
+    /**
+     * 重设配置数据。注意：此处重设的配置信息为最终生效的，在不明确自己的意图的情况下请不要随意重设配置信息。
+     *
+     * @param configData 配置数据
+     */
+    default void overrideBoxConfig(Map<String, String> configData) {
+    }
+
+    /**
+     * @return 签名校验异常HTTP状态码
+     */
+    default int getSignExceptionHttpStatusCode() {
+        return DEF_SIGN_EXCEPTION_HTTP_STATUS_CODE;
+    }
 
     /**
      * @return 业务异常HTTP状态码
@@ -62,6 +84,11 @@ public interface IBoxConfigObject {
      * @return 默认的有参系统异常采用的业务编码
      */
     IBizCode getSystemErrorInfoBizCode();
+
+    /**
+     * @return 签名校验失败时采用的业务编码
+     */
+    IBizCode getSignErrorBizCode();
 
     /**
      * @return 需要登陆后访问的场景中采用的业务编码

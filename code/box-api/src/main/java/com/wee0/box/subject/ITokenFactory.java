@@ -35,4 +35,12 @@ public interface ITokenFactory {
      */
     IPasswordToken createPasswordToken(String loginId, String password);
 
+    /**
+     * 创建框架令牌对象
+     *
+     * @param token 令牌数据
+     * @return 令牌对象
+     */
+    IBoxToken createBoxToken(String token);
+
 }

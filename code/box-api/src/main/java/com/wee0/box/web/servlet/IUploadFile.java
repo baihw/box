@@ -16,8 +16,6 @@
 
 package com.wee0.box.web.servlet;
 
-import com.wee0.box.web.IRequest;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;

@@ -64,13 +64,13 @@ public class SubjectContext {
     }
 
     /**
-     * 获取指定标识使用者主体对象
+     * 获取指定令牌使用者主体对象
      *
-     * @param id 唯一标识
+     * @param token 令牌
      * @return 使用者主体对象
      */
-    public static ISubject getSubject(String id) {
-        return IMPL.getSubject(id);
+    public static ISubject getSubject(String token) {
+        return IMPL.getSubject(token);
     }
 
     /**

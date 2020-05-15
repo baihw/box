@@ -61,4 +61,8 @@ public interface BoxConfigKeys {
      */
     String bizCodeStore = "bizCodeManager.bizCodeStore";
 
+    /**
+     * sms短信模块相关配置前缀。
+     */
+    String smsPrefix = "sms.";
 }

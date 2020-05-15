@@ -68,6 +68,11 @@ public class SimpleSubjectContext implements ISubjectContext {
     }
 
     @Override
+    public void clearAuthorizationCache() {
+        throw new UnsupportedOperationException("This method is not yet implemented.");
+    }
+
+    @Override
     public ITokenFactory getTokenFactory() {
         throw new UnsupportedOperationException("This method is not yet implemented.");
     }

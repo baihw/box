@@ -93,6 +93,11 @@ public class SimpleDateUtilsJava7 implements IDateUtils {
         return new SimpleDateFormat(PATTERN_DATE_TIME).format(new Date());
     }
 
+    @Override
+    public String getCurrentDateTimeGMT() {
+        return new SimpleDateFormat(PATTERN_GMT).format(new Date());
+    }
+
     /**
      * @return 14位年月日时分秒，中间无空格的当前日期时间。
      */

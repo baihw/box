@@ -25,6 +25,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
@@ -40,6 +42,11 @@ public class SimpleDateUtils implements IDateUtils {
      * 标准的日期时间格式"yyyy-MM-dd HH:mm:ss"
      */
     private static final DateTimeFormatter _FORMAT_DATETIME = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+    /**
+     * GMT日期时间格式"EEE, dd MMM yyyy HH:mm:ss 'GMT'"
+     */
+    private static final DateTimeFormatter _FORMAT_DATETIME_GMT = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss 'GMT'", Locale.US);
 
     /**
      * 14位日期时间格式
@@ -119,6 +126,14 @@ public class SimpleDateUtils implements IDateUtils {
         return _FORMAT_DATETIME.format(LocalDateTime.now());
     }
 
+    @Override
+    public String getCurrentDateTimeGMT() {
+//        SimpleDateFormat _dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
+//        _dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+//        return _dateFormat.format(new Date());
+        return _FORMAT_DATETIME_GMT.format(LocalDateTime.now());
+    }
+
     /**
      * @return 14位年月日时分秒，中间无空格的当前日期时间。
      */
@@ -171,16 +186,17 @@ public class SimpleDateUtils implements IDateUtils {
         return SimpleDateUtilsHolder._INSTANCE;
     }
 
-//	public static void main( String[] args ){
-//		DefaultDateUtil ddu = new DefaultDateUtil() ;
-//		System.out.println( "currentYear:" + ddu.getCurrentYear() );
-//		System.out.println( "currentMonth:" + ddu.getCurrentMonth() );
-//		System.out.println( "currentDay:" + ddu.getCurrentDay() );
-//		System.out.println( "currentDate:" + ddu.getCurrentDate() );
-//		System.out.println( "currentDateTime:" + ddu.getCurrentDateTime() );
-//		System.out.println( "currentDateTime14:" + ddu.getCurrentDateTime14() );
-//		System.out.println( "currentDate8:" + ddu.getCurrentDate8() );
-//		System.out.println( "currentDate6:" + ddu.getCurrentDate6() );
+//    public static void main(String[] args) {
+//        IDateUtils _impl = SimpleDateUtils.me();
+//        System.out.println("currentYear:" + _impl.getCurrentYear());
+//        System.out.println("currentMonth:" + _impl.getCurrentMonth());
+//        System.out.println("currentDay:" + _impl.getCurrentDay());
+//        System.out.println("currentDate:" + _impl.getCurrentDate());
+//        System.out.println("currentDateTime:" + _impl.getCurrentDateTime());
+//        System.out.println("currentDateTime14:" + _impl.getCurrentDateTime14());
+//        System.out.println("currentDate8:" + _impl.getCurrentDate8());
+//        System.out.println("currentDate6:" + _impl.getCurrentDate6());
+//        System.out.println("currentDateTimeGMT:" + _impl.getCurrentDateTimeGMT());
 //
 ////		ZoneId.getAvailableZoneIds().forEach( a -> System.out.println(a) );
 ////		ZoneId.getAvailableZoneIds().forEach( System.out::println );
@@ -193,6 +209,6 @@ public class SimpleDateUtils implements IDateUtils {
 ////		System.out.println( "japanDT:" + japanDT );
 ////		System.out.println( "chinaDT:" + chinaDT );
 //
-//	}
+//    }
 
 }

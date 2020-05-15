@@ -48,6 +48,11 @@ public class CaffeineCacheManager implements ICacheManager {
         return _result;
     }
 
+    @Override
+    public ICache getDefaultCache() {
+        return getCache(DEF_CACHE_NAME);
+    }
+
     /************************************************************
      ************* 单例样板代码。
      ************************************************************/

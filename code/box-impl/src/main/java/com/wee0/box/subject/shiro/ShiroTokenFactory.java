@@ -16,6 +16,7 @@
 
 package com.wee0.box.subject.shiro;
 
+import com.wee0.box.subject.IBoxToken;
 import com.wee0.box.subject.IPasswordToken;
 import com.wee0.box.subject.ITokenFactory;
 
@@ -32,6 +33,11 @@ final class ShiroTokenFactory implements ITokenFactory {
     @Override
     public IPasswordToken createPasswordToken(String loginId, String password) {
         return new ShiroPasswordToken(loginId, password);
+    }
+
+    @Override
+    public IBoxToken createBoxToken(String token) {
+        return new ShiroBoxToken(token);
     }
 
 }

@@ -24,8 +24,12 @@ import com.wee0.box.spring.BoxBeanDefinitionMerge;
 import com.wee0.box.spring.SpringBoxContext;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.boot.builder.ParentContextCloserApplicationListener;
 import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.event.ContextClosedEvent;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
@@ -46,6 +50,16 @@ public class BoxInitializer implements ApplicationContextInitializer<Configurabl
 
         SpringBoxContext.me().setSpringContext(configurableApplicationContext);
         SpringBoxContext.me().init();
+        configurableApplicationContext.addApplicationListener(new ApplicationListener<ContextClosedEvent>() {
+            @Override
+            public void onApplicationEvent(ContextClosedEvent event) {
+                log.info("application closing...", event.getApplicationContext());
+                if (event.getApplicationContext().getDisplayName().equals("Root WebApplicationContext")) {
+                    log.info("Root WebApplicationContext...");
+                }
+                SpringBoxContext.me().destroy();
+            }
+        });
 
         DefaultListableBeanFactory _beanFactory = (DefaultListableBeanFactory) configurableApplicationContext.getBeanFactory();
         _beanFactory.addBeanPostProcessor(new BoxBeanDefinitionMerge());

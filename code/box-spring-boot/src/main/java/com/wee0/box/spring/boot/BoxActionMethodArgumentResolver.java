@@ -18,10 +18,14 @@ package com.wee0.box.spring.boot;
 
 import com.wee0.box.util.shortcut.CheckUtils;
 import com.wee0.box.util.shortcut.StringUtils;
+import com.wee0.box.web.IActionRequest;
+import com.wee0.box.web.IActionResponse;
 import com.wee0.box.web.annotation.BoxAction;
 import com.wee0.box.log.ILogger;
 import com.wee0.box.log.LoggerFactory;
 import com.wee0.box.util.shortcut.JsonUtils;
+import com.wee0.box.web.servlet.impl.HttpServletActionRequest;
+import com.wee0.box.web.servlet.impl.HttpServletActionResponse;
 import org.springframework.beans.BeanUtils;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -72,19 +76,25 @@ public class BoxActionMethodArgumentResolver implements HandlerMethodArgumentRes
         if (HttpServletResponse.class.isAssignableFrom(_parameterType)) {
             return webRequest.getNativeResponse(HttpServletResponse.class);
         }
+        if (IActionRequest.class.isAssignableFrom(_parameterType)) {
+            HttpServletRequest _request = webRequest.getNativeRequest(HttpServletRequest.class);
+            return new HttpServletActionRequest(_request);
+        }
+        if (IActionResponse.class.isAssignableFrom(_parameterType)) {
+            HttpServletResponse _response = webRequest.getNativeResponse(HttpServletResponse.class);
+            return new HttpServletActionResponse(_response);
+        }
 
         // 参数值获取
         final String _parameterName = parameter.getParameterName();
+        if (null == _parameterName)
+            return null;
         String _parameterValue = CheckUtils.checkTrimEmpty(webRequest.getParameter(_parameterName), null);
         if (null == _parameterValue)
             return null;
         if (BeanUtils.isSimpleProperty(_parameterType)) {
             return convertStringPrimitive(_parameterValue, _parameterType);
         }
-//        if(IServiceRequest.class.isAssignableFrom(_parameterType)){
-//            HttpServletRequest _request = webRequest.getNativeRequest(HttpServletRequest.class);
-//            return new SimpleServiceRequest(_request);
-//        }
         return JsonUtils.readToObject(_parameterValue, _parameterType);
 
 //        if (Map.class.isAssignableFrom(_parameterType)) {

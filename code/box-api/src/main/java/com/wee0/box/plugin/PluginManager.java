@@ -1,0 +1,54 @@
+/*
+ * Copyright (c) 2019-present, wee0.com.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.wee0.box.plugin;
+
+import com.wee0.box.BoxConfig;
+
+/**
+ * @author <a href="78026399@qq.com">白华伟</a>
+ * @CreateDate 2019/12/22 17:22
+ * @Description 插件管理器快捷操作入口
+ * <pre>
+ * 补充说明
+ * </pre>
+ **/
+public class PluginManager {
+
+    // 实现类实例
+    private static final IPluginManager IMPL = BoxConfig.impl().getInterfaceImpl(IPluginManager.class);
+
+    /**
+     * 获取实现类实例
+     *
+     * @return 实现类实例
+     */
+    public static IPluginManager impl() {
+        return IMPL;
+    }
+
+    /**
+     * 获取插件接口实现者实例对象
+     *
+     * @param pluginInterface 插件接口
+     * @param <T>             插件接口类型
+     * @return 插件接口实现者实例
+     */
+    public static <T extends IPlugin> T getPlugin(Class<T> pluginInterface) {
+        return IMPL.getPlugin(pluginInterface);
+    }
+
+}

@@ -29,7 +29,7 @@ import java.util.*;
  * 补充说明
  * </pre>
  **/
-public class SimpleUploadRequest implements IUploadRequest {
+public class SimpleUploadRequest extends HttpServletActionRequest implements IUploadRequest {
 
     private final Map<String, String> parameters;
     private final Map<String, IUploadFile> files;

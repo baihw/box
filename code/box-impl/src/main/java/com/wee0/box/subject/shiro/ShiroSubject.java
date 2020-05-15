@@ -20,20 +20,11 @@ import com.wee0.box.log.ILogger;
 import com.wee0.box.log.LoggerFactory;
 import com.wee0.box.subject.ISubject;
 import com.wee0.box.subject.IToken;
-import com.wee0.box.subject.SubjectContext;
-import com.wee0.box.util.shortcut.StringUtils;
 import org.apache.shiro.authc.AuthenticationToken;
-import org.apache.shiro.session.InvalidSessionException;
-import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 
-import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
@@ -48,14 +39,15 @@ final class ShiroSubject implements ISubject {
     // 日志对象
     private static ILogger log = LoggerFactory.getLogger(ShiroSubject.class);
 
-    // 主体对象唯一标识关联键名
-    private static final String DEF_KEY_SUBJECT_ID = "_subjectId";
+//    // 主体对象唯一标识关联键名
+//    private static final String DEF_KEY_SUBJECT_ID = "_subjectId";
 
     // shiro subject
     private final Subject subject;
 
     // 当前主体对象唯一标识
     private String subjectId;
+    private String token;
 
     ShiroSubject(Subject subject) {
         this.subject = subject;
@@ -64,34 +56,38 @@ final class ShiroSubject implements ISubject {
     // 设置当前主体对象唯一标识
     void setId(String id) {
         this.subjectId = id;
-        this.subject.getSession().setAttribute(DEF_KEY_SUBJECT_ID, id);
-        log.debug("session {} bind id: {}.", this.getSessionId(), id);
+        log.debug("login id: {}", id);
     }
 
     @Override
     public String getId() {
-        if (null == subjectId) {
-            Object _id = this.subject.getSession().getAttribute(DEF_KEY_SUBJECT_ID);
-            if (null != _id)
-                this.subjectId = _id.toString();
-        }
         return this.subjectId;
     }
 
-    @Override
-    public String getSessionId() {
-        return this.subject.getSession().getId().toString();
+    // 设置令牌数据
+    void setToken(String token) {
+        this.token = token;
     }
 
     @Override
-    public ISubject sessionTouch() {
-        try {
-            this.subject.getSession().touch();
-        } catch (InvalidSessionException e) {
-            log.debug("InvalidSessionException:", e);
-        }
-        return this;
+    public String getToken() {
+        return this.token;
     }
+
+//    @Override
+//    public String getSessionId() {
+//        return this.subject.getSession().getId().toString();
+//    }
+//
+//    @Override
+//    public ISubject sessionTouch() {
+//        try {
+//            this.subject.getSession().touch();
+//        } catch (InvalidSessionException e) {
+//            log.debug("InvalidSessionException:", e);
+//        }
+//        return this;
+//    }
 
     @Override
     public boolean isLogin() {
@@ -106,7 +102,7 @@ final class ShiroSubject implements ISubject {
             this.subject.login((AuthenticationToken) token);
         else
             throw new IllegalStateException("token must be a AuthenticationToken!");
-        log.debug("session {} login.", this.getSessionId());
+        log.debug("login token: {}", this.getToken());
     }
 
     @Override
@@ -114,17 +110,11 @@ final class ShiroSubject implements ISubject {
         if (null == token)
             throw new IllegalArgumentException("token can't be null!");
         if (token instanceof AuthenticationToken) {
-            final String _SESSION_ID_OLD = this.getSessionId();
             this.subject.login((AuthenticationToken) token);
-            final String _SESSION_ID_NEW = this.getSessionId();
-            // 判断当前会话标识是否发生改变
-            if (!_SESSION_ID_OLD.equals(_SESSION_ID_NEW)) {
-                request.setAttribute(ShiroSubjectContext.KEY_BOX_ID, _SESSION_ID_NEW);
-                response.addCookie(ShiroSubjectContext.createIdCookie(_SESSION_ID_OLD, 0));
-                response.addCookie(ShiroSubjectContext.createIdCookie(_SESSION_ID_NEW, -1));
-                log.trace("sessionId from {} to {}", _SESSION_ID_OLD, _SESSION_ID_NEW);
-            }
-            log.debug("session {} login.", _SESSION_ID_NEW);
+            final String _LOGIN_TOKEN = this.getToken();
+            request.setAttribute(ShiroSubjectContext.KEY_BOX_TOKEN, _LOGIN_TOKEN);
+            response.addCookie(ShiroSubjectContext.createIdCookie(_LOGIN_TOKEN, -1));
+            log.debug("web login token: {}", _LOGIN_TOKEN);
         } else {
             throw new IllegalStateException("token must be a AuthenticationToken!");
         }
@@ -133,7 +123,7 @@ final class ShiroSubject implements ISubject {
     @Override
     public void logout() {
         try {
-            log.debug("session {} logout.", this.getSessionId());
+            log.debug("logout token: {}", this.getToken());
             this.subject.logout();
         } catch (Exception e) {
             log.error("logout error.", e);
@@ -142,14 +132,14 @@ final class ShiroSubject implements ISubject {
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response) {
-        final String _SESSION_ID = this.getSessionId();
+        final String _LOGIN_TOKEN = this.getToken();
         try {
-            log.debug("session {} logout.", _SESSION_ID);
+            log.debug("web logout token: {}", _LOGIN_TOKEN);
             this.subject.logout();
         } catch (Exception e) {
-            log.error("logout error.", e);
+            log.error("web logout error.", e);
         }
-        response.addCookie(ShiroSubjectContext.createIdCookie(_SESSION_ID, 0));
+        response.addCookie(ShiroSubjectContext.createIdCookie(_LOGIN_TOKEN, 0));
     }
 
     @Override
@@ -162,25 +152,36 @@ final class ShiroSubject implements ISubject {
         return this.subject.isPermitted(permission);
     }
 
-    @Override
-    public void setAttribute(String key, Object value) {
-        this.subject.getSession().setAttribute(key, value);
-    }
+//    @Override
+//    public void setAttribute(String key, Object value) {
+//        this.subject.getSession().setAttribute(key, value);
+//    }
+//
+//    @Override
+//    public Object getAttribute(String key) {
+//        return this.subject.getSession().getAttribute(key);
+//    }
+//
+//    @Override
+//    public void removeAttribute(String key) {
+//        this.subject.getSession().removeAttribute(key);
+//    }
+//
+//    @Override
+//    public Set<String> getAttributeKeys() {
+//        Collection<Object> _keys = this.subject.getSession().getAttributeKeys();
+//        return Collections.unmodifiableSet(_keys.stream().map(String::valueOf).collect(Collectors.toSet()));
+//    }
 
     @Override
-    public Object getAttribute(String key) {
-        return this.subject.getSession().getAttribute(key);
+    public String toString() {
+        StringBuilder _builder = new StringBuilder();
+        _builder.append("subject{");
+        _builder.append("id:").append(getId());
+        _builder.append(",token:").append(getToken());
+        _builder.append(",isLogin:").append(isLogin());
+        _builder.append(",instance:").append(super.toString());
+        _builder.append("}");
+        return _builder.toString();
     }
-
-    @Override
-    public void removeAttribute(String key) {
-        this.subject.getSession().removeAttribute(key);
-    }
-
-    @Override
-    public Set<String> getAttributeKeys() {
-        Collection<Object> _keys = this.subject.getSession().getAttributeKeys();
-        return Collections.unmodifiableSet(_keys.stream().map(String::valueOf).collect(Collectors.toSet()));
-    }
-
 }

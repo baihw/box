@@ -23,10 +23,7 @@ import com.wee0.box.util.IHttpUtils;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
@@ -44,9 +41,20 @@ public class SimpleHttpUtils implements IHttpUtils {
     private static ILogger log = LoggerFactory.getLogger(SimpleHttpUtils.class);
 
     /**
-     * 默认的数据分隔线定义
+     * 头信息关键字： Content-Type
      */
-    public static final String DEF_BOUNDARY = "---------7d4a6d158c9";
+    static final String HEAD_CONTENT_TYPE_KEY = "Content-Type";
+
+    /**
+     * 默认的表单数据分隔符号相关定义
+     */
+    static final String DEF_BOUNDARY = "---------box6d9a6d152c6------";
+    static final String DEF_BOUNDARY_RN = "\r\n";
+    static final String DEF_BOUNDARY_FLAG = "--";
+    static final String HEAD_CONTENT_TYPE_VAL_FORM_DATA_DEF = "multipart/form-data; boundary=" + DEF_BOUNDARY;
+
+    // 默认的分块数据大小：1024 * 1024
+    static final int DEF_CHUNK_SIZE = 1048576;
 
     // 默认的请求头信息数据
     private final Map<String, String> DEF_HEAD_MAP;
@@ -68,6 +76,60 @@ public class SimpleHttpUtils implements IHttpUtils {
         return _httpAction(method, url, sendData, _RES_HANDLER_COMMON, headMap, charset, timeout);
     }
 
+    @Override
+    public IHttpResult formUpload(METHOD method, String url, Map<String, String> headMap, Map<String, Object> formData, String charset, int timeout) {
+        final String _CHARSET = null == charset ? DEF_CHARSET : charset;
+        if (null == headMap) {
+            headMap = new HashMap<>(8);
+            headMap.putAll(DEF_HEAD_MAP);
+        }
+        headMap.put(HEAD_CONTENT_TYPE_KEY, HEAD_CONTENT_TYPE_VAL_FORM_DATA_DEF);
+        return httpAction(METHOD.POST, url, (_outStream) -> {
+            if (null == formData || formData.isEmpty())
+                return;
+//            OutputStream _out = new DataOutputStream(_outStream);
+
+            StringBuilder _sb = new StringBuilder(128);
+            Iterator<Map.Entry<String, Object>> _entrys = formData.entrySet().iterator();
+            while (_entrys.hasNext()) {
+                Map.Entry<String, Object> _entry = _entrys.next();
+                String _fieldName = _entry.getKey();
+                Object _fieldValue = _entry.getValue();
+                if (null == _fieldName || null == _fieldValue)
+                    continue;
+                // 插入分隔文本
+                _sb.append(DEF_BOUNDARY_FLAG).append(DEF_BOUNDARY).append(DEF_BOUNDARY_RN);
+                if (_fieldValue instanceof File) {
+                    // 文件上传
+                    File _f = (File) _fieldValue;
+                    _sb.append("Content-Disposition: form-data; name=\"").append(_fieldName).append("\"; filename=\"").append(_f.getName()).append("\"\r\n");
+//                    _sb.append("Content-length:"+_f.length() +";\"\r\n");
+                    _sb.append("Content-Type:application/octet-stream\r\n\r\n");
+                    writeString(_outStream, _sb.toString(), _CHARSET);
+                    _sb.delete(0, _sb.length());
+
+                    try (FileInputStream _fileIn = new FileInputStream(_f);) {
+                        copyStream(_fileIn, _outStream);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    // 其它情况统一作为文本处理
+                    _sb.append("Content-Disposition: form-data; name=\"").append(_fieldName).append("\"\r\n\r\n");
+                    _sb.append(String.valueOf(_fieldValue)).append(DEF_BOUNDARY_RN);
+
+                    writeString(_outStream, _sb.toString(), _CHARSET);
+                    _sb.delete(0, _sb.length());
+                }
+            }
+
+            // 写入结束信息
+            _sb.append(DEF_BOUNDARY_RN).append(DEF_BOUNDARY_FLAG).append(DEF_BOUNDARY).append(DEF_BOUNDARY_FLAG).append(DEF_BOUNDARY_RN);
+            writeString(_outStream, _sb.toString(), _CHARSET);
+            _sb.delete(0, _sb.length());
+        }, headMap, DEF_CHARSET, timeout);
+    }
+
     /**
      * 基于流的文件上传方式，比较节省内存。
      *
@@ -82,33 +144,6 @@ public class SimpleHttpUtils implements IHttpUtils {
     public IHttpResult httpUpload(METHOD method, String url, Map<String, String> headMap, InputStream inStream, int timeout) {
         return httpAction(METHOD.POST, url, (_outStream) -> {
             copyStream(inStream, _outStream);
-//				// 多个文件需要发送时，手动进行组装。
-//				OutputStream out = new DataOutputStream(conn.getOutputStream());
-//
-//				byte[] end_data = ("\r\n--" + BOUNDARY + "--\r\n")
-//						.getBytes();// 定义最后数据分隔线
-//
-//				StringBuilder sb1 = new StringBuilder();
-//
-//				sb1.append("--");
-//				sb1.append(BOUNDARY);
-//				sb1.append("\r\n");
-//				sb1.append("Content-Disposition: form-data;filename=\"uploadFile\"\r\n");
-//				sb1.append("Content-Type:application/octet-stream\r\n\r\n");
-//
-//				byte[] data = sb1.toString().getBytes("UTF-8");
-//				out.write(data);
-//				DataInputStream in = new DataInputStream(inStream);
-//				int bytes = 0;
-//				byte[] bufferOut = new byte[1024];
-//				while ((bytes = in.read(bufferOut)) != -1) {
-//					out.write(bufferOut, 0, bytes);
-//				}
-//			//	out.write("\r\n".getBytes()); // 多个文件时，二个文件之间加入这个
-//				in.close();
-//				out.write(end_data);
-//				out.flush();
-//				out.close();
         }, headMap, DEF_CHARSET, timeout);
     }
 
@@ -178,11 +213,16 @@ public class SimpleHttpUtils implements IHttpUtils {
         try {
             log.trace("[{}] {}", method.name(), url);
             _conn = (HttpURLConnection) new URL(url).openConnection();
+            _conn.setRequestMethod(method.name());
             _conn.setConnectTimeout(timeout);
             _conn.setReadTimeout(timeout);
-            _conn.setRequestMethod(method.name());
-            _conn.setUseCaches(false); // 不使用缓存
+            _conn.setDoInput(true);
             _conn.setDoOutput(true);// 可以使用conn.getOutputStream().write()向服务器传输数据。
+//            if (METHOD.GET != method) {
+//                _conn.setDoOutput(true);// 可以使用conn.getOutputStream().write()向服务器传输数据。
+//            }
+            _conn.setUseCaches(false); // 不使用缓存
+            _conn.setChunkedStreamingMode(DEF_CHUNK_SIZE);
             // 设置头信息部分。
             if (null != headMap && !headMap.isEmpty()) {
                 for (Map.Entry<String, String> _headEntry : headMap.entrySet()) {
@@ -193,10 +233,11 @@ public class SimpleHttpUtils implements IHttpUtils {
             _conn.connect(); // 建立连接，此时必须头信息全部设置完毕。
 //			log.trace( "连接建立，接收数据。" ) ;
             // 如果有需要发送的数据，则发送数据。
-            if (null != sendData) {
+            if (null != sendData && _conn.getDoOutput()) {
                 try (OutputStream _outStream = _conn.getOutputStream();) {
 //                    _outStream.write(data);
                     sendData.accept(_outStream);
+                    _outStream.flush();
                 }
             }
 
@@ -309,13 +350,28 @@ public class SimpleHttpUtils implements IHttpUtils {
     private static void copyStream(InputStream inStream, OutputStream outStream) {
 //        // 写入缓冲区大小:1024K。
 //        final int _WRITE_BUF = 1024 * 1024;
-        byte[] _buffer = new byte[1048576];
+        byte[] _buffer = new byte[DEF_CHUNK_SIZE];
         int _len = 0;
         try {
             while (-1 != (_len = inStream.read(_buffer))) {
                 outStream.write(_buffer, 0, _len);
             }
             outStream.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * 将指定的字符串写入到指定的输出流中
+     *
+     * @param outStream 输出流
+     * @param value     字符串
+     * @param charset   字符串编码
+     */
+    private static void writeString(OutputStream outStream, String value, String charset) {
+        try {
+            outStream.write(value.getBytes(charset));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -372,16 +428,16 @@ public class SimpleHttpUtils implements IHttpUtils {
         /**
          * 设置响应代码。
          *
-         * @param responseCode
+         * @param code 响应代码
          */
-        void setCode(int responseCode) {
-            _code = responseCode;
+        void setCode(int code) {
+            _code = code;
         }
 
         /**
          * 获取http响应代码。
          *
-         * @return
+         * @return http响应代码。
          */
         public int getCode() {
             return _code;
@@ -390,7 +446,7 @@ public class SimpleHttpUtils implements IHttpUtils {
         /**
          * 设置响应头信息集合
          *
-         * @param headMap
+         * @param headMap 响应头信息集合
          */
         void setHeaders(Map<String, List<String>> headMap) {
             _headMap = headMap;
@@ -399,7 +455,7 @@ public class SimpleHttpUtils implements IHttpUtils {
         /**
          * 获取http请求返回结果中的头信息集合。
          *
-         * @return
+         * @return http请求返回结果中的头信息集合。
          */
         public Map<String, List<String>> getHeaders() {
             return _headMap;
@@ -420,7 +476,7 @@ public class SimpleHttpUtils implements IHttpUtils {
         /**
          * 返回所有头信息的json形式字符串。
          *
-         * @return
+         * @return 所有头信息的json形式字符串。
          */
         public String head2Json() {
             if (null == _headMap)
@@ -449,9 +505,7 @@ public class SimpleHttpUtils implements IHttpUtils {
         }
 
         /**
-         * 获取http请求响应内容正文。
-         *
-         * @return
+         * @return http请求响应内容正文。
          */
         public String getContent() {
             return _content;
@@ -479,6 +533,7 @@ public class SimpleHttpUtils implements IHttpUtils {
 
         // 初始化默认请求头数据
         this.DEF_HEAD_MAP = new HashMap<>(1);
+        this.DEF_HEAD_MAP.put("Connection", "Keep-Alive");
         this.DEF_HEAD_MAP.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36");
     }
 

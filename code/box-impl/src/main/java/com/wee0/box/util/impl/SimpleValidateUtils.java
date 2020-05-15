@@ -74,7 +74,7 @@ public class SimpleValidateUtils implements IValidateUtils {
     /**
      * 正则表达式字符串--手机号码
      */
-    public static final String PATTERN_MOBILE = "13[0-9]{9}$|14[0-9]{9}|15[0-9]{9}$|18[0-9]{9}$";
+    public static final String PATTERN_MOBILE = "1[3-9][0-9]{9}$";
 
     /**
      * 正则表达式字符串--邮政编码

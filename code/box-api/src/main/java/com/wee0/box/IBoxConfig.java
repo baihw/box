@@ -19,6 +19,7 @@ package com.wee0.box;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
@@ -58,6 +59,14 @@ public interface IBoxConfig {
      * @return 配置值
      */
     String get(String key, String defValue);
+
+    /**
+     * 获取包含指定前缀的配置数据集合，返回的键名中默认去除了前缀。
+     *
+     * @param prefix 前缀名称
+     * @return 配置数据集合
+     */
+    Map<String, String> getByPrefix(String prefix);
 
     /**
      * 获取全局默认编码

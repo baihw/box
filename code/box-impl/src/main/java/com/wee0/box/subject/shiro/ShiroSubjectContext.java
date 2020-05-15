@@ -27,14 +27,20 @@ import com.wee0.box.util.shortcut.CheckUtils;
 import com.wee0.box.util.shortcut.StringUtils;
 import com.wee0.box.util.shortcut.ThreadUtils;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.AuthorizationInfo;
+import org.apache.shiro.cache.Cache;
 import org.apache.shiro.config.Ini;
 import org.apache.shiro.config.IniSecurityManagerFactory;
+import org.apache.shiro.mgt.RealmSecurityManager;
+import org.apache.shiro.realm.AuthorizingRealm;
+import org.apache.shiro.realm.Realm;
 import org.apache.shiro.subject.Subject;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ObjectStreamException;
+import java.util.Iterator;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
@@ -61,40 +67,76 @@ public class ShiroSubjectContext implements ISubjectContext {
     // Cookie作用域
     private static final String COOKIE_DOMAIN = BoxConfig.impl().get(BoxConfigKeys.domain, null);
 
+
     @Override
     public ISubject getSubject(HttpServletRequest request, HttpServletResponse response) {
-        String _boxId = findSessionId(request);
-        ISubject _subject = getSubject(_boxId);
-        // 判断当前会话标识是否发生改变
-        final String _SESSION_ID = _subject.getSessionId();
-        if (!_SESSION_ID.equals(_boxId)) {
-            request.setAttribute(KEY_BOX_ID, _SESSION_ID);
-            response.addCookie(createIdCookie(_boxId, 0));
-            response.addCookie(createIdCookie(_SESSION_ID, -1));
-            log.trace("sessionId from {} to {}", _boxId, _SESSION_ID);
+        final String _boxToken = findBoxToken(request);
+        if (null == _boxToken)
+            return null;
+        ShiroSubject _subject = (ShiroSubject) getSubject(_boxToken);
+        if (!_subject.isLogin()) {
+            log.info("delete invalid token: {}", _boxToken);
+            // 移除无效的cookie
+            response.addCookie(createIdCookie(_boxToken, 0));
+        }
+
+        return _subject;
+    }
+
+    @Override
+    public ISubject getSubject(String token) {
+        token = CheckUtils.checkNotTrimEmpty(token, "token can not be empty!");
+        ShiroSubject _subject = (ShiroSubject) SUBJECT_HOLDER.get();
+        if (null != _subject && token.equals(_subject.getToken()))
+            return _subject;
+        SUBJECT_HOLDER.remove();
+//        _subject = new ShiroSubject(new Subject.Builder().sessionId(token).buildSubject());
+        _subject = new ShiroSubject(new Subject.Builder().sessionCreationEnabled(false).buildSubject());
+        SUBJECT_HOLDER.set(_subject);
+        _subject.setToken(token);
+        ShiroBoxToken _loginToken = new ShiroBoxToken(token);
+        try {
+            _subject.login(_loginToken);
+            log.trace("auto login token: {} ok", token);
+        } catch (Exception e) {
+            log.info("auto login token: {} error: {}", token, e.getMessage());
         }
         return _subject;
     }
 
     @Override
-    public ISubject getSubject(String id) {
-        id = CheckUtils.checkTrimEmpty(id, "id can't be empty!");
-        SUBJECT_HOLDER.remove();
-        ISubject _subject = new ShiroSubject(new Subject.Builder().sessionId(id).buildSubject());
-        _subject.sessionTouch();
-        SUBJECT_HOLDER.set(_subject);
+    public ISubject getSubject() {
+//        return SUBJECT_HOLDER.get();
+//        return ((ShiroSubject) SUBJECT_HOLDER.get()).sessionTouch();
+        ISubject _subject = SUBJECT_HOLDER.get();
+        if (null == _subject) {
+            _subject = new ShiroSubject(new Subject.Builder().sessionCreationEnabled(false).buildSubject());
+            SUBJECT_HOLDER.set(_subject);
+        }
         return _subject;
     }
 
     @Override
-    public ISubject getSubject() {
-        return SUBJECT_HOLDER.get().sessionTouch();
-//        ISubject _subject = SUBJECT_HOLDER.get();
-//        if (null == _subject) {
-//            _subject = new ShiroSubject(SecurityUtils.getSubject());
-//            SUBJECT_HOLDER.set(_subject);
-//        }
-//        return _subject;
+    public void clearAuthorizationCache() {
+
+//        String _userId = "";
+//        String _realmName = "boxJdbcRealm";
+//        Subject _subject = SecurityUtils.getSubject();
+//        SimplePrincipalCollection _principals = new SimplePrincipalCollection(_userId,_realmName);
+//        _subject.runAs(_principals);
+
+        RealmSecurityManager _manager = (RealmSecurityManager) SecurityUtils.getSecurityManager();
+        Iterator<Realm> _realms = _manager.getRealms().iterator();
+        while (_realms.hasNext()) {
+            Realm _realm = _realms.next();
+            if (_realm instanceof AuthorizingRealm) {
+                Cache<Object, AuthorizationInfo> _realmCache = ((AuthorizingRealm) _realm).getAuthorizationCache();
+                _realmCache.clear();
+//                _realmCache.remove(_subject.getPrincipal());
+//                _realmCache.remove(_subject.getPrincipals());
+//                _subject.releaseRunAs();
+            }
+        }
     }
 
     @Override
@@ -102,22 +144,30 @@ public class ShiroSubjectContext implements ISubjectContext {
         return TOKEN_FACTORY;
     }
 
-    // servlet 环境相关
-    // 默认的客户端标识关联键名
-    static final String KEY_BOX_ID = "boxId";
+    // 初始化逻辑
+    private void init() {
+        IniSecurityManagerFactory _factory = new IniSecurityManagerFactory();
+        Ini _ini = Ini.fromResourcePath(DEF_RESOURCE);
+        _factory.setIni(_ini);
+        _factory.setSingleton(true);
+        SecurityUtils.setSecurityManager(_factory.getInstance());
+    }
+
+    // 默认的客户端令牌关联键名
+    static final String KEY_BOX_TOKEN = "boxToken";
 
     // 获取标识
-    private static String findSessionId(HttpServletRequest request) {
-        String _result = StringUtils.parseString(request.getAttribute(KEY_BOX_ID), null);
+    private static String findBoxToken(HttpServletRequest request) {
+        String _result = StringUtils.parseString(request.getAttribute(KEY_BOX_TOKEN), null);
         if (null == _result)
-            _result = CheckUtils.checkTrimEmpty(request.getParameter(KEY_BOX_ID), null);
+            _result = CheckUtils.checkTrimEmpty(request.getParameter(KEY_BOX_TOKEN), null);
         if (null == _result)
-            _result = CheckUtils.checkTrimEmpty(request.getHeader(KEY_BOX_ID), null);
+            _result = CheckUtils.checkTrimEmpty(request.getHeader(KEY_BOX_TOKEN), null);
         if (null == _result) {
             Cookie[] _cookies = request.getCookies();
             if (null != _cookies && 0 != _cookies.length) {
                 for (Cookie _cookie : _cookies) {
-                    if (KEY_BOX_ID.equals(_cookie.getName())) {
+                    if (KEY_BOX_TOKEN.equals(_cookie.getName())) {
                         _result = CheckUtils.checkTrimEmpty(_cookie.getValue(), null);
                     }
                 }
@@ -128,7 +178,7 @@ public class ShiroSubjectContext implements ISubjectContext {
 
     // 创建指定标识Cookie
     static Cookie createIdCookie(String value, int expiry) {
-        Cookie _cookie = new Cookie(KEY_BOX_ID, value);
+        Cookie _cookie = new Cookie(KEY_BOX_TOKEN, value);
         if (null != COOKIE_DOMAIN) {
             _cookie.setDomain(COOKIE_DOMAIN);
         }
@@ -137,15 +187,6 @@ public class ShiroSubjectContext implements ISubjectContext {
         _cookie.setHttpOnly(true);
 //        _cookie.setSecure(true);
         return _cookie;
-    }
-
-    // 初始化逻辑
-    private void init() {
-        IniSecurityManagerFactory _factory = new IniSecurityManagerFactory();
-        Ini _ini = Ini.fromResourcePath(DEF_RESOURCE);
-        _factory.setIni(_ini);
-        _factory.setSingleton(true);
-        SecurityUtils.setSecurityManager(_factory.getInstance());
     }
 
     /************************************************************

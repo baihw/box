@@ -21,7 +21,6 @@ import com.wee0.box.subject.IToken;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Set;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
@@ -39,14 +38,19 @@ final class SimpleSubject implements ISubject {
     }
 
     @Override
-    public String getSessionId() {
-        throw new UnsupportedOperationException("This method is not yet implemented.");
+    public String getToken() {
+        return null;
     }
 
-    @Override
-    public ISubject sessionTouch() {
-        throw new UnsupportedOperationException("This method is not yet implemented.");
-    }
+//    @Override
+//    public String getSessionId() {
+//        throw new UnsupportedOperationException("This method is not yet implemented.");
+//    }
+//
+//    @Override
+//    public ISubject sessionTouch() {
+//        throw new UnsupportedOperationException("This method is not yet implemented.");
+//    }
 
     @Override
     public boolean isLogin() {
@@ -83,23 +87,23 @@ final class SimpleSubject implements ISubject {
         throw new UnsupportedOperationException("This method is not yet implemented.");
     }
 
-    @Override
-    public void setAttribute(String key, Object value) {
-        throw new UnsupportedOperationException("This method is not yet implemented.");
-    }
-
-    @Override
-    public Object getAttribute(String key) {
-        throw new UnsupportedOperationException("This method is not yet implemented.");
-    }
-
-    @Override
-    public void removeAttribute(String key) {
-        throw new UnsupportedOperationException("This method is not yet implemented.");
-    }
-
-    @Override
-    public Set<String> getAttributeKeys() {
-        throw new UnsupportedOperationException("This method is not yet implemented.");
-    }
+//    @Override
+//    public void setAttribute(String key, Object value) {
+//        throw new UnsupportedOperationException("This method is not yet implemented.");
+//    }
+//
+//    @Override
+//    public Object getAttribute(String key) {
+//        throw new UnsupportedOperationException("This method is not yet implemented.");
+//    }
+//
+//    @Override
+//    public void removeAttribute(String key) {
+//        throw new UnsupportedOperationException("This method is not yet implemented.");
+//    }
+//
+//    @Override
+//    public Set<String> getAttributeKeys() {
+//        throw new UnsupportedOperationException("This method is not yet implemented.");
+//    }
 }
