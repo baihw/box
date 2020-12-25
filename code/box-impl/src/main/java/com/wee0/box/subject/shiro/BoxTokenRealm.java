@@ -19,13 +19,8 @@ package com.wee0.box.subject.shiro;
 import com.wee0.box.log.ILogger;
 import com.wee0.box.log.LoggerFactory;
 import com.wee0.box.subject.IBoxToken;
-import org.apache.shiro.authc.AuthenticationException;
-import org.apache.shiro.authc.AuthenticationInfo;
-import org.apache.shiro.authc.AuthenticationToken;
-import org.apache.shiro.authc.SimpleAuthenticationInfo;
-import org.apache.shiro.authz.AuthorizationInfo;
-import org.apache.shiro.realm.AuthorizingRealm;
-import org.apache.shiro.subject.PrincipalCollection;
+import com.wee0.box.subject.SubjectContext;
+import org.apache.shiro.authc.*;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
@@ -35,10 +30,10 @@ import org.apache.shiro.subject.PrincipalCollection;
  * 补充说明
  * </pre>
  **/
-public class BoxTokenRealm extends AuthorizingRealm {
+public class BoxTokenRealm extends BoxCustomRealm {
 
     // 日志对象
-    private static final ILogger _LOG = LoggerFactory.getLogger(BoxJdbcRealm.class);
+    private static final ILogger _LOG = LoggerFactory.getLogger(BoxTokenRealm.class);
 
     // 默认名称
     private final String DEF_NAME = "boxTokenRealm";
@@ -55,25 +50,20 @@ public class BoxTokenRealm extends AuthorizingRealm {
 
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
-        System.out.println("getAuthenticationInfo...");
         IBoxToken _token = (IBoxToken) token;
-
-//        // 获取用户标识
-//        ((ShiroSubject) SubjectContext.getSubject()).setId(_userId);
-//        AuthenticationInfo _info = new SimpleAuthenticationInfo(_userId, _loginPwd, getName());
-//
-//        if ("admin".equals(_userName) && "123".equals(_password)) {
-//            AuthenticationInfo _result = new SimpleAuthenticationInfo(_userName, _password, getName());
-//            return _result;
-//        }
-//        throw new IncorrectCredentialsException("认证失败!");
-        AuthenticationInfo _info = new SimpleAuthenticationInfo("0a19ba58e8ab11e9b3700242ac12010a", _token.getToken(), getName());
-        return _info;
-    }
-
-    @Override
-    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-        return null;
+        _LOG.trace("boxToken check: {}", token);
+        String _credentials = ((IBoxToken) token).getToken();
+        try {
+            String _userId = this.boxTokenManager.checkTokenUserId(_credentials);
+            ShiroSubject _subject = ((ShiroSubject) SubjectContext.getSubject());
+            // 保存当前主体对象唯一标识，便于后期开发人员获取。
+            _subject.setId(_userId);
+            _LOG.trace("boxToken checked: {}", _subject);
+            AuthenticationInfo _info = new SimpleAuthenticationInfo(_userId, _credentials, getName());
+            return _info;
+        } catch (Exception e) {
+            throw new IncorrectCredentialsException("认证失败! " + e.getMessage());
+        }
     }
 
     @Override

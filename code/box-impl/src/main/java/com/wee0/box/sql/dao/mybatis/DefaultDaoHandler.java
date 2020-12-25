@@ -38,9 +38,8 @@ final class DefaultDaoHandler implements IDaoHandler {
     private final Map<DatabaseId, IDialect> dialectMap = new HashMap<>(3);
 
     DefaultDaoHandler() {
-        IDialect _defaultDialect = new MysqlDialect();
-        this.dialectMap.put(DatabaseId.mysql, _defaultDialect);
-        this.dialectMap.put(DatabaseId.h2, _defaultDialect);
+        this.dialectMap.put(DatabaseId.mysql, new MysqlDialect());
+        this.dialectMap.put(DatabaseId.h2, new H2Dialect());
         this.dialectMap.put(DatabaseId.oracle, new OracleDialect());
     }
 

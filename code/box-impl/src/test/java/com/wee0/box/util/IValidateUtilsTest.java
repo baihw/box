@@ -16,13 +16,9 @@
 
 package com.wee0.box.util;
 
-import com.wee0.box.util.shortcut.ValidateUtils;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-
-import java.util.Date;
-import java.util.Locale;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>

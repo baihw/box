@@ -16,18 +16,9 @@
 
 package com.wee0.box.spring.boot;
 
-import com.wee0.box.IBoxContext;
-import com.wee0.box.testObjects.InterfaceA;
-import org.junit.Assert;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
-
-import javax.annotation.Resource;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>

@@ -22,12 +22,13 @@ import com.wee0.box.IBoxConfigObject;
 import com.wee0.box.IBoxContext;
 import com.wee0.box.cache.ICacheManager;
 import com.wee0.box.code.IBizCodeManager;
-import com.wee0.box.exception.BoxRuntimeException;
 import com.wee0.box.exception.IBizExceptionFactory;
+import com.wee0.box.generator.IGenerator;
 import com.wee0.box.i18n.ILocale;
 import com.wee0.box.io.IFileSystem;
 import com.wee0.box.log.ILoggerContext;
 import com.wee0.box.log.ILoggerFactory;
+import com.wee0.box.monitor.IMonitor;
 import com.wee0.box.notify.sms.ISmsHelper;
 import com.wee0.box.plugin.IPluginManager;
 import com.wee0.box.sql.ISqlHelper;
@@ -37,6 +38,7 @@ import com.wee0.box.sql.ds.IDsHelper;
 import com.wee0.box.sql.ds.IDsManager;
 import com.wee0.box.sql.template.ISqlTemplateHelper;
 import com.wee0.box.sql.transaction.ITxManger;
+import com.wee0.box.storage.IStorage;
 import com.wee0.box.struct.ICmdFactory;
 import com.wee0.box.subject.ISubjectContext;
 import com.wee0.box.task.ITaskManager;
@@ -68,6 +70,8 @@ public final class SimpleBoxConfig implements IBoxConfig {
 
     // 默认的资源文件
     public static final String DEF_RESOURCE = "config/box_config.properties";
+    // 默认的包含隐私信息的资源文件
+    public static final String DEF_PRIVATE_RESOURCE = "config/.private.properties";
 
     // 默认编码
     public static final String DEF_ENCODING = "UTF-8";
@@ -99,19 +103,19 @@ public final class SimpleBoxConfig implements IBoxConfig {
     }
 
     // 数据容器
-    private final Map<String, String> DATA;
-    // 全局默认使用的编码
-    private final String ENCODING;
+    private final Map<String, String> DATA = new LinkedHashMap<>(128);
 
     // 接口单例类实例缓存
     private final ConcurrentHashMap<Class, Object> IMPL_DATA = new ConcurrentHashMap<>(128);
 
+    // 全局默认使用的编码
+    private String encoding;
     // 框架组件定制对象
-    private final IBoxConfigObject CONFIG_OBJECT;
+    private IBoxConfigObject configObject;
 
     @Override
     public IBoxConfigObject getConfigObject() {
-        return this.CONFIG_OBJECT;
+        return this.configObject;
     }
 
     @Override
@@ -131,7 +135,7 @@ public final class SimpleBoxConfig implements IBoxConfig {
             throw new IllegalArgumentException("prefix can't be empty!");
         final String _PREFIX = prefix;
         final int _PREFIX_LEN = prefix.length();
-        final Map<String, String> _result = new HashMap<>(32);
+        final Map<String, String> _result = new LinkedHashMap<>(32);
         this.DATA.forEach((key, val) -> {
             if (key.startsWith(_PREFIX)) {
                 _result.put(key.substring(_PREFIX_LEN), val);
@@ -142,7 +146,7 @@ public final class SimpleBoxConfig implements IBoxConfig {
 
     @Override
     public String getEncoding() {
-        return this.ENCODING;
+        return this.encoding;
     }
 
     @Override
@@ -196,6 +200,88 @@ public final class SimpleBoxConfig implements IBoxConfig {
         return Collections.unmodifiableCollection(IMPL_DATA.values());
     }
 
+    @Override
+    public synchronized void loadData(Map<String, String> baseData) {
+//        this.DATA.clear();
+//        initDefaultValues();
+        if (null != baseData && !baseData.isEmpty())
+            this.DATA.putAll(baseData);
+
+        // 加载外部配置数据，如果存在同名配置，以外部配置为准。
+        Properties _props = new Properties();
+        try (InputStream _inStream = _getResourceAsStream(DEF_RESOURCE);) {
+            _props.load(_inStream);
+        } catch (IOException e) {
+            System.out.println("SimpleBoxConfig ignore file: " + e.getMessage());
+//            throw new BoxRuntimeException(e);
+        }
+        // 加载包含隐私信息的配置数据，可以覆盖默认配置文件中加载的数据。
+        try (InputStream _privateStream = _getResourceAsStream(DEF_PRIVATE_RESOURCE);) {
+            _props.load(_privateStream);
+        } catch (IOException e) {
+            System.out.println("SimpleBoxConfig ignore private file: " + e.getMessage());
+        }
+//        if (-1 != RESOURCE_DIR.indexOf(".jar")) {
+//            try (InputStream _inStream = SimpleBoxConfig.class.getResourceAsStream("/" + DEF_RESOURCE)) {
+//                _props.load(_inStream);
+//            } catch (IOException e) {
+//                throw new BoxRuntimeException(e);
+//            }
+//        } else {
+//            String _filePath = RESOURCE_DIR + DEF_RESOURCE;
+//            File _file = new File(_filePath);
+//            if (_file.exists()) {
+//                try (FileInputStream _inStream = new FileInputStream(_file)) {
+//                    _props.load(_inStream);
+//                } catch (IOException e) {
+//                    throw new BoxRuntimeException(e);
+//                }
+//            } else {
+//                throw new BoxRuntimeException("not found config file: " + _filePath);
+//            }
+//        }
+        loadProperties(_props);
+
+        // 加载系统环境变量数据
+        Map<String, String> _envData = System.getenv();
+        if (null != _envData && !_envData.isEmpty()) {
+            for (Map.Entry<String, String> _env : _envData.entrySet()) {
+                String _key = _env.getKey();
+                String _value = _env.getValue();
+                if (null == _key || 0 == (_key = _key.trim()).length())
+                    continue;
+                if (null == _value || 0 == (_value = _value.trim()).length()) {
+                    _value = null;
+                }
+                this.DATA.put(_key, _value);
+            }
+        }
+
+        // 加载JVM环境变量数据
+        loadProperties(System.getProperties());
+
+        // 配置数据加载完成后需要执行的后置处理逻辑。
+        _loadDataAfter();
+    }
+
+    private void _loadDataAfter() {
+        // 缓存全局默认编码
+        String _encoding = this.DATA.get(BoxConfigKeys.encoding);
+        if (null == _encoding || 0 == (_encoding = _encoding.trim()).length())
+            _encoding = DEF_ENCODING;
+        this.encoding = _encoding;
+
+        // 框架组件定制对象
+        String _configObject = this.DATA.get(BoxConfigKeys.configObject);
+        if (null == _configObject || 0 == (_configObject = _configObject.trim()).length())
+            this.configObject = new SimpleBoxConfigObject();
+        else
+            this.configObject = BoxConfig.createInstance(_configObject, IBoxConfigObject.class);
+
+        // 允许开发人员重设最终配置数据
+        this.configObject.overrideBoxConfig(this.DATA);
+    }
+
     /**
      * 加载指定属性对象中的配置信息
      *
@@ -233,6 +319,8 @@ public final class SimpleBoxConfig implements IBoxConfig {
 
         this.DATA.put(ICheckUtils.class.getName(), ICheckUtils.DEF_IMPL_CLASS_NAME);
         this.DATA.put(IStringUtils.class.getName(), IStringUtils.DEF_IMPL_CLASS_NAME);
+        this.DATA.put(IByteUtils.class.getName(), IByteUtils.DEF_IMPL_CLASS_NAME);
+        this.DATA.put(IDigestUtils.class.getName(), IDigestUtils.DEF_IMPL_CLASS_NAME);
         this.DATA.put(IMapUtils.class.getName(), IMapUtils.DEF_IMPL_CLASS_NAME);
         this.DATA.put(IDateUtils.class.getName(), IDateUtils.DEF_IMPL_CLASS_NAME);
         this.DATA.put(IJsonUtils.class.getName(), IJsonUtils.DEF_IMPL_CLASS_NAME);
@@ -241,8 +329,11 @@ public final class SimpleBoxConfig implements IBoxConfig {
         this.DATA.put(IThreadUtils.class.getName(), IThreadUtils.DEF_IMPL_CLASS_NAME);
         this.DATA.put(IClassUtils.class.getName(), IClassUtils.DEF_IMPL_CLASS_NAME);
         this.DATA.put(IValidateUtils.class.getName(), IValidateUtils.DEF_IMPL_CLASS_NAME);
+        this.DATA.put(IPathUtils.class.getName(), IPathUtils.DEF_IMPL_CLASS_NAME);
         this.DATA.put(IIoUtils.class.getName(), IIoUtils.DEF_IMPL_CLASS_NAME);
         this.DATA.put(IHttpUtils.class.getName(), IHttpUtils.DEF_IMPL_CLASS_NAME);
+        this.DATA.put(IZipUtils.class.getName(), IZipUtils.DEF_IMPL_CLASS_NAME);
+        this.DATA.put(IMonitor.class.getName(), IMonitor.DEF_IMPL_CLASS_NAME);
 
         this.DATA.put(IBizCodeManager.class.getName(), IBizCodeManager.DEF_IMPL_CLASS_NAME);
         this.DATA.put(IBizExceptionFactory.class.getName(), IBizExceptionFactory.DEF_IMPL_CLASS_NAME);
@@ -260,6 +351,8 @@ public final class SimpleBoxConfig implements IBoxConfig {
         this.DATA.put(IPageHelper.class.getName(), IPageHelper.DEF_IMPL_CLASS_NAME);
         this.DATA.put(ISqlTemplateHelper.class.getName(), ISqlTemplateHelper.DEF_IMPL_CLASS_NAME);
 
+        this.DATA.put(IStorage.class.getName(), IStorage.DEF_IMPL_CLASS_NAME);
+
         this.DATA.put(ICmdFactory.class.getName(), ICmdFactory.DEF_IMPL_CLASS_NAME);
         this.DATA.put(ISubjectContext.class.getName(), ISubjectContext.DEF_IMPL_CLASS_NAME);
 
@@ -267,6 +360,8 @@ public final class SimpleBoxConfig implements IBoxConfig {
 
         this.DATA.put(ITaskManager.class.getName(), ITaskManager.DEF_IMPL_CLASS_NAME);
         this.DATA.put(IPluginManager.class.getName(), IPluginManager.DEF_IMPL_CLASS_NAME);
+
+        this.DATA.put(IGenerator.class.getName(), IGenerator.DEF_IMPL_CLASS_NAME);
     }
 
     // 使用ClassLoader加载资源文件。
@@ -309,72 +404,16 @@ public final class SimpleBoxConfig implements IBoxConfig {
             // 防止使用反射API创建对象实例。
             throw new IllegalStateException("that's not allowed!");
         }
-        this.DATA = new HashMap<>(128);
 
         // 初始化默认配置数据
         initDefaultValues();
-        // 加载外部配置数据，如果存在同名配置，以外部配置为准。
-        Properties _props = new Properties();
-        try (InputStream _inStream = _getResourceAsStream(DEF_RESOURCE);) {
-            _props.load(_inStream);
-        } catch (IOException e) {
-            System.err.println(e);
-//            throw new BoxRuntimeException(e);
-        }
-//        if (-1 != RESOURCE_DIR.indexOf(".jar")) {
-//            try (InputStream _inStream = SimpleBoxConfig.class.getResourceAsStream("/" + DEF_RESOURCE)) {
-//                _props.load(_inStream);
-//            } catch (IOException e) {
-//                throw new BoxRuntimeException(e);
-//            }
-//        } else {
-//            String _filePath = RESOURCE_DIR + DEF_RESOURCE;
-//            File _file = new File(_filePath);
-//            if (_file.exists()) {
-//                try (FileInputStream _inStream = new FileInputStream(_file)) {
-//                    _props.load(_inStream);
-//                } catch (IOException e) {
-//                    throw new BoxRuntimeException(e);
-//                }
-//            } else {
-//                throw new BoxRuntimeException("not found config file: " + _filePath);
-//            }
-//        }
-        loadProperties(_props);
 
-        // 加载系统环境变量数据
-        Map<String, String> _envData = System.getenv();
-        if (null != _envData && !_envData.isEmpty()) {
-            for (Map.Entry<String, String> _env : _envData.entrySet()) {
-                String _key = _env.getKey();
-                String _value = _env.getValue();
-                if (null == _key || 0 == (_key = _key.trim()).length())
-                    continue;
-                if (null == _value || 0 == (_value = _value.trim()).length()) {
-                    _value = null;
-                }
-                this.DATA.put(_key, _value);
-            }
-        }
+        // 是否手动加载配置数据，通常用于与每三方框架进行集成时，将第三方框架中的配置数据作为低优先级的配置项合并入配置数据中。
+        String _configDataManualLoad = System.getProperty(KEY_MANUAL_LOAD_CONFIG_DATA);
+        if ("true".equals(_configDataManualLoad)) return;
 
-        // 加载JVM环境变量数据
-        loadProperties(System.getProperties());
-
-        // 缓存全局默认编码
-        String _encoding = this.DATA.get(BoxConfigKeys.encoding);
-        if (null == _encoding || 0 == (_encoding = _encoding.trim()).length())
-            _encoding = DEF_ENCODING;
-        this.ENCODING = _encoding;
-
-        // 框架组件定制对象
-        String _configObject = this.DATA.get(BoxConfigKeys.configObject);
-        if (null == _configObject || 0 == (_configObject = _configObject.trim()).length())
-            this.CONFIG_OBJECT = new SimpleBoxConfigObject();
-        else
-            this.CONFIG_OBJECT = BoxConfig.createInstance(_configObject, IBoxConfigObject.class);
-
-        // 允许开发人员重设最终配置数据
-        this.CONFIG_OBJECT.overrideBoxConfig(this.DATA);
+        // 加载配置数据
+        loadData();
     }
 
     // 当前对象唯一实例持有者。

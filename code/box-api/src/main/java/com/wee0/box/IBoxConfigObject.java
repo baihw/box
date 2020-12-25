@@ -37,6 +37,11 @@ public interface IBoxConfigObject {
     int DEF_BIZ_EXCEPTION_HTTP_STATUS_CODE = 500;
 
     /**
+     * 默认的参数校验失败状态码
+     */
+    int DEF_PARAMS_EXCEPTION_STATUS_CODE = 400;
+
+    /**
      * 默认的签名校验异常HTTP状态码
      */
     int DEF_SIGN_EXCEPTION_HTTP_STATUS_CODE = 401;
@@ -52,6 +57,13 @@ public interface IBoxConfigObject {
      * @param configData 配置数据
      */
     default void overrideBoxConfig(Map<String, String> configData) {
+    }
+
+    /**
+     * @return 参数校验失败状态码
+     */
+    default int getParamsExceptionStatusCode() {
+        return DEF_PARAMS_EXCEPTION_STATUS_CODE;
     }
 
     /**
@@ -99,6 +111,11 @@ public interface IBoxConfigObject {
      * @return 需要授权后访问的场景中采用的业务编码
      */
     IBizCode getUnauthorizedBizCode();
+
+    /**
+     * @return 参数校验失败时采用的业务编码
+     */
+    IBizCode getParamsErrorBizCode();
 
     /**
      * 获取请求返回值的默认统一包装对象

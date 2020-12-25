@@ -23,13 +23,11 @@ import com.wee0.box.sql.transaction.ITxManger;
 import com.wee0.box.sql.transaction.TxLevel;
 import org.apache.ibatis.session.SqlSessionManager;
 import org.apache.ibatis.session.TransactionIsolationLevel;
-import org.apache.ibatis.transaction.Transaction;
 import org.apache.ibatis.transaction.TransactionFactory;
 
 import javax.sql.DataSource;
 import java.io.ObjectStreamException;
 import java.sql.Connection;
-import java.sql.SQLException;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>

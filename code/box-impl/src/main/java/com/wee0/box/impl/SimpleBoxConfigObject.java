@@ -19,9 +19,6 @@ package com.wee0.box.impl;
 import com.wee0.box.IBoxConfigObject;
 import com.wee0.box.code.IBizCode;
 import com.wee0.box.code.impl.BizCodeDef;
-import com.wee0.box.struct.CmdFactory;
-
-import java.io.ObjectStreamException;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
@@ -56,6 +53,11 @@ final class SimpleBoxConfigObject implements IBoxConfigObject {
     @Override
     public IBizCode getUnauthorizedBizCode() {
         return BizCodeDef.Unauthorized;
+    }
+
+    @Override
+    public IBizCode getParamsErrorBizCode() {
+        return BizCodeDef.ParamsError;
     }
 
 }

@@ -27,7 +27,6 @@ import com.wee0.box.log.LoggerFactory;
 import com.wee0.box.plugin.PluginManager;
 import org.springframework.context.ApplicationContext;
 
-import java.io.File;
 import java.io.ObjectStreamException;
 import java.util.Collection;
 
@@ -89,12 +88,12 @@ public class SpringBoxContext implements IBoxContext, IDestroyable {
 
     @Override
     public void destroy() {
-        // 停止插件管理器
-        PluginManager.impl().stop();
+//        // 停止插件管理器
+//        PluginManager.impl().stop();
         // 清理资源
         Collection _allImpl = BoxConfig.impl().getAllInterfaceImpl();
         for (Object _impl : _allImpl) {
-            if (_impl instanceof IDestroyable) {
+            if (_impl instanceof IDestroyable && !(_impl instanceof SpringBoxContext)) {
                 ((IDestroyable) _impl).destroy();
             }
         }

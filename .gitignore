@@ -5,9 +5,12 @@ logs
 
 # .开头的任何文件
 .*
+# 包含隐私数据的配置文件
+.private.properties
 # 排除 .gitignore 本身
 !/.gitignore
 !/.travis.yml
+
 
 # Compiled class file
 *.class

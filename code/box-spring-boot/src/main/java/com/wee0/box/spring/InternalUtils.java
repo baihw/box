@@ -16,9 +16,9 @@
 
 package com.wee0.box.spring;
 
-import com.wee0.box.web.annotation.BoxAction;
 import com.wee0.box.beans.annotation.BoxBean;
 import com.wee0.box.sql.annotation.BoxDao;
+import com.wee0.box.web.annotation.BoxAction;
 import org.springframework.util.ClassUtils;
 
 import java.lang.annotation.Annotation;

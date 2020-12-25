@@ -19,9 +19,9 @@ package com.wee0.box.subject.impl;
 import com.wee0.box.subject.ISubject;
 import com.wee0.box.subject.ISubjectContext;
 import com.wee0.box.subject.ITokenFactory;
+import com.wee0.box.subject.ITokenHelper;
 import com.wee0.box.util.shortcut.ThreadUtils;
 
-import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ObjectStreamException;
@@ -69,6 +69,11 @@ public class SimpleSubjectContext implements ISubjectContext {
 
     @Override
     public void clearAuthorizationCache() {
+        throw new UnsupportedOperationException("This method is not yet implemented.");
+    }
+
+    @Override
+    public ITokenHelper getTokenHelper() {
         throw new UnsupportedOperationException("This method is not yet implemented.");
     }
 

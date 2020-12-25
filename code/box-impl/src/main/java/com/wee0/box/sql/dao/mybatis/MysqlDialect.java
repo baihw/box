@@ -16,14 +16,6 @@
 
 package com.wee0.box.sql.dao.mybatis;
 
-import com.wee0.box.sql.dao.IDaoHandler;
-import com.wee0.box.sql.ds.DatabaseId;
-import com.wee0.box.util.impl.UtilsCandidate;
-
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
  * @CreateDate 2019/9/15 22:06

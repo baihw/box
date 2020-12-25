@@ -29,40 +29,50 @@ public interface BoxConfigKeys {
     /**
      * 框架可定制组件定制类
      */
-    String configObject = "configObject";
+    String configObject = "box.configObject";
 
     /**
      * 全局默认编码
      */
-    String encoding = "encoding";
+    String encoding = "box.encoding";
 
     /**
      * 应用主机域，用于需要识别主机环境的组件中，如cookie。
      */
-    String domain = "domain";
+    String domain = "box.domain";
 
     /**
      * 扫描包名称配置
      */
-    String scanBasePackage = "scan.basePackage";
+    String scanBasePackage = "box.scan.basePackage";
 
     /**
      * 业务编码枚举类配置项名称，多个之间用逗号隔开。
      */
-    String bizCodeEnums = "bizCodeManager.bizCodeEnums";
+    String bizCodeEnums = "box.bizCodeManager.bizCodeEnums";
 
     /**
      * 业务编码文本默认值初始化器配置项名称，多个之间用逗号隔开。
      */
-    String bizCodeInitializers = "bizCodeManager.bizCodeInitializers";
+    String bizCodeInitializers = "box.bizCodeManager.bizCodeInitializers";
 
     /**
      * 业务编码存储对象, 需要国际化支持时可以设置为："i18nStore"。
      */
-    String bizCodeStore = "bizCodeManager.bizCodeStore";
+    String bizCodeStore = "box.bizCodeManager.bizCodeStore";
+
+    /**
+     * plugin插件模块相关配置前缀。
+     */
+    String pluginPrefix = "box.plugin.";
+
+    /**
+     * storage存储模块相关配置前缀。
+     */
+    String storagePrefix = "box.storage.";
 
     /**
      * sms短信模块相关配置前缀。
      */
-    String smsPrefix = "sms.";
+    String smsPrefix = "box.sms.";
 }

@@ -19,7 +19,6 @@ package com.wee0.box.testEntities;
 import com.wee0.box.beans.annotation.BoxIgnore;
 import com.wee0.box.sql.annotation.BoxColumn;
 import com.wee0.box.sql.annotation.BoxId;
-import com.wee0.box.sql.annotation.BoxTable;
 import com.wee0.box.sql.entity.AbstractEntity;
 
 import java.util.Date;

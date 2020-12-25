@@ -16,8 +16,6 @@
 
 package com.wee0.box.sql.transaction;
 
-import java.sql.SQLException;
-
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
  * @CreateDate 2019/11/10 16:12

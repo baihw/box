@@ -29,7 +29,7 @@ public interface IPluginManager {
     /**
      * 默认的实现类名称
      */
-    String DEF_IMPL_CLASS_NAME = "com.wee0.box.plugin.impl.SimplePluginManager";
+    String DEF_IMPL_CLASS_NAME = "com.wee0.box.plugin.impl.SimpleHttpPluginManager";
 
     /**
      * 获取插件接口实现者实例对象

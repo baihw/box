@@ -103,7 +103,12 @@ public enum BizCodeDef implements IBizCode, IBizCodeInitializer {
     /**
      * 签名错误
      */
-    SignError("S000004");
+    SignError("S000004"),
+
+    /**
+     * 参数错误
+     */
+    ParamsError("S000005");
 
 
     // 实际的业务编码
@@ -134,6 +139,7 @@ public enum BizCodeDef implements IBizCode, IBizCodeInitializer {
         setter.set(NeedLogin, "请先登陆后访问");
         setter.set(Unauthorized, "没有访问权限，请联系管理员");
         setter.set(SignError, "签名错误");
+        setter.set(ParamsError, "参数非法：{0}");
     }
 
 }

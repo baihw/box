@@ -109,6 +109,16 @@ public interface IMapUtils {
     List getList(final Map map, final Object key);
 
     /**
+     * 获取包含指定前缀的数据集合，返回的键名中默认去除了前缀部分。
+     *
+     * @param map    原始数据集合
+     * @param prefix 前缀文本
+     * @param <T>    值类型
+     * @return 仅包含指定前缀的数据集合
+     */
+    <T> Map<String, T> getByPrefix(final Map<String, T> map, String prefix);
+
+    /**
      * 判断数据源中指定键对应的值是否为空值
      *
      * @param map 数据源

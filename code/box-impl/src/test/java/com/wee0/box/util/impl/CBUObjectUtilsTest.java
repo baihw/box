@@ -17,12 +17,8 @@
 package com.wee0.box.util.impl;
 
 import com.wee0.box.testObjects.Level3Obj;
-import com.wee0.box.util.IObjectUtils;
 import com.wee0.box.util.IObjectUtilsTest;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>

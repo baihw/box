@@ -17,12 +17,12 @@
 package com.wee0.box.code.impl;
 
 import com.wee0.box.BoxConfig;
-import com.wee0.box.testObjects.BizCodeExt1;
 import com.wee0.box.code.IBizCode;
 import com.wee0.box.code.IBizCodeInfo;
 import com.wee0.box.i18n.Language;
 import com.wee0.box.i18n.Locale;
 import com.wee0.box.impl.BoxConfigKeys;
+import com.wee0.box.testObjects.BizCodeExt1;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;

@@ -31,7 +31,7 @@ public interface IBoxContext {
     /**
      * 默认的实现类名称
      */
-    String DEF_IMPL_CLASS_NAME = "com.wee0.box.spring.boot.SpringBoxContext";
+    String DEF_IMPL_CLASS_NAME = "com.wee0.box.spring.SpringBoxContext";
 
     /**
      * 检查是否包含指定标识的托管对象

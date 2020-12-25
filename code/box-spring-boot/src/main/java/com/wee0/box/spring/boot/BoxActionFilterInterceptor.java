@@ -19,7 +19,6 @@ package com.wee0.box.spring.boot;
 import com.wee0.box.BoxConfig;
 import com.wee0.box.log.ILogger;
 import com.wee0.box.log.LoggerFactory;
-import com.wee0.box.util.shortcut.CheckUtils;
 import com.wee0.box.util.shortcut.JsonUtils;
 import com.wee0.box.web.IActionFilter;
 import com.wee0.box.web.IActionRequest;
@@ -27,7 +26,6 @@ import com.wee0.box.web.IActionResponse;
 import com.wee0.box.web.servlet.impl.HttpServletActionRequest;
 import com.wee0.box.web.servlet.impl.HttpServletActionResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
 import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 
@@ -36,9 +34,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>

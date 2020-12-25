@@ -43,4 +43,22 @@ public interface ITokenFactory {
      */
     IBoxToken createBoxToken(String token);
 
+    /**
+     * 创建自定义令牌对象
+     *
+     * @param userId   用户身份标识
+     * @param userCode 用户身份校验码
+     * @return 自定义令牌对象
+     */
+    ICustomToken createCustomToken(String userId, String userCode);
+
+    /**
+     * 创建微信登陆令牌对象
+     *
+     * @param code  微信返回的访问码
+     * @param state 自定义的状态码
+     * @return 微信登陆令牌对象
+     */
+    IWeiXinToken createWeiXinToken(String code, String state);
+
 }

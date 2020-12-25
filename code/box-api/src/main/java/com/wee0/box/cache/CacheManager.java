@@ -17,7 +17,6 @@
 package com.wee0.box.cache;
 
 import com.wee0.box.BoxConfig;
-import com.wee0.box.beans.IDestroyable;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>

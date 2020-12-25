@@ -16,10 +16,10 @@
 
 package com.wee0.box.testBeans;
 
-import com.wee0.box.testObjects.InterfaceB;
 import com.wee0.box.beans.annotation.BoxBean;
 import com.wee0.box.beans.annotation.BoxPrimary;
 import com.wee0.box.log.ILogger;
+import com.wee0.box.testObjects.InterfaceB;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>

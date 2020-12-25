@@ -24,7 +24,6 @@ import com.wee0.box.sql.ds.DsManager;
 import com.wee0.box.util.shortcut.CheckUtils;
 import com.wee0.box.util.shortcut.ClassUtils;
 
-import java.beans.Introspector;
 import java.io.ObjectStreamException;
 import java.math.BigDecimal;
 import java.sql.*;

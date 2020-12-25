@@ -17,6 +17,7 @@
 package com.wee0.box.util.impl;
 
 import com.wee0.box.util.IMapUtils;
+import com.wee0.box.util.shortcut.CheckUtils;
 
 import java.io.ObjectStreamException;
 import java.math.BigDecimal;
@@ -137,6 +138,21 @@ public class SimpleMapUtils implements IMapUtils {
         if (_obj instanceof List)
             return (List) _obj;
         return null;
+    }
+
+    @Override
+    public <T> Map<String, T> getByPrefix(Map<String, T> map, String prefix) {
+        if (null == map) return null;
+        final String _PREFIX = CheckUtils.checkTrimEmpty(prefix, null);
+        if (null == _PREFIX) return map;
+        final int _PREFIX_LEN = prefix.length();
+        final Map<String, T> _result = new HashMap<>(map.size());
+        map.forEach((key, val) -> {
+            if (key.startsWith(_PREFIX)) {
+                _result.put(key.substring(_PREFIX_LEN), val);
+            }
+        });
+        return _result;
     }
 
     @Override

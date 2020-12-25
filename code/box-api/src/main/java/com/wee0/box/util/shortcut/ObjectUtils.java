@@ -17,7 +17,6 @@
 package com.wee0.box.util.shortcut;
 
 import com.wee0.box.BoxConfig;
-import com.wee0.box.cache.ICacheManager;
 import com.wee0.box.util.IObjectUtils;
 
 /**

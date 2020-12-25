@@ -29,6 +29,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
@@ -91,7 +93,13 @@ final class BoxActionExceptionHandler extends ResponseEntityExceptionHandler {
     public CMD<String> exception(HttpServletResponse response, Exception ex) {
         log.warn("Exception:", ex);
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        return CmdFactory.create("500", ex.getMessage());
+        String _msg = ex.getMessage();
+        if (null == _msg) {
+            StringWriter _msgWriter = new StringWriter();
+            ex.printStackTrace(new PrintWriter(_msgWriter, true));
+            _msg = _msgWriter.toString();
+        }
+        return CmdFactory.create("500", _msg);
     }
 
 //    private <T extends Throwable> Map<String, Object> exceptionFormat(Integer code, T ex) {

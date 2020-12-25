@@ -18,12 +18,9 @@ package com.wee0.box.sql.dao.mybatis;
 
 import com.wee0.box.log.ILogger;
 import com.wee0.box.log.LoggerFactory;
-import com.wee0.box.sql.dao.IPage;
 import com.wee0.box.sql.dao.PageHelper;
 import com.wee0.box.sql.ds.DsManagerTest;
-import com.wee0.box.sql.transaction.TxManger;
 import com.wee0.box.testDaos.ISysUserDao;
-import com.wee0.box.testEntities.SysUserEntity;
 import com.wee0.box.util.IDateUtils;
 import com.wee0.box.util.shortcut.DateUtils;
 import org.apache.ibatis.binding.MapperMethod;
@@ -32,12 +29,10 @@ import org.apache.ibatis.mapping.*;
 import org.apache.ibatis.scripting.xmltags.DynamicContext;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSessionFactory;
-import org.h2.store.Page;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
-import java.sql.Connection;
 import java.util.*;
 
 /**

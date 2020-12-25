@@ -19,10 +19,7 @@ package com.wee0.box.spring.boot;
 import com.wee0.box.log.ILogger;
 import com.wee0.box.log.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>

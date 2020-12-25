@@ -16,9 +16,8 @@
 
 package com.wee0.box.util;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -174,6 +173,31 @@ public interface IHttpUtils {
      * @param url 请求地址
      * @return 响应结果
      */
+    default IHttpResult httpPost(String url, Map<String, String> data) {
+        final StringBuilder _builder = new StringBuilder();
+        if (null != data && !data.isEmpty()) {
+            data.forEach((_k, _v) -> {
+                try {
+                    String _key = URLEncoder.encode(_k, DEF_CHARSET);
+                    String _val = URLEncoder.encode(_v, DEF_CHARSET);
+                    _builder.append(_key).append('=').append(_val).append('&');
+                } catch (UnsupportedEncodingException e) {
+                    throw new IllegalStateException("UnsupportedEncoding:" + DEF_CHARSET, e);
+                }
+            });
+        }
+        if (0 != _builder.length() && '&' == _builder.charAt(_builder.length() - 1)) {
+            _builder.deleteCharAt(_builder.length() - 1);
+        }
+        return httpAction(url, _builder.toString(), null, DEF_CHARSET, DEF_TIMEOUT);
+    }
+
+    /**
+     * 执行一个简单的POST请求
+     *
+     * @param url 请求地址
+     * @return 响应结果
+     */
     default IHttpResult httpPost(String url) {
         return httpAction(METHOD.POST, url, null, null, DEF_CHARSET, DEF_TIMEOUT);
     }
@@ -308,6 +332,21 @@ public interface IHttpUtils {
      */
     default IHttpResult httpDownload(String url, OutputStream outStream) {
         return httpDownload(METHOD.GET, url, null, outStream, DEF_TIMEOUT);
+    }
+
+    /**
+     * 下载资源
+     *
+     * @param url      请求地址
+     * @param destFile 目标文件
+     * @return 响应结果
+     */
+    default IHttpResult httpDownload(String url, File destFile) {
+        try (OutputStream _outStream = new FileOutputStream(destFile)) {
+            return httpDownload(METHOD.GET, url, null, _outStream, DEF_TIMEOUT);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

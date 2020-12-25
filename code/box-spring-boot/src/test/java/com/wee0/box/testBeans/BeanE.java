@@ -16,9 +16,9 @@
 
 package com.wee0.box.testBeans;
 
+import com.wee0.box.beans.annotation.BoxBean;
 import com.wee0.box.testObjects.InterfaceA;
 import com.wee0.box.testObjects.InterfaceB;
-import com.wee0.box.beans.annotation.BoxBean;
 
 import javax.annotation.Resource;
 

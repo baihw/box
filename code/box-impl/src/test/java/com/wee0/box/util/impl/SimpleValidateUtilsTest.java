@@ -16,8 +16,6 @@
 
 package com.wee0.box.util.impl;
 
-import com.wee0.box.util.IJsonUtilsTest;
-import com.wee0.box.util.IValidateUtils;
 import com.wee0.box.util.IValidateUtilsTest;
 import org.junit.BeforeClass;
 

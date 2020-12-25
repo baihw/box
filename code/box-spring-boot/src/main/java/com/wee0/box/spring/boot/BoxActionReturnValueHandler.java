@@ -17,10 +17,9 @@
 package com.wee0.box.spring.boot;
 
 import com.wee0.box.BoxConfig;
+import com.wee0.box.struct.IStruct;
 import com.wee0.box.web.annotation.BoxAction;
 import com.wee0.box.web.annotation.BoxIgnoreReturnValue;
-import com.wee0.box.struct.CmdFactory;
-import com.wee0.box.struct.IStruct;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.web.context.request.NativeWebRequest;

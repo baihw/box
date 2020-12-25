@@ -96,58 +96,54 @@ final class BoxActionHandlerInterceptor implements HandlerInterceptor {
         // 初始化当前会话主体对象
 //        ISubject _subject = SubjectContext.getSubject(request, response);
 
+        if (!(handler instanceof HandlerMethod)) {
+            log.warn("unKnow method: {}", handler);
+            return true;
+        }
+        HandlerMethod _handlerMethod = (HandlerMethod) handler;
+
         // 判断请求的资源是否允许匿名访问
         String _uri = request.getRequestURI();
-        if (-1 != this.ignoreUrls.indexOf(_uri + ',')) {
+        if (-1 != this.ignoreUrls.indexOf(_uri + ',') || _handlerMethod.hasMethodAnnotation(BoxRequireIgnore.class)) {
+            // 不需要权限检查
             return true;
         }
 
-        if (handler instanceof HandlerMethod) {
-            HandlerMethod _handlerMethod = (HandlerMethod) handler;
-            if (_handlerMethod.hasMethodAnnotation(BoxRequireIgnore.class)) {
-                // 不需要权限检查
+        if (_handlerMethod.hasMethodAnnotation(BoxRequireSign.class)) {
+            // 签名检查
+            if (this.signChecker.check(request))
                 return true;
-            }
+            renderJson(response, CmdFactory.create(BoxConfig.impl().getConfigObject().getSignErrorBizCode()));
+            return false;
+        }
 
-            if (_handlerMethod.hasMethodAnnotation(BoxRequireSign.class)) {
-                // 签名检查
-                if (this.signChecker.check(request))
-                    return true;
-                renderJson(response, CmdFactory.create(BoxConfig.impl().getConfigObject().getSignErrorBizCode()));
+        // 以下情况都需要登陆，判断当前用户是否已经登陆。
+        ISubject _subject = SubjectContext.getSubject(request, response);
+        if (null == _subject || !_subject.isLogin()) {
+            renderJson(response, CmdFactory.create(BoxConfig.impl().getConfigObject().getNeedLoginBizCode()));
+            return false;
+        }
+
+        // 角色检查
+        BoxRequireRoles _requireRoles = _handlerMethod.getMethodAnnotation(BoxRequireRoles.class);
+        if (null != _requireRoles) {
+            String[] _roles = _requireRoles.value();
+            BoxRequireLogical _logical = _requireRoles.logical();
+            if (!checkRoles(_subject, _roles, _logical)) {
+                renderJson(response, CmdFactory.create(BoxConfig.impl().getConfigObject().getUnauthorizedBizCode()));
                 return false;
             }
+        }
 
-            // 以下情况都需要登陆，判断当前用户是否已经登陆。
-            ISubject _subject = SubjectContext.getSubject(request, response);
-            if (null == _subject || !_subject.isLogin()) {
-                renderJson(response, CmdFactory.create(BoxConfig.impl().getConfigObject().getNeedLoginBizCode()));
+        // 权限检查
+        BoxRequirePermissions _requirePermissions = _handlerMethod.getMethodAnnotation(BoxRequirePermissions.class);
+        if (null != _requirePermissions) {
+            String[] _permissions = _requirePermissions.value();
+            BoxRequireLogical _logical = _requirePermissions.logical();
+            if (!checkPermissions(_subject, _permissions, _logical)) {
+                renderJson(response, CmdFactory.create(BoxConfig.impl().getConfigObject().getUnauthorizedBizCode()));
                 return false;
             }
-
-            // 角色检查
-            BoxRequireRoles _requireRoles = _handlerMethod.getMethodAnnotation(BoxRequireRoles.class);
-            if (null != _requireRoles) {
-                String[] _roles = _requireRoles.value();
-                BoxRequireLogical _logical = _requireRoles.logical();
-                if (!checkRoles(_subject, _roles, _logical)) {
-                    renderJson(response, CmdFactory.create(BoxConfig.impl().getConfigObject().getUnauthorizedBizCode()));
-                    return false;
-                }
-            }
-
-            // 权限检查
-            BoxRequirePermissions _requirePermissions = _handlerMethod.getMethodAnnotation(BoxRequirePermissions.class);
-            if (null != _requirePermissions) {
-                String[] _permissions = _requirePermissions.value();
-                BoxRequireLogical _logical = _requirePermissions.logical();
-                if (!checkPermissions(_subject, _permissions, _logical)) {
-                    renderJson(response, CmdFactory.create(BoxConfig.impl().getConfigObject().getUnauthorizedBizCode()));
-                    return false;
-                }
-            }
-
-        } else {
-            log.warn("unKnow method: {}", handler);
         }
 
         return true;
@@ -166,6 +162,28 @@ final class BoxActionHandlerInterceptor implements HandlerInterceptor {
             return;
 //        log.trace("handler: {}", handler);
     }
+
+//    // 检查请求参数
+//    private boolean checkParameters(HandlerMethod method, HttpServletRequest request, HttpServletResponse response) {
+////        LocalVariableTableParameterNameDiscoverer _nameDiscoverer = BoxContext.impl().getBean(LocalVariableTableParameterNameDiscoverer.class);
+//        // 参数校验
+//        MethodParameter[] _methodParameters = method.getMethodParameters();
+//        if (null == _methodParameters || 0 == _methodParameters.length)
+//            return true;
+//        for (MethodParameter _methodParameter : _methodParameters) {
+//            if (_methodParameter.hasParameterAnnotation(BoxParam.class)) {
+//                BoxParam _param = _methodParameter.getParameterAnnotation(BoxParam.class);
+//                String _paramName = _methodParameter.getParameterName();
+//                String _paramVal = request.getParameter(_paramName);
+//                boolean _validateResult = ValidateUtils.impl().validatePattern(_param.pattern(), _paramVal, _param.allowNull(), false);
+//                if (_validateResult) return true;
+//                int _resCode = BoxConfig.impl().getConfigObject().getParamsExceptionStatusCode();
+//                renderJson(response, CmdFactory.create(String.valueOf(_resCode), _param.message()), _resCode);
+//                return false;
+//            }
+//        }
+//        return true;
+//    }
 
     // 检查指定角色的逻辑关系是否成立
     private static boolean checkRoles(ISubject subject, String[] roles, BoxRequireLogical logical) {
@@ -211,6 +229,11 @@ final class BoxActionHandlerInterceptor implements HandlerInterceptor {
 
     // 渲染错误信息
     private static void renderJson(HttpServletResponse response, Object data) {
+        renderJson(response, data, BoxConfig.impl().getConfigObject().getPermissionExceptionHttpStatusCode());
+    }
+
+    // 渲染错误信息
+    private static void renderJson(HttpServletResponse response, Object data, int status) {
 //        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         response.setStatus(BoxConfig.impl().getConfigObject().getPermissionExceptionHttpStatusCode());
         response.setCharacterEncoding(BoxConfig.impl().getEncoding());

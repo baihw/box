@@ -17,16 +17,18 @@
 package com.wee0.box.util.impl;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.wee0.box.util.IJsonUtils;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectStreamException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
@@ -64,10 +66,24 @@ public class JacksonJsonUtils implements IJsonUtils {
     public <T> T readToObject(String jsonString, Class<T> type) {
         try {
             return objectMapper.readValue(jsonString, type);
-        } catch (JsonParseException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
-        } catch (JsonMappingException e) {
+        }
+    }
+
+    @Override
+    public <T> T readToObject(InputStream jsonStream, Class<T> type) {
+        try {
+            return objectMapper.readValue(jsonStream, type);
+        } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public <T> T readToObject(URL jsonUrl, Class<T> type) {
+        try {
+            return objectMapper.readValue(jsonUrl, type);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -84,9 +100,49 @@ public class JacksonJsonUtils implements IJsonUtils {
     }
 
     @Override
+    public Map<String, Object> readToMap(InputStream jsonStream) {
+        try {
+            Map<String, Object> _result = objectMapper.readValue(jsonStream, TYPE_MAP);
+            return _result;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public Map<String, Object> readToMap(URL jsonUrl) {
+        try {
+            Map<String, Object> _result = objectMapper.readValue(jsonUrl, TYPE_MAP);
+            return _result;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public List<Map<String, Object>> readToMapList(String jsonString) {
         try {
             List<Map<String, Object>> _result = objectMapper.readValue(jsonString, TYPE_MAP_LIST);
+            return _result;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<Map<String, Object>> readToMapList(InputStream jsonStream) {
+        try {
+            List<Map<String, Object>> _result = objectMapper.readValue(jsonStream, TYPE_MAP_LIST);
+            return _result;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<Map<String, Object>> readToMapList(URL jsonUrl) {
+        try {
+            List<Map<String, Object>> _result = objectMapper.readValue(jsonUrl, TYPE_MAP_LIST);
             return _result;
         } catch (IOException e) {
             throw new RuntimeException(e);

@@ -23,6 +23,8 @@ import com.wee0.box.log.LoggerFactory;
 import com.wee0.box.subject.ISubject;
 import com.wee0.box.subject.ISubjectContext;
 import com.wee0.box.subject.ITokenFactory;
+import com.wee0.box.subject.ITokenHelper;
+import com.wee0.box.subject.impl.SimpleTokenHelper;
 import com.wee0.box.util.shortcut.CheckUtils;
 import com.wee0.box.util.shortcut.StringUtils;
 import com.wee0.box.util.shortcut.ThreadUtils;
@@ -41,6 +43,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ObjectStreamException;
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
@@ -55,8 +58,10 @@ public class ShiroSubjectContext implements ISubjectContext {
     // 日志对象
     private static ILogger log = LoggerFactory.getLogger(ShiroSubjectContext.class);
 
-    // 默认的资源配置文件
-    private static final String DEF_RESOURCE = "classpath:config/shiro.ini";
+//    // 默认的资源配置文件
+//    private static final String DEF_RESOURCE = "classpath:config/shiro.ini";
+//   // 默认的配置荐前缀。
+    static final String DEF_CONFIG_PREFIX = "shiro.main.";
 
     // 对象存储容器
     private static final ThreadLocal<ISubject> SUBJECT_HOLDER = ThreadUtils.createThreadLocal();
@@ -140,6 +145,11 @@ public class ShiroSubjectContext implements ISubjectContext {
     }
 
     @Override
+    public ITokenHelper getTokenHelper() {
+        return SimpleTokenHelper.me();
+    }
+
+    @Override
     public ITokenFactory getTokenFactory() {
         return TOKEN_FACTORY;
     }
@@ -147,7 +157,15 @@ public class ShiroSubjectContext implements ISubjectContext {
     // 初始化逻辑
     private void init() {
         IniSecurityManagerFactory _factory = new IniSecurityManagerFactory();
-        Ini _ini = Ini.fromResourcePath(DEF_RESOURCE);
+//        Ini _ini = Ini.fromResourcePath(DEF_RESOURCE);
+        Ini _ini = new Ini();
+        _ini.addSection(IniSecurityManagerFactory.MAIN_SECTION_NAME);
+        Map<String, String> _mainConfig = BoxConfig.impl().getByPrefix(DEF_CONFIG_PREFIX);
+        if (null != _mainConfig && !_mainConfig.isEmpty()) {
+            // 注入主配置对象中shiro相关配置数据。
+            Ini.Section _section = _ini.getSection(IniSecurityManagerFactory.MAIN_SECTION_NAME);
+            _section.putAll(_mainConfig);
+        }
         _factory.setIni(_ini);
         _factory.setSingleton(true);
         SecurityUtils.setSecurityManager(_factory.getInstance());
@@ -185,6 +203,7 @@ public class ShiroSubjectContext implements ISubjectContext {
         _cookie.setPath("/");
         _cookie.setMaxAge(expiry);
         _cookie.setHttpOnly(true);
+//        _cookie.setSameSite()
 //        _cookie.setSecure(true);
         return _cookie;
     }

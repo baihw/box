@@ -19,6 +19,7 @@ package com.wee0.box.util.impl;
 import com.wee0.box.log.ILogger;
 import com.wee0.box.log.LoggerFactory;
 import com.wee0.box.util.IHttpUtils;
+import com.wee0.box.util.shortcut.StringUtils;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -32,7 +33,15 @@ import java.util.function.Consumer;
  * @CreateDate 2019/12/15 7:12
  * @Description Http处理工具快捷入口
  * <pre>
- * 补充说明
+ * 如果需要设置一些特殊的头信息时，需要在启动时增加以下系统设置：
+ * System.setProperty("sun.net.http.allowRestrictedHeaders", "true");
+ * 如果需要指定使用ipv4网络，需要在启动时增加以下系统设置：
+ * System.setProperty("java.net.preferIPv4Stack", "true");
+ * 如果需要对网络进行代理，需要在启动时增加以下系统设置：
+ * System.setProperty("http.proxyHost", "127.0.0.1");
+ * System.setProperty("http.proxyPort", "8866");
+ * System.setProperty("https.proxyHost", "127.0.0.1");
+ * System.setProperty("https.proxyPort", "8866");
  * </pre>
  **/
 public class SimpleHttpUtils implements IHttpUtils {
@@ -44,6 +53,11 @@ public class SimpleHttpUtils implements IHttpUtils {
      * 头信息关键字： Content-Type
      */
     static final String HEAD_CONTENT_TYPE_KEY = "Content-Type";
+
+    /**
+     * 头信息关键字： Content-Length
+     */
+    static final String HEAD_CONTENT_LENGTH_KEY = "Content-Length";
 
     /**
      * 默认的表单数据分隔符号相关定义
@@ -84,7 +98,7 @@ public class SimpleHttpUtils implements IHttpUtils {
             headMap.putAll(DEF_HEAD_MAP);
         }
         headMap.put(HEAD_CONTENT_TYPE_KEY, HEAD_CONTENT_TYPE_VAL_FORM_DATA_DEF);
-        return httpAction(METHOD.POST, url, (_outStream) -> {
+        return httpAction(method, url, (_outStream) -> {
             if (null == formData || formData.isEmpty())
                 return;
 //            OutputStream _out = new DataOutputStream(_outStream);
@@ -142,7 +156,7 @@ public class SimpleHttpUtils implements IHttpUtils {
      */
     @Override
     public IHttpResult httpUpload(METHOD method, String url, Map<String, String> headMap, InputStream inStream, int timeout) {
-        return httpAction(METHOD.POST, url, (_outStream) -> {
+        return httpAction(method, url, (_outStream) -> {
             copyStream(inStream, _outStream);
         }, headMap, DEF_CHARSET, timeout);
     }
@@ -201,11 +215,13 @@ public class SimpleHttpUtils implements IHttpUtils {
         if (null == url || 0 == (url = url.trim()).length())
             throw new IllegalArgumentException("url can not be null!");
         if (null == method)
-            method = METHOD.POST;
+            method = METHOD.GET;
         if (null == charset)
             charset = DEF_CHARSET;
         if (null == headMap)
             headMap = DEF_HEAD_MAP;
+        else
+            headMap.putAll(DEF_HEAD_MAP);
         if (0 > timeout)
             timeout = DEF_TIMEOUT;
 
@@ -216,28 +232,35 @@ public class SimpleHttpUtils implements IHttpUtils {
             _conn.setRequestMethod(method.name());
             _conn.setConnectTimeout(timeout);
             _conn.setReadTimeout(timeout);
-            _conn.setDoInput(true);
-            _conn.setDoOutput(true);// 可以使用conn.getOutputStream().write()向服务器传输数据。
-//            if (METHOD.GET != method) {
-//                _conn.setDoOutput(true);// 可以使用conn.getOutputStream().write()向服务器传输数据。
-//            }
-            _conn.setUseCaches(false); // 不使用缓存
-            _conn.setChunkedStreamingMode(DEF_CHUNK_SIZE);
+
             // 设置头信息部分。
             if (null != headMap && !headMap.isEmpty()) {
                 for (Map.Entry<String, String> _headEntry : headMap.entrySet()) {
                     _conn.setRequestProperty(_headEntry.getKey(), _headEntry.getValue());
                 }
             }
+            int _contentLength = StringUtils.parseInt(headMap.get(HEAD_CONTENT_LENGTH_KEY), -1);
+
+            if (METHOD.GET != method) {
+                _conn.setDoInput(true);
+                // 可以使用conn.getOutputStream().write()向服务器传输数据。
+                _conn.setDoOutput(true);
+//            _conn.setDoOutput(METHOD.GET == method ? false : true);
+                _conn.setUseCaches(false); // 不使用缓存
+                if (-1 == _contentLength)
+                    _conn.setChunkedStreamingMode(DEF_CHUNK_SIZE);
+                else
+                    _conn.setFixedLengthStreamingMode(_contentLength);
 //			log.trace( "数据设置完成，准备建立连接。" ) ;
-            _conn.connect(); // 建立连接，此时必须头信息全部设置完毕。
+                _conn.connect(); // 建立连接，此时必须头信息全部设置完毕。
 //			log.trace( "连接建立，接收数据。" ) ;
-            // 如果有需要发送的数据，则发送数据。
-            if (null != sendData && _conn.getDoOutput()) {
-                try (OutputStream _outStream = _conn.getOutputStream();) {
+                // 如果有需要发送的数据，则发送数据。
+                if (null != sendData && _conn.getDoOutput()) {
+                    try (OutputStream _outStream = _conn.getOutputStream();) {
 //                    _outStream.write(data);
-                    sendData.accept(_outStream);
-                    _outStream.flush();
+                        sendData.accept(_outStream);
+                        _outStream.flush();
+                    }
                 }
             }
 

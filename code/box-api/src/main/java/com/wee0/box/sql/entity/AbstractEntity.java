@@ -16,8 +16,6 @@
 
 package com.wee0.box.sql.entity;
 
-import com.wee0.box.sql.annotation.BoxColumn;
-import com.wee0.box.sql.annotation.BoxId;
 import com.wee0.box.util.shortcut.ObjectUtils;
 
 import java.io.Serializable;

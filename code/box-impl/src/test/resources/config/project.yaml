@@ -1,0 +1,109 @@
+# 项目描述文件
+project:
+  # 项目生成规则：
+  # 如果不分模块，全部代码混合在一个项目中，则直接采用3要素生成项目pom文件坐标，如：com.example:demo:0.1.0。
+  # 如果是分模块项目，各项目坐标如下：
+  #     com.example:demo-parent:0.1.0
+  #       |- com.example:demo-api:0.1.0
+  #       |- com.example:demo-impl:0.1.0
+  #       |- com.example:demo-route:0.1.0
+  #       |- com.example:demo-module1-api:0.1.0
+  #       |- com.example:demo-module1-impl:0.1.0
+  #       |- com.example:demo-module2-api:0.1.0
+  #       |- com.example:demo-module2-impl:0.1.0
+  # 包名与坐标名一致，横线被替换为“.”，如下：
+  #     com.example.demo.api
+  #     com.example.demo.impl
+  #     com.example.demo.route
+  #     com.example.demo.module1.api
+  #     com.example.demo.module1.impl
+  #     com.example.demo.module2.api
+  #     com.example.demo.module2.impl
+  groupId: "com.example"
+  artifactId: "demo"
+  version: "0.1.0"
+  # 是否不分模块，全部代码混合在一个项目中，默认：false。
+  minxin: false
+  # 使用BoxApiParam注解参数，默认为false。
+  useBoxApiParam: true
+  # 使用BoxParam注解参数，默认为false。当useBoxApiParam与useBoxParam参数同时为true时，使用boxApiParam。
+  # useBoxParam: false
+  # 项目标题
+  title: "演示项目"
+  # 项目域名
+  domain: "demo.test.internal.com"
+  # 接口请求前缀，如：demo.test.internal.com/api/... 。
+  prefix: "api"
+# 默认模块，生成在默认的api与模拟实现模块项目中。如：api, impl。
+default:
+  user/login:
+    # 请求方法，默认同时支持Get与Post。
+    # method: GET
+    #
+    # 需要携带的请求头信息
+    # headers:
+    #   x-test:
+    #     description: "测试请求头"
+    #     type: String
+    #     example: test-001
+    #   x-1:
+    #     description: "测试请求头1"
+    #     type: String
+    #     example: test-001
+    parameters:
+      loginId:
+        description: 登陆标识
+        type: String
+        # 校验规则
+        validate:
+          pattrn: "*6-12"
+          error: "登陆标识长度必须在6到12位之间！"
+      loginPwd:
+        description: 登陆密码
+        type: String
+        # 校验规则
+        validate:
+          pattrn: "*6-12"
+          error: "登陆密码长度必须在6到12位之间！"
+    responses:
+      701: "参数校验失败"
+      702: "用户不存在"
+      703: "密码不正确"
+      200:
+        userName: "string|3-9"
+        age: "int|16-66"
+        roles:
+          type: "array|1-10"
+          value: "test"
+
+# 自定义模块，会根据模块名称生成对应的api与模拟实现模块项目中。如：mod1-api, mod1-impl。
+mod1:
+  user/login:
+    # 请求方法，默认同时支持Get与Post。
+    # method: GET
+    #
+    # 需要携带的请求头信息
+    # headers:
+    #   x-test:
+    #     description: "测试请求头"
+    #     type: String
+    #     example: test-001
+    #   x-1:
+    #     description: "测试请求头1"
+    #     type: String
+    #     example: test-001
+    parameters:
+      loginId:
+        description: 登陆标识
+        type: String
+        # 校验规则
+        validate:
+          pattrn: "*6-12"
+          error: "登陆标识长度必须在6到12位之间！"
+      loginPwd:
+        description: 登陆密码
+        type: String
+        # 校验规则
+        validate:
+          pattrn: "*6-12"
+          error: "登陆密码长度必须在6到12位之间！"

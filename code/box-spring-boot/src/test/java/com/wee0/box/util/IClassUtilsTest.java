@@ -16,11 +16,11 @@
 
 package com.wee0.box.util;
 
-import com.wee0.box.testObjects.*;
 import com.wee0.box.beans.annotation.BoxBean;
 import com.wee0.box.code.IBizCode;
 import com.wee0.box.exception.BoxRuntimeException;
 import com.wee0.box.testBeans.BeanA;
+import com.wee0.box.testObjects.*;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;

@@ -16,12 +16,7 @@
 
 package com.wee0.box.util;
 
-import org.junit.Assert;
 import org.junit.Ignore;
-import org.junit.Test;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>

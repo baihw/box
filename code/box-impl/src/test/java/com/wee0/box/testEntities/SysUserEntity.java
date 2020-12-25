@@ -19,8 +19,6 @@ package com.wee0.box.testEntities;
 import com.wee0.box.sql.annotation.BoxColumn;
 import com.wee0.box.sql.annotation.BoxTable;
 
-import java.util.Date;
-
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
  * @CreateDate 2019/9/15 8:16

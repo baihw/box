@@ -20,30 +20,14 @@ import com.alibaba.druid.pool.DruidDataSource;
 import com.wee0.box.log.ILogger;
 import com.wee0.box.log.LoggerFactory;
 import com.wee0.box.sql.ds.DsManager;
-import com.wee0.box.sql.ds.IDsManager;
-import com.wee0.box.sql.ds.impl.SimpleDsProperty;
-import com.wee0.box.util.shortcut.CheckUtils;
-import org.apache.ibatis.builder.xml.XMLConfigBuilder;
-import org.apache.ibatis.session.Configuration;
-import org.apache.ibatis.session.SqlSessionFactory;
-import org.apache.ibatis.session.SqlSessionFactoryBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.context.properties.bind.BindResult;
-import org.springframework.boot.context.properties.bind.Bindable;
-import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.core.env.Environment;
-import org.springframework.jndi.JndiObjectFactoryBean;
 
-import javax.naming.NamingException;
 import javax.sql.DataSource;
-import java.io.InputStream;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>

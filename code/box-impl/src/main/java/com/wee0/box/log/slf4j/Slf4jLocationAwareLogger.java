@@ -17,11 +17,7 @@
 package com.wee0.box.log.slf4j;
 
 import com.wee0.box.log.ILogger;
-import org.slf4j.Marker;
-import org.slf4j.MarkerFactory;
 import org.slf4j.spi.LocationAwareLogger;
-
-import java.util.Collections;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>

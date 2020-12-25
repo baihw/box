@@ -19,8 +19,6 @@ package com.wee0.box.sql.dao.mybatis;
 import com.wee0.box.sql.dao.IPage;
 import com.wee0.box.util.shortcut.ObjectUtils;
 
-import java.util.Collection;
-
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
  * @CreateDate 2019/11/10 10:22

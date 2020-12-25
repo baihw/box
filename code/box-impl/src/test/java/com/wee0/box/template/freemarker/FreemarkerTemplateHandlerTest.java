@@ -16,7 +16,6 @@
 
 package com.wee0.box.template.freemarker;
 
-import com.wee0.box.BoxConfig;
 import com.wee0.box.template.ITemplateHandler;
 import freemarker.template.Configuration;
 import freemarker.template.Template;

@@ -32,6 +32,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.config.annotation.*;
 
 import java.util.List;
@@ -86,6 +89,7 @@ class BoxActionAutoConfiguration implements WebMvcConfigurer {
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
         ObjectMapper _objectMapper = JacksonJsonUtils.me().getObjectMapper();
+//        MappingJackson2HttpMessageConverter _jackson2HttpMessageConverter = new BoxActionHttpMessageConverter(_objectMapper);
         MappingJackson2HttpMessageConverter _jackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter(_objectMapper);
         _jackson2HttpMessageConverter.setDefaultCharset(BoxConstants.UTF8_CHARSET);
         converters.add(0, _jackson2HttpMessageConverter);
@@ -126,16 +130,6 @@ class BoxActionAutoConfiguration implements WebMvcConfigurer {
     }
 
     @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/api/**")
-                .allowedOrigins("*")
-                .allowCredentials(true)
-                .allowedMethods("OPTIONS", "GET", "POST")
-                .allowedHeaders("Content-Type, Accept, Authorization")
-                .maxAge(3600);
-    }
-
-    @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new BoxActionHandlerInterceptor(authIgnoreUrls, authSignSecretKey, authSignChecker));
         registry.addInterceptor(new BoxActionFilterInterceptor(actionFilterNames));
@@ -144,6 +138,21 @@ class BoxActionAutoConfiguration implements WebMvcConfigurer {
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
 //        registry.addViewController("/").setViewName("/static/index.html");
+    }
+
+    @Bean
+    CorsFilter corsFilter() {
+        CorsConfiguration _configuration = new CorsConfiguration();
+        _configuration.addAllowedOrigin("*");
+        _configuration.addAllowedHeader("*"); // Content-Type, Accept, Authorization
+        _configuration.addAllowedMethod("*"); // "OPTIONS", "GET", "POST", "PUT", "DELETE"
+        _configuration.setAllowCredentials(true);
+        // 可以缓存该结果，3600秒内，不需要再发送预检验请求。
+        _configuration.setMaxAge(3600L);
+//        _configuration.addExposedHeader(HttpHeaders.SET_COOKIE);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/api/**", _configuration);
+        return new CorsFilter(source);
     }
 
     @Bean

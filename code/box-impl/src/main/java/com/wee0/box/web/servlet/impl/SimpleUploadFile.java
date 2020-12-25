@@ -17,13 +17,10 @@
 package com.wee0.box.web.servlet.impl;
 
 import com.wee0.box.web.servlet.IUploadFile;
-import com.wee0.box.web.servlet.IUploadRequest;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>

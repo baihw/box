@@ -16,8 +16,8 @@
 
 package com.wee0.box.exception;
 
-import com.wee0.box.testObjects.BizCodeExt1;
 import com.wee0.box.code.impl.SimpleBizCodeManager;
+import com.wee0.box.testObjects.BizCodeExt1;
 import org.junit.BeforeClass;
 import org.junit.Test;
 

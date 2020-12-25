@@ -83,6 +83,15 @@ public class SubjectContext {
     }
 
     /**
+     * 获取令牌操作助手实例对象
+     *
+     * @return 令牌操作助手实例对象
+     */
+    public static ITokenHelper getTokenHelper() {
+        return IMPL.getTokenHelper();
+    }
+
+    /**
      * 获取令牌工厂实例对象
      *
      * @return 令牌工厂实例对象

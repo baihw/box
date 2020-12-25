@@ -18,12 +18,12 @@ package com.wee0.box.subject.impl;
 
 import com.wee0.box.exception.BoxRuntimeException;
 import com.wee0.box.subject.IServletRequestSignChecker;
+import com.wee0.box.util.shortcut.ByteUtils;
 import com.wee0.box.util.shortcut.StringUtils;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.bind.DatatypeConverter;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -114,7 +114,7 @@ public class SimpleServletRequestSignChecker implements IServletRequestSignCheck
             SecretKeySpec _secretKeySpec = new SecretKeySpec(_key.getBytes(UTF8), _mac.getAlgorithm());
             _mac.init(_secretKeySpec);
             byte[] _resultBytes = _mac.doFinal(data.getBytes(UTF8));
-            String _resultHex = DatatypeConverter.printHexBinary(_resultBytes);
+            String _resultHex = ByteUtils.bytesToHexString(_resultBytes);
             return _resultHex.toLowerCase();
         } catch (NoSuchAlgorithmException | UnsupportedEncodingException | InvalidKeyException e) {
             throw new BoxRuntimeException("crypto error!", e);

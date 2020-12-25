@@ -39,6 +39,11 @@ import java.util.Map;
 public interface IBoxConfig {
 
     /**
+     * 指定手动加载配置数据的系统属性键名
+     */
+    String KEY_MANUAL_LOAD_CONFIG_DATA = "manualLoadConfigData";
+
+    /**
      * @return 获取可定制组件的定制对象
      */
     IBoxConfigObject getConfigObject();
@@ -122,4 +127,17 @@ public interface IBoxConfig {
      */
     Collection getAllInterfaceImpl();
 
+    /**
+     * 合并指定基础数据，然后加载配置数据。
+     *
+     * @param baseData 要合并的基础数据，优先级低于之后加载的配置数据。
+     */
+    void loadData(Map<String, String> baseData);
+
+    /**
+     * 加载配置数据
+     */
+    default void loadData() {
+        this.loadData(null);
+    }
 }

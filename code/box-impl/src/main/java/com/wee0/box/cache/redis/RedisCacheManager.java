@@ -23,14 +23,11 @@ import com.wee0.box.log.ILogger;
 import com.wee0.box.log.LoggerFactory;
 import com.wee0.box.util.shortcut.CheckUtils;
 import com.wee0.box.util.shortcut.ObjectUtils;
-import com.wee0.box.util.shortcut.PropertiesUtils;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.util.Pool;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectStreamException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -50,14 +47,16 @@ public class RedisCacheManager implements ICacheManager {
 
     // 配置文件
     static final String DEF_CONFIG_FILE = "config/redis.properties";
+    // 默认的配置荐前缀。
+    static final String DEF_CONFIG_PREFIX = "box.redis.";
 
     // 自定义配置项名称
     private static final String KEY_MODE = "redis.mode"; // basic, shard, cluster, sentinel
-    private static final String KEY_HOST = "redis.host";
-    private static final String KEY_PORT = "redis.port";
-    private static final String KEY_PASSWORD = "redis.password";
-    private static final String KEY_DATABASE = "redis.database";
-    private static final String KEY_TIMEOUT = "redis.timeout";
+    private static final String KEY_HOST = "host";
+    private static final String KEY_PORT = "port";
+    private static final String KEY_PASSWORD = "password";
+    private static final String KEY_DATABASE = "database";
+    private static final String KEY_TIMEOUT = "timeout";
 
     // 自定义配置项默认值
     private static final String DEF_MODE = "basic";
@@ -100,33 +99,39 @@ public class RedisCacheManager implements ICacheManager {
         int _database = DEF_DATABASE;
 
         JedisPoolConfig _config = createDefaultConfig();
-        try (InputStream _inStream = SimpleBoxConfig.me().getResourceAsStream(DEF_CONFIG_FILE);) {
-            Map<String, String> _propertiesMap = PropertiesUtils.loadToMap(_inStream);
-            ObjectUtils.impl().setProperties(_config, _propertiesMap);
-            if (_propertiesMap.containsKey(KEY_HOST)) {
-                _host = CheckUtils.checkNotTrimEmpty(_propertiesMap.get(KEY_HOST), "%s can't be empty!", KEY_HOST);
+
+        Map<String, String> _redisConfig = SimpleBoxConfig.me().getByPrefix(DEF_CONFIG_PREFIX);
+        if (null != _redisConfig && !_redisConfig.isEmpty()) {
+            ObjectUtils.impl().setProperties(_config, _redisConfig);
+
+            if (_redisConfig.containsKey(KEY_HOST)) {
+                _host = CheckUtils.checkNotTrimEmpty(_redisConfig.get(KEY_HOST), "%s can't be empty!", KEY_HOST);
             }
-            if (_propertiesMap.containsKey(KEY_PORT)) {
-                String _portString = CheckUtils.checkTrimEmpty(_propertiesMap.get(KEY_PORT), null);
+            if (_redisConfig.containsKey(KEY_PORT)) {
+                String _portString = CheckUtils.checkTrimEmpty(_redisConfig.get(KEY_PORT), null);
                 if (null != _portString)
                     _port = Integer.parseInt(_portString);
             }
-            if (_propertiesMap.containsKey(KEY_PASSWORD)) {
-                _password = CheckUtils.checkTrimEmpty(_propertiesMap.get(KEY_PASSWORD), null);
+            if (_redisConfig.containsKey(KEY_PASSWORD)) {
+                _password = CheckUtils.checkTrimEmpty(_redisConfig.get(KEY_PASSWORD), null);
             }
-            if (_propertiesMap.containsKey(KEY_DATABASE)) {
-                String _dbString = CheckUtils.checkTrimEmpty(_propertiesMap.get(KEY_DATABASE), null);
+            if (_redisConfig.containsKey(KEY_DATABASE)) {
+                String _dbString = CheckUtils.checkTrimEmpty(_redisConfig.get(KEY_DATABASE), null);
                 if (null != _dbString)
                     _database = Integer.parseInt(_dbString);
             }
-            if (_propertiesMap.containsKey(KEY_TIMEOUT)) {
-                String _timeoutString = CheckUtils.checkTrimEmpty(_propertiesMap.get(KEY_TIMEOUT), null);
+            if (_redisConfig.containsKey(KEY_TIMEOUT)) {
+                String _timeoutString = CheckUtils.checkTrimEmpty(_redisConfig.get(KEY_TIMEOUT), null);
                 if (null != _timeoutString)
                     _timeout = Integer.parseInt(_timeoutString);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+
+//        try (InputStream _inStream = SimpleBoxConfig.me().getResourceAsStream(DEF_CONFIG_FILE);) {
+//            Map<String, String> _propertiesMap = PropertiesUtils.loadToMap(_inStream);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
         log.info("connect redis {}:{}:{}", _host, _port, _database);
         this.POOL = new JedisPool(_config, _host, _port, _timeout, _password, _database);
     }

@@ -17,7 +17,6 @@
 package com.wee0.box.spring.boot;
 
 import com.wee0.box.BoxConstants;
-import com.wee0.box.util.shortcut.StringUtils;
 import org.springframework.web.servlet.View;
 
 import javax.servlet.http.HttpServletRequest;

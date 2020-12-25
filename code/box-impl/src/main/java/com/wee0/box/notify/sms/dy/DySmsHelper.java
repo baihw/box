@@ -140,7 +140,7 @@ public class DySmsHelper implements ISmsHelper {
     }
 
     /**
-     * 阿里云短信算法专用的UrlEncode格式
+     * 阿里云短信算法指定的UrlEncode格式
      *
      * @param value 原始值
      * @return 格式化后的值
@@ -154,7 +154,7 @@ public class DySmsHelper implements ISmsHelper {
     }
 
     /**
-     * 阿里云短信算法专用的日期格式
+     * 阿里云短信算法指定的日期格式
      *
      * @param date 原始日期
      * @return 格式化后的值

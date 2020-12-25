@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.wee0.box</groupId>
         <artifactId>box-parent</artifactId>
-        <version>0.2.7</version>
+        <version>0.3.8</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 

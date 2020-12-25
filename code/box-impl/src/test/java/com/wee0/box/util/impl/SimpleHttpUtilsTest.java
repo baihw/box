@@ -18,15 +18,11 @@ package com.wee0.box.util.impl;
 
 import com.wee0.box.util.IHttpUtils;
 import com.wee0.box.util.IHttpUtilsTest;
-import com.wee0.box.util.IMapUtilsTest;
 import com.wee0.box.util.shortcut.HttpUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 

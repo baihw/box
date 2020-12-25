@@ -16,15 +16,9 @@
 
 package com.wee0.box.web.servlet.impl;
 
-import com.wee0.box.BoxConstants;
-import com.wee0.box.web.IActionRequest;
 import com.wee0.box.web.IActionResponse;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>

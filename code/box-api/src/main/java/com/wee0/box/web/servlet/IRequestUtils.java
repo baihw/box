@@ -16,8 +16,6 @@
 
 package com.wee0.box.web.servlet;
 
-import javax.servlet.http.HttpServletRequest;
-
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
  * @CreateDate 2019/11/23 11:12

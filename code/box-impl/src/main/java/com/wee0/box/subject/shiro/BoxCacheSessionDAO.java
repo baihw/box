@@ -65,7 +65,7 @@ public final class BoxCacheSessionDAO extends CachingSessionDAO {
 
     @Override
     protected Session doReadSession(Serializable sessionId) {
-        log.debug("read sessionId: {}", sessionId);
+        log.trace("read sessionId: {}", sessionId);
         if (null != sessionId) {
             String _sessionId = sessionId.toString();
             if (0 == _sessionId.indexOf("tk_")) {

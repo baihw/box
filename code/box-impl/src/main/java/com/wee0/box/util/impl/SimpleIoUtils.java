@@ -67,6 +67,13 @@ public class SimpleIoUtils implements IIoUtils {
     }
 
     @Override
+    public String readString(InputStream input, String encoding) throws IOException {
+        byte[] _bytes = readBytes(input);
+        if (null == _bytes) return null;
+        return new String(_bytes, encoding);
+    }
+
+    @Override
     public void write(String data, OutputStream output, String encoding) throws IOException {
         if (null == data || null == output)
             return;

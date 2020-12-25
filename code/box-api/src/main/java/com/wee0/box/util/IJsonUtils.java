@@ -16,6 +16,8 @@
 
 package com.wee0.box.util;
 
+import java.io.InputStream;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -53,6 +55,26 @@ public interface IJsonUtils {
     <T> T readToObject(String jsonString, Class<T> type);
 
     /**
+     * Json流转换为指定对象
+     *
+     * @param jsonStream json流
+     * @param type       转换类
+     * @param <T>        转换类型
+     * @return 类对象实例
+     */
+    <T> T readToObject(InputStream jsonStream, Class<T> type);
+
+    /**
+     * json地址数据转换为指定对象
+     *
+     * @param jsonUrl json地址
+     * @param type    转换类
+     * @param <T>     转换类型
+     * @return 类对象实例
+     */
+    <T> T readToObject(URL jsonUrl, Class<T> type);
+
+    /**
      * 读取json文本到Map对象
      *
      * @param jsonString json文本
@@ -61,11 +83,43 @@ public interface IJsonUtils {
     Map<String, Object> readToMap(String jsonString);
 
     /**
+     * 读取Json流到Map对象
+     *
+     * @param jsonStream Json流
+     * @return Map对象
+     */
+    Map<String, Object> readToMap(InputStream jsonStream);
+
+    /**
+     * 读取json地址数据到Map对象
+     *
+     * @param jsonUrl json地址
+     * @return Map对象
+     */
+    Map<String, Object> readToMap(URL jsonUrl);
+
+    /**
      * 读取json文本到Map对象集合
      *
      * @param jsonString json文本
      * @return Map对象集合
      */
     List<Map<String, Object>> readToMapList(String jsonString);
+
+    /**
+     * 读取Json流到Map对象集合
+     *
+     * @param jsonStream Json流
+     * @return Map对象集合
+     */
+    List<Map<String, Object>> readToMapList(InputStream jsonStream);
+
+    /**
+     * 读取json地址数据到Map对象集合
+     *
+     * @param jsonUrl json地址
+     * @return Map对象集合
+     */
+    List<Map<String, Object>> readToMapList(URL jsonUrl);
 
 }

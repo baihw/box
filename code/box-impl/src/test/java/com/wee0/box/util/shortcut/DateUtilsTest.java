@@ -19,11 +19,7 @@ package com.wee0.box.util.shortcut;
 import com.wee0.box.BoxConfig;
 import com.wee0.box.util.IDateUtils;
 import com.wee0.box.util.IDateUtilsTest;
-import com.wee0.box.util.IStringUtils;
-import com.wee0.box.util.IStringUtilsTest;
 import org.junit.BeforeClass;
-
-import javax.swing.*;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>

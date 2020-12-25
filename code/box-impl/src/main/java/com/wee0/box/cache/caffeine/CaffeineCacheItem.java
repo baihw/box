@@ -16,13 +16,10 @@
 
 package com.wee0.box.cache.caffeine;
 
-import com.wee0.box.cache.ICache;
 import com.wee0.box.util.shortcut.CheckUtils;
 
 import java.time.Instant;
 import java.time.temporal.ChronoField;
-import java.util.Collection;
-import java.util.Set;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>

@@ -55,6 +55,27 @@ public interface IIoUtils {
     byte[] readBytes(InputStream input) throws IOException;
 
     /**
+     * 将指定的输入流数据读取为指定编码的字符串。
+     *
+     * @param input    输入流
+     * @param encoding 字符串编码
+     * @return 字符串
+     * @throws IOException 数据操作异常
+     */
+    String readString(InputStream input, String encoding) throws IOException;
+
+    /**
+     * 将指定的输入流数据读取为默认编码（UTF-8）的字符串。
+     *
+     * @param input 输入流
+     * @return 字符串
+     * @throws IOException 数据操作异常
+     */
+    default String readString(InputStream input) throws IOException {
+        return readString(input, "UTF-8");
+    }
+
+    /**
      * 将指定数据写入输出流
      *
      * @param data     数据

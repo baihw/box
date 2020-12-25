@@ -56,7 +56,7 @@ final class ShiroSubject implements ISubject {
     // 设置当前主体对象唯一标识
     void setId(String id) {
         this.subjectId = id;
-        log.debug("login id: {}", id);
+        log.trace("login id: {}", id);
     }
 
     @Override

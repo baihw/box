@@ -18,7 +18,6 @@ package com.wee0.box.util.shortcut;
 
 import com.wee0.box.BoxConfig;
 import com.wee0.box.util.IHttpUtils;
-import com.wee0.box.util.IThreadUtils;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>

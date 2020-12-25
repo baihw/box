@@ -16,8 +16,7 @@
 
 package com.wee0.box.util.impl;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.UndeclaredThrowableException;
+import java.net.URLDecoder;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -63,6 +62,22 @@ public final class UtilsCandidate {
                 return this.size() > limit;
             }
         };
+    }
+
+    /**
+     * 用于在排查依赖冲突等问题时，判断异常代码执行类所属的源码位置
+     *
+     * @param clazz 异常代码执行类
+     * @return 源码位置
+     */
+    public static String getSourceLocation(Class clazz) {
+        String _locUrl = "";
+        try {
+            String _loc = clazz.getProtectionDomain().getCodeSource().getLocation().getFile();
+            _locUrl = URLDecoder.decode(_loc, "UTF-8");
+        } catch (Throwable e) {
+        }
+        return _locUrl;
     }
 
 }

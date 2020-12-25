@@ -16,14 +16,17 @@
 
 package com.wee0.box.spring.boot;
 
+import com.wee0.box.BoxConfig;
+import com.wee0.box.exception.BizExceptionFactory;
+import com.wee0.box.log.ILogger;
+import com.wee0.box.log.LoggerFactory;
 import com.wee0.box.util.shortcut.CheckUtils;
-import com.wee0.box.util.shortcut.StringUtils;
+import com.wee0.box.util.shortcut.JsonUtils;
+import com.wee0.box.util.shortcut.ValidateUtils;
 import com.wee0.box.web.IActionRequest;
 import com.wee0.box.web.IActionResponse;
 import com.wee0.box.web.annotation.BoxAction;
-import com.wee0.box.log.ILogger;
-import com.wee0.box.log.LoggerFactory;
-import com.wee0.box.util.shortcut.JsonUtils;
+import com.wee0.box.web.annotation.BoxParam;
 import com.wee0.box.web.servlet.impl.HttpServletActionRequest;
 import com.wee0.box.web.servlet.impl.HttpServletActionResponse;
 import org.springframework.beans.BeanUtils;
@@ -36,7 +39,6 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.text.NumberFormat;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
@@ -90,6 +92,15 @@ public class BoxActionMethodArgumentResolver implements HandlerMethodArgumentRes
         if (null == _parameterName)
             return null;
         String _parameterValue = CheckUtils.checkTrimEmpty(webRequest.getParameter(_parameterName), null);
+        BoxParam _boxParam = parameter.getParameterAnnotation(BoxParam.class);
+        if (null != _boxParam) {
+            boolean _validateResult = ValidateUtils.impl().validatePattern(_parameterValue, _boxParam.pattern(), _boxParam.allowNull(), false);
+            if (!_validateResult) {
+                throw BizExceptionFactory.create(BoxConfig.impl().getConfigObject().getParamsErrorBizCode(), _boxParam.message());
+//                int _resCode = BoxConfig.impl().getConfigObject().getParamsExceptionStatusCode();
+//                renderJson(response, CmdFactory.create(String.valueOf(_resCode), _param.message()), _resCode);
+            }
+        }
         if (null == _parameterValue)
             return null;
         if (BeanUtils.isSimpleProperty(_parameterType)) {

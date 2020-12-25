@@ -16,8 +16,6 @@
 
 package com.wee0.box.sql.dao.mybatis;
 
-import com.wee0.box.sql.dao.IBaseDao;
-
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.*;

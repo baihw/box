@@ -48,7 +48,7 @@ public class BoxPasswordRealm extends AuthorizingRealm {
 
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
-        System.out.println("getAuthenticationInfo...");
+//        System.out.println("getAuthenticationInfo...");
         IPasswordToken _token = (IPasswordToken) token;
         String _userName = _token.getUsername();
         String _password = _token.getPassword();

@@ -16,9 +16,7 @@
 
 package com.wee0.box.subject.shiro;
 
-import com.wee0.box.subject.IBoxToken;
-import com.wee0.box.subject.IPasswordToken;
-import com.wee0.box.subject.ITokenFactory;
+import com.wee0.box.subject.*;
 
 /**
  * @author <a href="78026399@qq.com">白华伟</a>
@@ -38,6 +36,16 @@ final class ShiroTokenFactory implements ITokenFactory {
     @Override
     public IBoxToken createBoxToken(String token) {
         return new ShiroBoxToken(token);
+    }
+
+    @Override
+    public ICustomToken createCustomToken(String userId, String userCode) {
+        return new ShiroCustomToken(userId, userCode);
+    }
+
+    @Override
+    public IWeiXinToken createWeiXinToken(String code, String state) {
+        return new ShiroWeiXinToken(code, state);
     }
 
 }

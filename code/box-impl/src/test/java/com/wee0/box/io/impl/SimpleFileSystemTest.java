@@ -16,7 +16,6 @@
 
 package com.wee0.box.io.impl;
 
-import org.apache.ibatis.io.DefaultVFS;
 import org.junit.Ignore;
 import org.junit.Test;
 

@@ -64,6 +64,13 @@ public interface ISubjectContext {
     void clearAuthorizationCache();
 
     /**
+     * 获取令牌操作助手实例对象
+     *
+     * @return 令牌操作助手实例对象
+     */
+    ITokenHelper getTokenHelper();
+
+    /**
      * 获取令牌工厂实例对象
      *
      * @return 令牌工厂实例对象
