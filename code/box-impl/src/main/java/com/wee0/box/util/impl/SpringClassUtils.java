@@ -127,7 +127,7 @@ public final class SpringClassUtils implements IClassUtils {
 
     @Override
     public Set<Class<?>> getClassAllInterfaces(Class<?> cla) {
-        return getClassAllInterfaces(cla, null);
+        return getClassAllInterfaces(cla, ClassUtils.getDefaultClassLoader());
     }
 
     @Override
