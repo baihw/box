@@ -15,6 +15,8 @@
     <modules>
         <module>box-api</module>
         <module>box-impl</module>
+		<module>box-core-api</module>
+        <module>box-core-impl</module>
         <module>box-spring-boot</module>
     </modules>
 

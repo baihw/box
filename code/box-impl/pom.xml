@@ -74,6 +74,18 @@
             <optional>true</optional>
         </dependency>
         <dependency>
+            <groupId>com.github.drinkjava2</groupId>
+            <artifactId>jdialects</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.ibeetl</groupId>
+            <artifactId>beetlsql</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <scope>provided</scope>
