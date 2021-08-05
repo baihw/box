@@ -105,7 +105,8 @@ public class DySmsHelper implements ISmsHelper {
         if (!params.containsKey("Action")) params.put("Action", "QuerySendDetails");
         if (!params.containsKey("PageSize")) params.put("PageSize", "10");
         if (!params.containsKey("CurrentPage")) params.put("CurrentPage", "1");
-        if (!params.containsKey("SendDate")) params.put("SendDate", new SimpleDateFormat("yyyyMMdd").format(new Date()));
+        if (!params.containsKey("SendDate"))
+            params.put("SendDate", new SimpleDateFormat("yyyyMMdd").format(new Date()));
         // 因为要处理返回结果，所以强制使用json返回格式
         params.put("Format", "json");
         String _postUrl = buildPostUrl(params);
@@ -253,6 +254,7 @@ public class DySmsHelper implements ISmsHelper {
             javax.crypto.Mac _mac = javax.crypto.Mac.getInstance(DEF_ALGORITHM);
             _mac.init(this._key);
             byte[] _signData = _mac.doFinal(_sb.toString().getBytes(DEF_ENCODING));
+//            Base64.getEncoder().encode(_signData);
             _signature = new sun.misc.BASE64Encoder().encode(_signData);
         } catch (Exception e) {
             throw new BoxRuntimeException(e);

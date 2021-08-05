@@ -1,0 +1,96 @@
+{
+  "SysUser": {
+    "userId": "",
+    "userName": ""
+  },
+  "SysUser": {
+    "_hide": {
+      "desc": "登录时判断用户是否存在，原型：select count(*) as cnt from SysUser where userName=? and userPassword=?",
+      "where": {
+        "userName": "user1",
+        "password": "123456"
+      }
+    },
+    "cnt": "count(*)"
+  },
+  "SysUser": {
+    "_hide": {
+      "desc": "获取当前登录用户信息(依赖当前用户登录Token)",
+      "explain": true,
+      "action": "query(query是默认值，可以省略。)",
+      "from": "SysUser",
+      "fields": "userId, userName, "
+    },
+    "roles": {
+      "_hide": {
+        "desc": "获取当前登录用户角色信息",
+        "from": "SysRole(只有作为列子集时，才有此选项。)",
+        "fields": [
+          "roleName"
+        ],
+        "where": {
+          "userId": "&CURRENT_USER_ID"
+        },
+        "transform": "rowsValueToArray"
+      }
+    }
+  },
+  "SysUser": {
+    "_hide": {
+      "order": "updateTime-,createTime+",
+      "order说明": "-降序，+升序，+可省略，默认升序排列。",
+      "fields": "userId, userName, userAge",
+      "rows": 10,
+      "page": 1,
+      "rows说明": "当配置了rows参数时，返回的数据结构为：{rowCount:xx, page:x, rows:[]}"
+    }
+  },
+  "create | update | delete": {
+    "SysUser": {
+      "userId": "",
+      "userName": "",
+      "userAge": 16
+    }
+  },
+  "backup": {
+    "where": {
+      "id": [
+        "id1",
+        "id2",
+        "id3"
+      ],
+      "id!": [
+        "id1",
+        "id2",
+        "id3"
+      ],
+      "city%": "福建省%",
+      "city%": "%厦门市%",
+      "age": "[16,19]",
+      "age": "(16,19]",
+      "age": "(16,19)"
+    },
+    "group": "col1",
+    "order": "updateTime-,createTime+",
+    "order说明": "-降序，+升序，+可省略，默认升序排列。",
+    "rows": 10,
+    "skip": 0,
+    "rows说明": "当配置了rows参数时，返回的数据结构为：{rows:[], rowCount:xx}",
+    "query": {
+      "currentUser": {
+        "from": "SysUser",
+        "fields": "*",
+        "complexFields": {
+        },
+        "where": {
+          "userId": "001"
+        }
+      },
+      "users": {
+        "more": true,
+        "from": "SysUser",
+        "fields": "*"
+      }
+    }
+  }
+}

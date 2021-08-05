@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.wee0.box</groupId>
         <artifactId>box-parent</artifactId>
-        <version>0.3.8</version>
+        <version>0.4.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -15,6 +15,10 @@
     <packaging>jar</packaging>
 
     <dependencies>
+        <dependency>
+            <groupId>com.wee0.box</groupId>
+            <artifactId>box-core-api</artifactId>
+        </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>

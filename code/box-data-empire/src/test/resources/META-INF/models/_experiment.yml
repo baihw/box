@@ -1,0 +1,26 @@
+---
+# 实验配置片段一
+common:
+  baseFields: &baseFields
+    createUserId: String
+    createTime: DateTime
+    updateUserId: String
+    updateTime: DateTime
+    deletedFlag: Boolean
+models:
+  SysUser:
+    fields:
+      userId: String
+      loginName: String
+      password: String
+      showName: String
+      userType: Integer
+      userStatus: Integer
+      <<: *baseFields
+  SysRole:
+    fields:
+      roleId: String
+      roleName: String
+      <<: *baseFields
+---
+# 实验配置片段二

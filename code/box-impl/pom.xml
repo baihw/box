@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.wee0.box</groupId>
         <artifactId>box-parent</artifactId>
-        <version>0.3.8</version>
+        <version>0.4.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -18,6 +18,10 @@
         <dependency>
             <groupId>com.wee0.box</groupId>
             <artifactId>box-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.wee0.box</groupId>
+            <artifactId>box-core-impl</artifactId>
         </dependency>
         <dependency>
             <groupId>com.rabbitmq</groupId>
@@ -76,36 +80,6 @@
         <dependency>
             <groupId>com.github.drinkjava2</groupId>
             <artifactId>jdialects</artifactId>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>com.ibeetl</groupId>
-            <artifactId>beetlsql</artifactId>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>

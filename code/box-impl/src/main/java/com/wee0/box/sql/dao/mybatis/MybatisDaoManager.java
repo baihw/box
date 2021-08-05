@@ -119,7 +119,7 @@ public class MybatisDaoManager implements IDaoManager {
             if (configuration.hasStatement(_methodId))
                 continue;
 
-            log.debug("generate: {}", _methodId);
+            log.debug("generator: {}", _methodId);
             String _sqlScript = getSqlScript(DsManager.impl().getDefaultDatabaseId(), _method, _entityClass);
             if (null == _sqlScript)
                 continue;

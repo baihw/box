@@ -81,7 +81,7 @@ public class SimpleSqlTemplateHelper implements ISqlTemplateHelper {
             _dataModel.putAll(dataModel);
             String _entityContent = TemplateHandler.impl().process(templateName, _dataModel);
             String _entityFileName = _entityName + ".java";
-            log.debug("generate entity from {} to {}.", _tableName, _entityFileName);
+            log.debug("generator entity from {} to {}.", _tableName, _entityFileName);
             try (FileOutputStream _outputStream = new FileOutputStream(new File(outputDirectory, _entityFileName));) {
                 IoUtils.impl().write(_entityContent, _outputStream);
             } catch (IOException e) {

@@ -20,6 +20,7 @@ package com.wee0.box.spring.boot;
 
 import com.wee0.box.BoxConfig;
 import com.wee0.box.IBoxConfig;
+import com.wee0.box.IBoxContext;
 import com.wee0.box.log.ILogger;
 import com.wee0.box.log.LoggerFactory;
 import com.wee0.box.spring.BoxBeanDefinitionMerge;
@@ -57,6 +58,8 @@ public class BoxInitializer implements ApplicationContextInitializer<Configurabl
 
         // 获取spring配置数据
         Map<String, String> _springConfigData = loadSpringConfigData((AbstractEnvironment) configurableApplicationContext.getEnvironment());
+        _springConfigData.put(IBoxContext.class.getName(), "com.wee0.box.spring.SpringBoxContext");
+
         // 加载框架配置数据
         BoxConfig.impl().loadData(_springConfigData);
 

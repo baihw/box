@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration scan="false" scanPeriod="60 seconds" debug="false">
+
+    <!-- 默认控制台日志 -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %-5level [%16thread] %-39logger:%L |- %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 应用默认文件日志 -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/app.log</file>
+        <append>true</append>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>DENY</onMatch>
+            <onMismatch>ACCEPT</onMismatch>
+        </filter>
+        <encoder>
+            <pattern>%d{yyyyMMddHHmmss.SSS} %level [%thread] %logger |- %msg%n</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/app_%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>15</maxHistory>
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <!-- 错误信息文件日志 -->
+    <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/error.log</file>
+        <append>true</append>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <encoder>
+            <pattern>%d{yyyyMMddHHmmss.SSS} %level [%thread] %logger |- %msg%n</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/error_%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>15</maxHistory>
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <!-- 框架文件日志 -->
+    <appender name="FRAMEWORK_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>logs/framework.log</File>
+        <append>true</append>
+        <encoder>
+            <pattern>%d{yyyyMMddHHmmss.SSS} %level [%thread] %logger |- %msg%n</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <FileNamePattern>logs/framework_%d{yyyy-MM-dd}_%i.log</FileNamePattern>
+            <MaxFileSize>5MB</MaxFileSize>
+            <MaxHistory>15</MaxHistory>
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <logger name="com.wee0" level="TRACE"/>
+    <logger name="druid.sql" level="DEBUG"/>
+    <logger name="org.springframework" level="INFO" additivity="false">
+        <appender-ref ref="FRAMEWORK_FILE"/>
+    </logger>
+
+    <!-- root级别 -->
+    <root>
+        <level value="DEBUG"/>
+        <!-- 控制台输出 -->
+        <appender-ref ref="STDOUT"/>
+        <!-- 文件输出 -->
+        <!--<appender-ref ref="FILE"/>-->
+        <!-- 错误信息文件输出 -->
+        <!--<appender-ref ref="ERROR_FILE"/>-->
+    </root>
+
+</configuration> 

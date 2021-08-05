@@ -1,0 +1,50 @@
+# 补充说明：
+#   字段信息属性补充说明：
+#     comment： 字段注释信息。
+#     type：数据类型，可使用的值有：Bool, Str, Int, Decimal, Date。
+#     primary：是否主键字段，用于标识模型实例唯一性，当一个模型中有多个字段都是主键字段时，则组成联合主键，单字段不要求唯一。
+#     length: 数据长度。
+#     required: 是否必须字段，不能为空。
+#     defValue：默认值。
+#     generator：值生成器名称。如果配置了值生成器，则忽略默认值设置。从项目中配置的值生成器中选取。
+#     dataRules: 数据校验规则名称。从项目中配置的数据校验规则集中选取。
+#
+SysUser: # 模型名称
+  backend: db1 # 后端存储对象，默认为项目中配置的默认存储引擎。当项目中配置了多个存储引擎时在这里指定使用的后端存储引擎名称。
+  fields: # 模型字段信息
+    userId: {type: Char, length: 32, required: true}
+    userName: {type: Str, length: 32, required: true}
+    userPwd: {type: Str, length: 16, required: true}
+    email: {type: Str, length:64, comment: "邮箱，可选。"}
+    mobile: {type: Str, length:16, comment: "电话，可选。"}
+    sex: {type: Int, length:1, comment: '性别'}
+    isDeleted: {type: Bool, comment: '假删除。'}
+    MIXIN: CREATE_UPDATE_TIME_USER # MIXIN混入关键字，支持的混入字段集合从项目中配置的可混入字段集合中选取。
+  indexes: # 模型索引信息
+    "UNIQUE_USER_NAME":
+      unique: true # 是否唯一索引
+      fields: [userName, email, mobile]
+  primaryKeys: [userId]
+---
+common:
+  baseFields: &baseFields
+    createUserId: String
+    createTime: DateTime
+    updateUserId: String
+    updateTime: DateTime
+    deletedFlag: Boolean
+models:
+  SysUser:
+    fields:
+      userId: String
+      loginName: String
+      password: String
+      showName: String
+      userType: Integer
+      userStatus: Integer
+      <<: *baseFields
+  SysRole:
+    fields:
+      roleId: String
+      roleName: String
+      <<: *baseFields

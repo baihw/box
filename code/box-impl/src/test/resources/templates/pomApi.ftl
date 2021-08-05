@@ -34,7 +34,7 @@
     <!--                    <execution>-->
     <!--                        <id>Generate MyBatis Artifacts</id>-->
     <!--                        <goals>-->
-    <!--                            <goal>generate</goal>-->
+    <!--                            <goal>generator</goal>-->
     <!--                        </goals>-->
     <!--                    </execution>-->
     <!--                </executions>-->

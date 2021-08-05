@@ -86,7 +86,7 @@ public class BoxBeanNameGenerator extends AnnotationBeanNameGenerator implements
         if (null == _result) {
             _result = InternalUtils.generateBeanName(_beanClassName);
         }
-        log.trace("generate {} name: {}", _beanClassName, _result);
+        log.trace("generator {} name: {}", _beanClassName, _result);
         return _result;
     }
 
