@@ -382,7 +382,7 @@ public final class SimpleBoxConfig implements IBoxConfig {
     private static InputStream _getResourceAsStream(String resource) throws IOException {
         if (null == resource)
             throw new IOException("resource can not be null!");
-        // 如果存在同名的外瓿配置文件，优先加载
+        // 如果存在同名的外部配置文件，优先加载
         File _file = new File(EXTERNAL_DIR, resource);
         if (_file.exists())
             return new FileInputStream(_file);

@@ -67,6 +67,11 @@ public class SpringBoxContext implements IBoxContext, IDestroyable {
     }
 
     @Override
+    public void addBean(String id, Object bean) {
+        throw new UnsupportedOperationException("This method is not yet implemented.");
+    }
+
+    @Override
     public void init() {
         log.info("user.timezone:{}.", System.getProperty("user.timezone"));
         log.info("externalDir:{}.", BoxConfig.impl().getExternalDir());
